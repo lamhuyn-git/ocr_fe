@@ -1,7 +1,6 @@
 import { type ReactNode } from 'react';
-import vextractLogo from '../../assets/vextract-logo.svg';
+import vextractLogo from '../../../assets/vextract-logo.svg';
 
-// Subtle decorative wave pattern matching the Figma background (Trống Đồng motif)
 function BackgroundDecoration() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
@@ -51,11 +50,11 @@ function BackgroundDecoration() {
   );
 }
 
-type LoginPageProps = {
+type LoginLayoutProps = {
   children: ReactNode;
 };
 
-export default function LoginPage({ children }: LoginPageProps) {
+export default function LoginLayout({ children }: LoginLayoutProps) {
   return (
     <div className="relative min-h-screen w-full bg-white flex flex-col font-be-vietnam">
       <BackgroundDecoration />

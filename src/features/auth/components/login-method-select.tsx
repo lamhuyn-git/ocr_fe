@@ -1,8 +1,7 @@
 import LoginProgressBar from './login-progress-bar';
-import vneidIcon from '../../assets/vneid-icon.png';
-import portalIcon from '../../assets/portal-icon.png';
-
-export type LoginMethod = 'citizen-vneid' | 'officer-vneid' | 'officer-account';
+import { type LoginMethod } from '../types';
+import vneidIcon from '../../../assets/vneid-icon.png';
+import portalIcon from '../../../assets/portal-icon.png';
 
 type MethodCardProps = {
   icon: string;

@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import LoginLayout from '../features/auth/components/login-layout';
-import LoginMethodSelect from '../features/auth/components/login-method-select';
-import LoginFormVneid from '../features/auth/components/login-form-vneid';
-import LoginFormAccount from '../features/auth/components/login-form-account';
-import { type LoginMethod, type LoginStep } from '../features/auth/types';
+import { useState } from "react";
+import LoginLayout from "../features/auth/components/login-layout";
+import LoginMethodSelect from "../features/auth/components/login-method-select";
+import LoginFormVneid from "../features/auth/components/login-form-vneid";
+import LoginFormAccount from "../features/auth/components/login-form-account";
+import { type LoginMethod, type LoginStep } from "../features/auth/hooks/types";
 
 export default function LoginPage() {
   const [step, setStep] = useState<LoginStep>(1);
@@ -19,18 +19,15 @@ export default function LoginPage() {
       return <LoginMethodSelect onSelect={handleMethodSelect} />;
     }
 
-    if (method === 'officer-account') {
+    if (method === "officer-account") {
       return <LoginFormAccount />;
     }
 
-    const stepLabel = 'Bước 2: Đăng nhập bằng tài khoản định danh điện tử (VNeID).';
+    const stepLabel =
+      "Bước 2: Đăng nhập bằng tài khoản định danh điện tử (VNeID).";
 
     return <LoginFormVneid stepLabel={stepLabel} />;
   }
 
-  return (
-    <LoginLayout>
-      {renderStep()}
-    </LoginLayout>
-  );
+  return <LoginLayout>{renderStep()}</LoginLayout>;
 }

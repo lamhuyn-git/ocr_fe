@@ -1,6 +1,6 @@
 import LoginProgressBar from "./login-progress-bar";
 import { type LoginMethod } from "../hooks/types";
-import vneidIcon from "../../../assets/vneid-icon.png";
+import vneidIcon from "../../../assets/vneid-icon.svg";
 import portalIcon from "../../../assets/portal-icon.png";
 
 type MethodCardProps = {
@@ -14,18 +14,18 @@ function MethodCard({ icon, title, subtitle, onClick }: MethodCardProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full bg-white rounded-lg p-6 flex items-center gap-4 text-left transition-shadow hover:shadow-option shadow-card border border-transparent hover:border-primary-light"
+      className="w-full rounded-lg p-4 flex items-center gap-4 text-left transition-[box-shadow,border-color] shadow-card hover:border hover:border-secondary"
     >
       <img
         src={icon}
         alt=""
-        className="w-12 h-12 rounded-xl shrink-0 object-cover"
+        className="w-10 h-10 rounded-xl shrink-0 object-cover"
       />
-      <div className="flex flex-col gap-1">
-        <span className="text-sm font-bold text-text-main leading-none">
+      <div className="flex flex-col gap-2">
+        <span className="text-h3 font-bold text-text-main leading-none">
           {title}
         </span>
-        <span className="text-sm font-normal text-text-main leading-[1.45]">
+        <span className="text-para-m-regular font-normal text-text-main leading-[1.45]">
           {subtitle}
         </span>
       </div>
@@ -41,14 +41,14 @@ export default function LoginMethodSelect({
   onSelect,
 }: LoginMethodSelectProps) {
   return (
-    <div className="flex flex-col gap-14 items-center w-[512px]">
+    <div className="flex flex-col gap-12 items-center w-full">
       {/* Header */}
       <div className="flex flex-col gap-2 items-center w-full">
-        <h1 className="text-3xl font-bold text-text-main text-center leading-none">
+        <p className="text-h1 font-bold text-text-main text-center leading-none">
           Đăng nhập
-        </h1>
+        </p>
         <div className="flex flex-col gap-4 items-center w-full">
-          <p className="text-sm font-normal text-text-main text-center">
+          <p className="text-para-m-regular font-normal text-text-main text-center">
             Bước 1: Chọn một trong các hình thức đăng nhập dưới đây.
           </p>
           <LoginProgressBar step={1} />

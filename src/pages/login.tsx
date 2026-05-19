@@ -29,5 +29,12 @@ export default function LoginPage() {
     return <LoginFormVneid stepLabel={stepLabel} />;
   }
 
-  return <LoginLayout>{renderStep()}</LoginLayout>;
+  return (
+    <LoginLayout>
+      {/* key forces remount on step change, triggering the enter animation */}
+      <div key={step} className="animate-fade-in-up">
+        {renderStep()}
+      </div>
+    </LoginLayout>
+  );
 }

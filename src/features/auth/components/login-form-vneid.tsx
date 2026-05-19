@@ -1,5 +1,5 @@
 import { useState } from "react";
-import qrCode from "../../../assets/qr-code.png";
+import qrCode from "../../../assets/design_link.png";
 import Input from "../../../components/ui/Input";
 import LoginProgressBar from "./login-progress-bar";
 import Button from "../../../components/ui/Button";
@@ -36,7 +36,7 @@ export default function LoginFormVneid({ stepLabel }: LoginFormVneidProps) {
         {/* Left: form inputs */}
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-6 items-end w-[527px]"
+          className="w-full flex flex-col gap-6 items-end"
         >
           {/* ID field */}
           <Input
@@ -83,12 +83,8 @@ export default function LoginFormVneid({ stepLabel }: LoginFormVneidProps) {
 
         {/* Right: QR code */}
         <div className="flex flex-col gap-4 items-center justify-center h-full">
-          <img
-            src={qrCode}
-            alt="QR code VNeID"
-            className="w-[249px] h-[251px] object-cover"
-          />
-          <p className="text-para-m-regular w-[65%] text-center">
+          <img src={qrCode} alt="QR code for VNeID login" className="w-48" />
+          <p className="text-para-m-regular w-full text-center">
             Hoặc quét mã QR này bằng ứng dụng VNeID để đăng nhập.
           </p>
         </div>

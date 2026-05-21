@@ -14,13 +14,13 @@ export default function LoginFormAccount() {
   function handleRequestNewPassword() {}
 
   return (
-    <div className="flex flex-col gap-14 items-center">
+    <div className="flex flex-col gap-10 items-center">
       {/* Header */}
       <div className="flex flex-col gap-2 items-center w-full">
         <p className="text-h1 font-bold text-text-main text-center leading-none">
           Đăng nhập
         </p>
-        <div className="flex flex-col gap-4 items-center w-full">
+        <div className="flex flex-col gap-2 items-center w-full">
           <p className="text-para-m-regular font-normal text-text-main text-center">
             Bước 2: Đăng nhập bằng Tài khoản cấp bởi Cổng dịch vụ công quốc gia.
           </p>
@@ -31,7 +31,7 @@ export default function LoginFormAccount() {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-6 items-end w-full"
+        className="flex flex-col gap-4 items-end w-full"
       >
         <Input
           icon="account"

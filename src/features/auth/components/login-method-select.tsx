@@ -41,13 +41,13 @@ export default function LoginMethodSelect({
   onSelect,
 }: LoginMethodSelectProps) {
   return (
-    <div className="flex flex-col gap-12 items-center w-full">
+    <div className="flex flex-col gap-10 items-center w-full">
       {/* Header */}
       <div className="flex flex-col gap-2 items-center w-full">
         <p className="text-h1 font-bold text-text-main text-center leading-none">
           Đăng nhập
         </p>
-        <div className="flex flex-col gap-4 items-center w-full">
+        <div className="flex flex-col gap-2 items-center w-full">
           <p className="text-para-m-regular font-normal text-text-main text-center">
             Bước 1: Chọn một trong các hình thức đăng nhập dưới đây.
           </p>
@@ -56,7 +56,7 @@ export default function LoginMethodSelect({
       </div>
 
       {/* Method cards */}
-      <div className="flex flex-col gap-6 w-full">
+      <div className="flex flex-col gap-4 w-full">
         <MethodCard
           icon={vneidIcon}
           title="Đăng nhập bằng tài khoản Công dân"

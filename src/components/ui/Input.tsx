@@ -39,7 +39,7 @@ export default function Input({
       {icon && (
         <Icon
           name={icon}
-          size={20}
+          size={16}
           className="shrink-0 text-text-placeholder"
         />
       )}

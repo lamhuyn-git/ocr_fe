@@ -8,16 +8,16 @@ export const fontFamily = {
 export const fontSize = {
   // ===== Heading =====
   h1: [
-    "1.65rem",
+    "1.485rem",
     { lineHeight: "normal", letterSpacing: "0", fontWeight: "700" },
   ],
   h2: [
-    "1.25rem",
+    "1.125rem",
     { lineHeight: "normal", letterSpacing: "0.02em", fontWeight: "700" },
   ],
-  h3: ["0.8rem", { lineHeight: "1", letterSpacing: "0", fontWeight: "700" }],
+  h3: ["0.72rem", { lineHeight: "1", letterSpacing: "0", fontWeight: "700" }],
   h4: [
-    "0.8rem",
+    "0.72rem",
     { lineHeight: "normal", letterSpacing: "0.02em", fontWeight: "600" },
   ],
 
@@ -41,23 +41,23 @@ export const fontSize = {
 
   // ===== Paragraph M (14px) =====
   "para-m-bold": [
-    "0.8rem",
+    "0.72rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "700" },
   ],
   "para-m-semibold": [
-    "0.8rem",
+    "0.72rem",
     { lineHeight: "1.45", letterSpacing: "0.02em", fontWeight: "600" },
   ],
   "para-m-medium": [
-    "0.8rem",
+    "0.72rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "500" },
   ],
   "para-m-regular": [
-    "0.8rem",
+    "0.72rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "400" },
   ],
   "para-m-light": [
-    "0.8rem",
+    "0.72rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "300" },
   ],
 } as const;

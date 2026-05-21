@@ -10,7 +10,7 @@ export default function LoginLayout({ children }: LoginLayoutProps) {
   return (
     <div className="relative min-h-screen w-full bg-white flex flex-col font-be-vietnam ">
       {/* Logo — top left */}
-      <header className="relative z-10 p-8">
+      <header className="relative z-10 px-8 py-4">
         <Logo size="Large" showText />
       </header>
 
@@ -22,7 +22,7 @@ export default function LoginLayout({ children }: LoginLayoutProps) {
       </main>
 
       {/* Footer — drum watermark sits behind the text row */}
-      <footer className="relative z-10 py-7 overflow-hidden">
+      <footer className="relative z-10 px-8 py-4 overflow-hidden">
         {/* Trống Đồng — decorative watermark centered behind footer content */}
         <img
           src={drumSvg}
@@ -34,7 +34,7 @@ export default function LoginLayout({ children }: LoginLayoutProps) {
         {/* Decorative lines (before/after) flanking the footer text */}
         <div
           className="
-            relative flex items-center gap-8 px-12
+            relative flex items-center gap-8 
             before:content-[''] before:flex-1 before:h-px before:bg-beige-active
             after:content-['']  after:flex-1  after:h-px  after:bg-beige-active
           "

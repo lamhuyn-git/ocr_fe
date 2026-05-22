@@ -1,5 +1,5 @@
 import LoginProgressBar from "./login-progress-bar";
-import { type LoginMethod } from "../hooks/types";
+import { type LoginMethod } from "../types";
 import vneidIcon from "../../../assets/vneid-icon.svg";
 import portalIcon from "../../../assets/portal-icon.png";
 

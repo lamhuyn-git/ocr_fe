@@ -52,21 +52,17 @@ export default function LoginPage() {
       return <LoginMethodSelect onSelect={handleMethodSelect} />;
     }
 
-    if (method === "officer-account") {
+    if (method === "admin-account") {
       return <LoginFormAccount onBack={handleBack} />;
     }
 
     const stepLabel =
-      method === "citizen-vneid"
+      method === "user-vneid"
         ? "Bước 2: Đăng nhập bằng tài khoản định danh điện tử (VNeID)."
-        : "Bước 2: Đăng nhập bằng tài khoản Cán bộ định danh điện tử (VNeID).";
+        : "Bước 2: Đăng nhập bằng Tài khoản cấp bởi Cổng dịch vụ công quốc gia.";
 
     return (
-      <LoginFormVneid
-        stepLabel={stepLabel}
-        method={method}
-        onBack={handleBack}
-      />
+      <LoginFormVneid stepLabel={stepLabel} onBack={handleBack} />
     );
   }
 

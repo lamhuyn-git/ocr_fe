@@ -8,27 +8,21 @@ type IconProps = {
 
 /**
  * Generic icon renderer. Pulls SVG content from icon-data.tsx.
- * Inherits color via `currentColor` — control with Tailwind text-* classes.
+ * Each icon in iconMap returns a full <svg> element, so we wrap in a
+ * sized <span> and let the inner SVG scale to fill it.
  */
 export default function Icon({ name, size = 20, className }: IconProps) {
   const Content = iconMap[name];
   if (!Content) return null;
 
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
+    <span
+      className={`inline-flex items-center justify-center shrink-0 [&>svg]:w-full [&>svg]:h-full ${className ?? ""}`}
+      style={{ width: size, height: size }}
       aria-hidden
     >
       <Content />
-    </svg>
+    </span>
   );
 }
 

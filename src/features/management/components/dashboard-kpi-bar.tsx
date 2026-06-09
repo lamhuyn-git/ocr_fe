@@ -8,11 +8,11 @@ type KpiItem = {
 };
 
 const KPI_ITEMS: KpiItem[] = [
-  { icon: "clock", value: 13, label: "Hồ sơ mới tiếp nhận" },
-  { icon: "file-text", value: 46, label: "Hồ sơ đang xử lý" },
-  { icon: "refresh", value: 0, label: "Hồ sơ còn tồn đọng" },
-  { icon: "alert-triangle", value: 0, label: "Hồ sơ đã quá hạn" },
-  { icon: "check-circle", value: 0, label: "Hồ sơ đã hoàn thành" },
+  { icon: "timer", value: 13, label: "Hồ sơ mới tiếp nhận" },
+  { icon: "document", value: 46, label: "Hồ sơ đang xử lý" },
+  { icon: "reload", value: 0, label: "Hồ sơ còn tồn đọng" },
+  { icon: "overtime", value: 0, label: "Hồ sơ đã quá hạn" },
+  { icon: "confirm", value: 0, label: "Hồ sơ đã hoàn thành" },
 ];
 
 export default function DashboardKpiBar() {

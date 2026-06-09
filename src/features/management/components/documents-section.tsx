@@ -22,10 +22,10 @@ export default function DocumentsSection() {
 
           <div className="flex items-center border border-input-border rounded-lg overflow-hidden">
             <button className="p-2 bg-primary-light hover:bg-grey transition-colors">
-              <Icon name="grid" size={16} className="text-text-main" />
+              <Icon name="services" size={16} className="text-text-main" />
             </button>
             <button className="p-2 hover:bg-grey transition-colors">
-              <Icon name="list-view" size={16} className="text-text-placeholder" />
+              <Icon name="row" size={16} className="text-text-placeholder" />
             </button>
           </div>
         </div>

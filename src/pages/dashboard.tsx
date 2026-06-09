@@ -1,8 +1,8 @@
-import DashboardSidebar from "../features/cu-tru/components/dashboard-sidebar";
-import DashboardTopMenu from "../features/cu-tru/components/dashboard-top-menu";
-import DashboardContentHeader from "../features/cu-tru/components/dashboard-content-header";
-import DashboardMapSection from "../features/cu-tru/components/dashboard-map-section";
-import DocumentsSection from "../features/cu-tru/components/documents-section";
+import DashboardSidebar from "../components/ui/sidebar/Sidebar";
+import DashboardTopMenu from "../features/management/components/dashboard-top-menu";
+import DashboardContentHeader from "../features/management/components/dashboard-content-header";
+import DashboardMapSection from "../features/management/components/dashboard-map-section";
+import DocumentsSection from "../features/management/components/documents-section";
 
 export default function DashboardPage() {
   return (
@@ -14,10 +14,16 @@ export default function DashboardPage() {
         <DashboardTopMenu />
 
         {/* Scrollable content area */}
-        <main className="flex flex-col flex-1 overflow-y-auto gap-4 p-4">
-          <DashboardContentHeader />
-          <DashboardMapSection />
-          <DocumentsSection />
+        <main className="flex flex-col flex-1 overflow-y-auto gap-4 p-4 snap-y snap-mandatory">
+          <div className="snap-start shrink-0">
+            <DashboardContentHeader />
+          </div>
+          <div className="snap-start shrink-0">
+            <DashboardMapSection />
+          </div>
+          <div className="snap-start flex-1">
+            <DocumentsSection />
+          </div>
         </main>
       </div>
     </div>

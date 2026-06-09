@@ -1,27 +1,26 @@
-export type LoginMethod = "citizen-vneid" | "officer-vneid" | "officer-account";
+export type LoginMethod = "user-vneid" | "admin-vneid" | "admin-account";
 export type LoginStep = 1 | 2;
 
 export type AccountCredentials = {
-  username: string;
+  email: string;
   password: string;
 };
 
 export type VneidCredentials = {
-  username: string;
+  nationalId: string;
   password: string;
-  method: "citizen-vneid" | "officer-vneid";
 };
 
 export type AuthTokens = {
   accessToken: string;
   refreshToken: string;
-  expiresIn: number; // seconds until access token expires
 };
 
 export type AuthUser = {
   id: string;
   name: string;
-  role: "citizen" | "officer";
+  email: string;
+  role: "user" | "admin";
 };
 
 export type AuthState = {

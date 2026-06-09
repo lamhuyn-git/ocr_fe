@@ -26,7 +26,7 @@ export default function DashboardTopMenu() {
           </span>
         </button>
         <button className="flex items-center justify-center p-2 rounded-lg hover:bg-grey transition-colors">
-          <Icon name="bell" size={16} className="text-text-placeholder" />
+          <Icon name="notification" size={16} className="text-text-placeholder" />
         </button>
       </div>
     </div>

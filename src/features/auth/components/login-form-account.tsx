@@ -9,16 +9,19 @@ type LoginFormAccountProps = {
 };
 
 export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
   const [apiErrorOnFields, setApiErrorOnFields] = useState(false);
 
   const { signInWithAccount, isLoading, error, clearError } = useAuth();
 
   function validate(): boolean {
-    const errors: { username?: string; password?: string } = {};
-    if (!username.trim()) errors.username = "Vui lòng nhập số định danh.";
+    const errors: { email?: string; password?: string } = {};
+    if (!email.trim()) errors.email = "Vui lòng nhập email.";
     if (!password) errors.password = "Vui lòng nhập mật khẩu.";
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -29,11 +32,16 @@ export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
     setApiErrorOnFields(false);
     if (!validate()) return;
     clearError();
-    const apiError = await signInWithAccount({ username: username.trim(), password });
+    const apiError = await signInWithAccount({
+      email: email.trim(),
+      password,
+    });
     if (apiError) setApiErrorOnFields(true);
   }
 
-  function handleRequestNewPassword() {}
+  function handleRequestNewPassword() {
+    console.log("Request new password button clicked");
+  }
 
   return (
     <div className="relative flex flex-col gap-10 items-center">
@@ -53,7 +61,7 @@ export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
         <p className="text-h1 font-bold text-text-main text-center leading-none">
           Đăng nhập
         </p>
-        <div className="flex flex-col gap-2 items-center w-full">
+        <div className="flex flex-col gap-4 items-center w-full">
           <p className="text-para-m-regular font-normal text-text-main text-center">
             Bước 2: Đăng nhập bằng Tài khoản cấp bởi Cổng dịch vụ công quốc gia.
           </p>
@@ -77,19 +85,19 @@ export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
         <Input
           icon="account"
           inputType="default"
-          placeholder="Số định danh cá nhân"
-          value={username}
-          error={fieldErrors.username}
+          placeholder="Email"
+          value={email}
+          error={fieldErrors.email}
           hasError={apiErrorOnFields}
           onChange={(e) => {
-            setUsername(e.target.value);
-            setFieldErrors((p) => ({ ...p, username: undefined }));
+            setEmail(e.target.value);
+            setFieldErrors((p) => ({ ...p, email: undefined }));
             setApiErrorOnFields(false);
           }}
         />
 
         <Input
-          icon="password"
+          icon="lock"
           inputType="password"
           showSubIcon
           placeholder="Mật khẩu"
@@ -112,7 +120,7 @@ export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
           disabled={isLoading}
         />
 
-        <Button
+        {/* <Button
           type="button"
           variant="secondary"
           size="14px"
@@ -120,16 +128,30 @@ export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
           className="w-full justify-center"
           onClick={handleRequestNewPassword}
           disabled={isLoading}
-        />
+        /> */}
 
-        <div className="flex gap-1 items-start w-full text-para-m-regular text-text-main whitespace-nowrap">
-          <span className="text-para-m-regular">
-            *Trường hợp không đăng nhập được, vui lòng
-          </span>
-          <a href="#" className="text-para-m-semibold">
-            xem hướng dẫn
+        <div className="flex mt-2 gap-1 items-start justify-between w-full text-para-m-regular text-text-main whitespace-nowrap">
+          <a
+            href="#"
+            className="text-para-m-regular color-grey-hover underline "
+          >
+            Xem hướng dẫn đăng nhập
           </a>
-          <span className="font-bold leading-[1.45]">.</span>
+          <Button
+            type="button"
+            variant="tertiary"
+            size="12px"
+            text="Quên mật khẩu?"
+            onClick={handleRequestNewPassword}
+            className="text-para-m-semibold "
+            style={{
+              padding: 0,
+              fontSize: "0.72rem",
+              fontWeight: 600,
+              letterSpacing: "0.02em",
+              color: "#242424",
+            }}
+          />
         </div>
       </form>
     </div>

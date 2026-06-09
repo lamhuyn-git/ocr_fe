@@ -61,19 +61,19 @@ export default function LoginMethodSelect({
           icon={vneidIcon}
           title="Đăng nhập bằng tài khoản Công dân"
           subtitle="Tài khoản định danh điện tử (VNeID)"
-          onClick={() => onSelect("citizen-vneid")}
+          onClick={() => onSelect("user-vneid")}
         />
-        <MethodCard
+        {/* <MethodCard
           icon={vneidIcon}
-          title="Đăng nhập bằng tài khoản Cán bộ"
+          title="Đăng nhập Admin"
           subtitle="Tài khoản định danh điện tử (VNeID)"
-          onClick={() => onSelect("officer-vneid")}
-        />
+          onClick={() => onSelect("admin-vneid")}
+        /> */}
         <MethodCard
           icon={portalIcon}
           title="Đăng nhập bằng tài khoản Cán bộ"
           subtitle="Tài khoản cấp bởi Cổng dịch vụ công quốc gia"
-          onClick={() => onSelect("officer-account")}
+          onClick={() => onSelect("admin-account")}
         />
       </div>
     </div>

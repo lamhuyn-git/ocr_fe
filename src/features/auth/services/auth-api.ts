@@ -1,9 +1,10 @@
+import { apiFetch } from "../../../lib/http-client";
 import type {
   AccountCredentials,
   VneidCredentials,
   AuthTokens,
   AuthUser,
-  ApiError,
+  // ApiError,
 } from "../types";
 
 export type LoginResponse = {
@@ -11,87 +12,96 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
-const delay = (ms = 800) =>
-  new Promise<void>((resolve) => setTimeout(resolve, ms));
+// const delay = (ms = 800) =>
+//   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-function mockTokens(prefix: string): AuthTokens {
-  return {
-    accessToken: `mock-access-${prefix}-${Date.now()}`,
-    refreshToken: `mock-refresh-${prefix}-${Date.now()}`,
-    expiresIn: 900, // 15 minutes
-  };
-}
-
-// MOCK — replace body with real fetch/axios call when backend is ready
-export async function loginWithAccount(
-  credentials: AccountCredentials,
-): Promise<LoginResponse> {
-  await delay();
-
-  if (
-    credentials.username !== "trulem" ||
-    credentials.password !== "password"
-  ) {
-    throw {
-      code: "INVALID_CREDENTIALS",
-      message: "Thông tin đăng nhập không đúng. Vui lòng kiểm tra lại.",
-    } satisfies ApiError;
-  }
-
-  return {
-    tokens: mockTokens("account"),
-    user: { id: "u-001", name: "Nguyễn Văn A", role: "officer" },
-  };
-}
-
-// MOCK — replace body with real fetch/axios call when backend is ready
 export async function loginWithVneid(
   credentials: VneidCredentials,
 ): Promise<LoginResponse> {
-  await delay();
-
-  if (
-    credentials.username !== "123456789" ||
-    credentials.password !== "password"
-  ) {
-    throw {
-      code: "INVALID_CREDENTIALS",
-      message: "Thông tin đăng nhập không đúng. Vui lòng kiểm tra lại.",
-    } satisfies ApiError;
-  }
+  const tokens = await apiFetch<any>("/api/v1/auth/login/citizen", {
+    method: "POST",
+    body: JSON.stringify({
+      national_id: credentials.nationalId,
+      password: credentials.password,
+    }),
+  });
+  const data = await apiFetch<any>("/api/v1/auth/me", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${tokens.access_token}`,
+    },
+  });
 
   return {
-    tokens: mockTokens("vneid"),
+    tokens: {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+    },
     user: {
-      id: "u-002",
-      name: "Trần Thị B",
-      role: credentials.method === "citizen-vneid" ? "citizen" : "officer",
+      id: data.id,
+      role: data.role,
+      name: data.full_name,
+      email: data.email,
     },
   };
 }
 
-// MOCK — replace body with real fetch/axios call when backend is ready
-export async function refreshAccessToken(
-  refreshToken: string,
-): Promise<AuthTokens> {
-  await delay(200);
+export async function loginWithAccount(
+  credentials: AccountCredentials,
+): Promise<LoginResponse> {
+  const tokens = await apiFetch<any>("/api/v1/auth/login/staff", {
+    method: "POST",
+    body: JSON.stringify({
+      email: credentials.email,
+      password: credentials.password,
+    }),
+  });
 
-  if (!refreshToken.startsWith("mock-refresh")) {
-    throw {
-      code: "TOKEN_EXPIRED",
-      message: "Phiên đăng nhập đã hết hạn.",
-    } satisfies ApiError;
-  }
+  const data = await apiFetch<any>("/api/v1/auth/me", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${tokens.access_token}`,
+    },
+  });
 
   return {
-    accessToken: `mock-access-refreshed-${Date.now()}`,
-    refreshToken, // real impl should rotate this
-    expiresIn: 900,
+    tokens: {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+    },
+    user: {
+      id: data.id,
+      role: data.role,
+      name: data.full_name,
+      email: data.email,
+    },
   };
 }
 
-// MOCK — replace body with real fetch/axios call when backend is ready
-export async function revokeSession(_refreshToken: string): Promise<void> {
-  await delay(150);
-  // server invalidates the refresh token server-side
+// export async function refreshAccessToken(
+//   refreshToken: string,
+// ): Promise<AuthTokens> {
+//   await delay(200);
+
+//   if (!refreshToken.startsWith("mock-refresh")) {
+//     throw {
+//       code: "TOKEN_EXPIRED",
+//       message: "Phiên đăng nhập đã hết hạn.",
+//     } satisfies ApiError;
+//   }
+
+//   return {
+//     accessToken: `mock-access-refreshed-${Date.now()}`,
+//     refreshToken,
+//     expiresIn: 900,
+//   };
+// }
+
+// Logout: cần access token (auth) + gửi refresh token trong body để BE thu hồi.
+export async function revokeSession(refreshToken: string): Promise<void> {
+  await apiFetch<void>("/api/v1/auth/logout", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify({ refresh_token: refreshToken }),
+  });
 }

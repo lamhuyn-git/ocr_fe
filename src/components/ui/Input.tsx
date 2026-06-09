@@ -8,7 +8,7 @@ type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
   showSubIcon?: boolean;
   icon?: IconName;
   placeholder?: string;
-  error?: string;    // error border + red icon + message below
+  error?: string; // error border + red icon + message below
   hasError?: boolean; // error border + red icon only, no message
 };
 
@@ -73,14 +73,14 @@ export default function Input({
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className={`shrink-0 transition-colors ${
+            className={`flex items-centershrink-0 transition-colors ${
               hasError
                 ? "text-red hover:text-red-hover"
                 : "text-text-placeholder hover:text-text-main"
             }`}
             aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
           >
-            <Icon name={showPassword ? "hide" : "show"} size={20} />
+            <Icon name={showPassword ? "eye-hide" : "eye-show"} size={20} />
           </button>
         )}
       </div>

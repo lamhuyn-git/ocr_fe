@@ -7,19 +7,17 @@ import { useAuth } from "../hooks/use-auth";
 
 type LoginFormVneidProps = {
   stepLabel: string;
-  method: "citizen-vneid" | "officer-vneid";
   onBack: () => void;
 };
 
 export default function LoginFormVneid({
   stepLabel,
-  method,
   onBack,
 }: LoginFormVneidProps) {
-  const [username, setUsername] = useState("");
+  const [nationalId, setNationalId] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{
-    username?: string;
+    nationalId?: string;
     password?: string;
   }>({});
   const [apiErrorOnFields, setApiErrorOnFields] = useState(false);
@@ -27,8 +25,8 @@ export default function LoginFormVneid({
   const { signInWithVneid, isLoading, error, clearError } = useAuth();
 
   function validate(): boolean {
-    const errors: { username?: string; password?: string } = {};
-    if (!username.trim()) errors.username = "Vui lòng nhập số định danh.";
+    const errors: { nationalId?: string; password?: string } = {};
+    if (!nationalId.trim()) errors.nationalId = "Vui lòng nhập số định danh.";
     if (!password) errors.password = "Vui lòng nhập mật khẩu.";
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -39,7 +37,10 @@ export default function LoginFormVneid({
     setApiErrorOnFields(false);
     if (!validate()) return;
     clearError();
-    const apiError = await signInWithVneid({ username: username.trim(), password, method });
+    const apiError = await signInWithVneid({
+      nationalId: nationalId.trim(),
+      password,
+    });
     if (apiError) setApiErrorOnFields(true);
   }
 
@@ -48,7 +49,7 @@ export default function LoginFormVneid({
       <Button
         type="button"
         variant="tertiary"
-        size="14px"
+        size="12px"
         text="Quay lại"
         showIcon
         icon="chevron-left"
@@ -81,19 +82,19 @@ export default function LoginFormVneid({
             inputType="default"
             icon="account"
             placeholder="Số định danh cá nhân"
-            value={username}
-            error={fieldErrors.username}
+            value={nationalId}
+            error={fieldErrors.nationalId}
             hasError={apiErrorOnFields}
             onChange={(e) => {
-              setUsername(e.target.value);
-              setFieldErrors((p) => ({ ...p, username: undefined }));
+              setNationalId(e.target.value);
+              setFieldErrors((p) => ({ ...p, nationalId: undefined }));
               setApiErrorOnFields(false);
             }}
           />
 
           <Input
             inputType="password"
-            icon="password"
+            icon="lock"
             placeholder="Mật khẩu"
             value={password}
             error={fieldErrors.password}
@@ -114,21 +115,37 @@ export default function LoginFormVneid({
 
           <Button
             type="submit"
-            size="14px"
+            size="12px"
             variant="primary"
             text="Đăng nhập"
             className="w-full"
             disabled={isLoading}
           />
 
-          <div className="flex gap-1 items-start w-full text-para-m-regular text-text-main whitespace-nowrap">
-            <span className="text-para-m-regular">
-              *Trường hợp không đăng nhập được, vui lòng
-            </span>
-            <a href="#" className="text-para-m-semibold underline">
-              xem hướng dẫn
+          <div className="flex gap-1 mt-2 items-start justify-between w-full text-para-m-regular text-text-main whitespace-nowrap">
+            <a
+              href="#"
+              className="text-para-m-regular color-grey-hover underline "
+            >
+              Xem hướng dẫn đăng nhập
             </a>
-            <span className="font-bold leading-[1.45]">.</span>
+            <Button
+              type="button"
+              variant="tertiary"
+              size="12px"
+              text="Quên mật khẩu?"
+              onClick={() => {
+                console.log("Reset password button clicked");
+              }}
+              className="text-para-m-semibold "
+              style={{
+                padding: 0,
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                letterSpacing: "0.02em",
+                color: "#242424",
+              }}
+            />
           </div>
         </form>
 
@@ -137,7 +154,7 @@ export default function LoginFormVneid({
 
         {/* Right: QR code */}
         <div className="flex flex-col gap-4 items-center justify-center h-full">
-          <img src={qrCode} alt="QR code for VNeID login" className="w-48" />
+          <img src={qrCode} alt="QR code for VNeID login" className="w-40" />
           <p className="text-para-m-regular w-full text-center">
             Hoặc quét mã QR này bằng ứng dụng VNeID để đăng nhập.
           </p>

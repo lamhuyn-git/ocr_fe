@@ -10,7 +10,7 @@ function AppRoutes() {
 
   // After login: citizen → /registration, officer → /dashboard
   const homeRoute = isAuthenticated
-    ? user?.role === "citizen" ? "/registration" : "/dashboard"
+    ? user?.role === "user" ? "/registration" : "/dashboard"
     : "/login";
 
   return (

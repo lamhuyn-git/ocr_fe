@@ -1,7 +1,11 @@
 import { useCallback } from "react";
 import { useAuthContext } from "../../../store/auth-store";
 import { tokenManager } from "../../../lib/token-manager";
-import { loginWithAccount, loginWithVneid, type LoginResponse } from "../services/auth-api";
+import {
+  loginWithAccount,
+  loginWithVneid,
+  type LoginResponse,
+} from "../services/auth-api";
 import type { AccountCredentials, VneidCredentials, ApiError } from "../types";
 
 export function useAuth() {
@@ -12,7 +16,7 @@ export function useAuth() {
       tokenManager.setTokens(res.tokens.accessToken, res.tokens.refreshToken);
       dispatch({ type: "LOGIN_SUCCESS", payload: res });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onError = useCallback(
@@ -21,7 +25,7 @@ export function useAuth() {
         (err as ApiError)?.message ?? "Đã có lỗi xảy ra, vui lòng thử lại.";
       dispatch({ type: "LOGIN_FAILURE", payload: msg });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const signInWithAccount = useCallback(
@@ -32,10 +36,12 @@ export function useAuth() {
         return null;
       } catch (err) {
         onError(err);
-        return (err as ApiError)?.message ?? "Đã có lỗi xảy ra, vui lòng thử lại.";
+        return (
+          (err as ApiError)?.message ?? "Đã có lỗi xảy ra, vui lòng thử lại."
+        );
       }
     },
-    [dispatch, onSuccess, onError]
+    [dispatch, onSuccess, onError],
   );
 
   const signInWithVneid = useCallback(
@@ -46,15 +52,17 @@ export function useAuth() {
         return null;
       } catch (err) {
         onError(err);
-        return (err as ApiError)?.message ?? "Đã có lỗi xảy ra, vui lòng thử lại.";
+        return (
+          (err as ApiError)?.message ?? "Đã có lỗi xảy ra, vui lòng thử lại."
+        );
       }
     },
-    [dispatch, onSuccess, onError]
+    [dispatch, onSuccess, onError],
   );
 
   const clearError = useCallback(
     () => dispatch({ type: "CLEAR_ERROR" }),
-    [dispatch]
+    [dispatch],
   );
 
   return { ...state, signInWithAccount, signInWithVneid, signOut, clearError };

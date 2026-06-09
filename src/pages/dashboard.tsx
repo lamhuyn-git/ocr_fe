@@ -3,11 +3,14 @@ import DashboardTopMenu from "../features/management/components/dashboard-top-me
 import DashboardContentHeader from "../features/management/components/dashboard-content-header";
 import DashboardMapSection from "../features/management/components/dashboard-map-section";
 import DocumentsSection from "../features/management/components/documents-section";
+import { useAuthContext } from "../store/auth-store";
 
 export default function DashboardPage() {
+  const { user } = useAuthContext();
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-grey">
-      <DashboardSidebar />
+      <DashboardSidebar user={user} />
 
       {/* Main content */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">

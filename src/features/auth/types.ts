@@ -27,6 +27,7 @@ export type AuthState = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isInitializing: boolean; // đang khôi phục phiên lúc mới load app
   error: string | null;
 };
 

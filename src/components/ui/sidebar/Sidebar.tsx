@@ -1,82 +1,82 @@
+import { useState } from "react";
 import Icon from "../../icons";
-import vextractLogo from "../../.././assets/vextract-logo.svg";
 import {
   SIDEBAR_SECTIONS,
   type NavItem,
   type NavSection,
 } from "./sidebar-config";
+import Logo from "../Logo";
+import Button from "../Button";
+import type { AuthUser } from "../../../features/auth/types";
+import { useAuthContext } from "../../../store/auth-store";
 
-/** L-shaped branch connector for nested nav items */
-function BranchIcon({ active }: { active?: boolean }) {
+function BranchIcon({
+  active,
+  className,
+}: {
+  active?: boolean;
+  className?: string;
+}) {
   return (
     <svg
-      width="11"
-      height="14"
-      viewBox="0 0 11 14"
+      width="8"
+      height="15"
+      viewBox="0 0 8 15"
       fill="none"
-      className="shrink-0"
+      overflow="visible"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <path
-        d="M1 0V9.5C1 10.3284 1.67157 11 2.5 11H11"
-        stroke={active ? "#133524" : "#707071"}
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        d="M0.5 0.5V12.5C0.5 13.6046 1.39543 14.5 2.5 14.5H7.5"
+        stroke={active ? "#242424" : "#707071"}
+        stroke-linecap="round"
+        stroke-linejoin="round"
       />
     </svg>
   );
 }
 
-/** Sidebar panel collapse/expand icon */
-function CollapseIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-      <rect
-        x="1"
-        y="1"
-        width="16"
-        height="16"
-        rx="2.5"
-        stroke="#707071"
-        strokeWidth="1.5"
-      />
-      <line
-        x1="6.5"
-        y1="1.5"
-        x2="6.5"
-        y2="16.5"
-        stroke="#707071"
-        strokeWidth="1.5"
-      />
-    </svg>
-  );
-}
-
-/** Single nav item row (with optional expandable children) */
-function NavItemRow({ item }: { item: NavItem }) {
+function NavItemRow({
+  item,
+  collapsed,
+}: {
+  item: NavItem;
+  collapsed: boolean;
+}) {
   return (
     <div className="flex flex-col gap-1">
       <button
-        className={`flex items-center gap-2 w-full px-2 py-[7px] rounded-lg text-left transition-colors ${
+        type="button"
+        onClick={item.handleClick}
+        title={collapsed ? item.label : undefined}
+        className={`flex items-center w-full py-2 rounded-lg text-left transition-colors ${
+          collapsed ? "justify-center px-0" : "gap-[0.35rem] px-2"
+        } ${
           item.active
             ? "bg-white shadow-[0_0_4px_rgba(182,192,187,0.25)] text-text-main"
-            : "text-text-placeholder hover:bg-grey"
+            : "text-text-placeholder hover:bg-grey-hover"
         }`}
       >
         <Icon
           name={item.icon as any}
           size={18}
-          className={item.active ? "text-text-main" : "text-text-placeholder"}
+          className={
+            item.active ? "[&_path]:stroke-black" : "[&_path]:stroke-[#707071]"
+          }
         />
-        <span
-          className={`flex-1 ${
-            item.active
-              ? "text-para-s-semibold text-text-main"
-              : "text-para-s-medium text-text-placeholder"
-          }`}
-        >
-          {item.label}
-        </span>
-        {item.children && (
+        {!collapsed && (
+          <span
+            className={`flex-1  ${
+              item.active
+                ? "text-para-s-semibold color-black text-para-s-semibold"
+                : "text-para-s-medium color-grey-dark-active leading-none mt-[3px]"
+            }`}
+          >
+            {item.label}
+          </span>
+        )}
+        {!collapsed && item.children && (
           <Icon
             name="chevron-down"
             size={16}
@@ -86,23 +86,27 @@ function NavItemRow({ item }: { item: NavItem }) {
           />
         )}
       </button>
-
-      {/* Sub-items */}
-      {item.children && item.expanded && (
-        <div className="flex flex-col gap-1 pl-2">
+      {/* Sub-items (ẩn khi thu gọn) */}
+      {!collapsed && item.children && item.expanded && (
+        <div className="flex flex-col gap-2">
           {item.children.map((child) => (
             <button
               key={child.label}
-              className={`flex items-center gap-2 w-full px-2 py-1 rounded-lg text-left transition-colors ${
+              className={`flex items-center gap-2 w-full p-2 rounded-lg text-left transition-colors ${
                 child.active
                   ? "bg-white shadow-[0_0_4px_rgba(182,192,187,0.25)]"
-                  : "hover:bg-grey"
+                  : "hover:bg-grey-hover"
               }`}
             >
-              <BranchIcon active={child.active} />
+              <BranchIcon
+                active={child.active}
+                className="shrink-0 ml-[0.5rem]"
+              />
               <span
-                className={`text-para-s-medium ${
-                  child.active ? "text-text-main" : "text-text-placeholder"
+                className={`text-para-s-medium mt-[4px] ${
+                  child.active
+                    ? "text-para-s-semibold color-black text-para-s-semibold"
+                    : "text-para-s-medium color-grey-dark-active leading-none"
                 }`}
               >
                 {child.label}
@@ -115,72 +119,106 @@ function NavItemRow({ item }: { item: NavItem }) {
   );
 }
 
-/** One titled section of nav items */
-function NavSectionBlock({ section }: { section: NavSection }) {
+function NavSectionBlock({
+  section,
+  collapsed,
+}: {
+  section: NavSection;
+  collapsed: boolean;
+}) {
   return (
-    <div className="flex flex-col gap-4 px-4">
-      <span className="text-para-s-semibold text-text-secondary uppercase pl-2 tracking-[0.02em]">
-        {section.title}
-      </span>
+    <div className="flex flex-col gap-2 px-4">
+      {!collapsed && (
+        <span className="text-para-s-semibold text-text-secondary uppercase pl-2 tracking-[0.02em]">
+          {section.title}
+        </span>
+      )}
       <div className="flex flex-col gap-2">
         {section.items.map((item) => (
-          <NavItemRow key={item.label} item={item} />
+          <NavItemRow key={item.label} item={item} collapsed={collapsed} />
         ))}
       </div>
     </div>
   );
 }
 
-/**
- * App sidebar.
- * Navigation structure is defined in `sidebar-config.ts`.
- * The last section in SIDEBAR_SECTIONS is pinned to the bottom.
- */
-export default function Sidebar() {
+export default function Sidebar({ user }: { user: AuthUser | null }) {
+  const { signOut } = useAuthContext();
+  const [collapsed, setCollapsed] = useState(false);
   const topSections = SIDEBAR_SECTIONS.slice(0, -1);
-  const bottomSection = SIDEBAR_SECTIONS.at(-1)!;
+
+  // Gắn handler cho item logout (signOut gọi API /auth/logout rồi dọn phiên).
+  const rawBottom = SIDEBAR_SECTIONS.at(-1)!;
+  const bottomSection: NavSection = {
+    ...rawBottom,
+    items: rawBottom.items.map((item) =>
+      item.icon === "logout"
+        ? { ...item, handleClick: () => void signOut().catch(() => {}) }
+        : item,
+    ),
+  };
+
+  const handleResizeSidebar = () => setCollapsed((c) => !c);
 
   return (
-    <aside className="flex flex-col h-full w-[200px] shrink-0 bg-white border-r border-dashed border-[#bbb]">
+    <aside
+      className={`flex flex-col h-full shrink-0 border-r border-dashed border-[#bbb] transition-[width] duration-200 ${
+        collapsed ? "w-[72px]" : "w-[15%]"
+      }`}
+    >
       {/* Header: logo + collapse button */}
-      <div className="flex items-center justify-between px-4 py-[14px] border-b border-dashed border-[#bbb] shrink-0">
-        <div className="flex items-center gap-1">
-          <img src={vextractLogo} alt="VExtract" className="w-8 h-8" />
-          <span className="text-para-s-semibold text-text-main tracking-[0.02em] uppercase">
-            VExtract
-          </span>
-        </div>
-        <button className="flex items-center justify-center w-[34px] h-[34px] rounded-lg hover:bg-grey transition-colors">
-          <CollapseIcon />
-        </button>
+      <div
+        className={`flex items-center px-4 py-[14px] border-b border-dashed border-[#bbb] shrink-0 ${
+          collapsed ? "flex-col gap-3" : "justify-between"
+        }`}
+      >
+        <Logo size="Medium" showText={!collapsed} />
+        <Button
+          type="button"
+          variant="tertiary"
+          size="14px"
+          showIcon
+          icon="expanse"
+          onClick={handleResizeSidebar}
+          className="px-0 py-0"
+        />
       </div>
 
       {/* Scrollable nav body: top sections grow, bottom section stays pinned */}
       <div className="flex flex-col flex-1 justify-between pb-4 overflow-y-auto min-h-0">
-        {/* Top sections */}
-        <div className="flex flex-col gap-4 pt-4">
+        <div className="flex flex-col gap-2 py-6">
           {topSections.map((section) => (
-            <NavSectionBlock key={section.title} section={section} />
+            <NavSectionBlock
+              key={section.title}
+              section={section}
+              collapsed={collapsed}
+            />
           ))}
         </div>
 
         {/* Bottom section + profile card */}
-        <div className="flex flex-col gap-4">
-          <NavSectionBlock section={bottomSection} />
+        <div className="flex flex-col gap-2">
+          <NavSectionBlock section={bottomSection} collapsed={collapsed} />
 
-          {/* Profile card */}
-          <div className="flex items-center gap-2 p-2 mx-4 bg-white rounded-lg shadow-[0_0_4px_rgba(182,192,187,0.25)]">
+          {/* Profile card (thu gọn: chỉ avatar) */}
+          <div
+            className={`flex items-center bg-white rounded-lg shadow-[0_0_4px_rgba(182,192,187,0.25)] ${
+              collapsed ? "justify-center p-1 mx-3" : "gap-2 p-2 mx-4"
+            }`}
+          >
             <div className="w-[34px] h-[34px] rounded-full bg-primary-light flex items-center justify-center shrink-0">
               <Icon name="account" size={18} className="text-primary" />
             </div>
-            <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-para-s-semibold text-text-main truncate">
-                Nguyễn Văn A
-              </span>
-              <span className="text-para-s-regular text-text-placeholder truncate">
-                nguyenvana@g...
-              </span>
-            </div>
+            {!collapsed && (
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="text-para-s-semibold text-text-main truncate">
+                  {user?.name ?? "Người dùng"}
+                </span>
+                <span className="text-para-s-regular text-text-placeholder truncate">
+                  {user?.email ?? ""}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

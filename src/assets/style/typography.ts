@@ -13,26 +13,26 @@ export const fontSize = {
   ],
   h2: [
     "1.125rem",
-    { lineHeight: "normal", letterSpacing: "0.02em", fontWeight: "700" },
+    { lineHeight: "normal", letterSpacing: "2%", fontWeight: "700" },
   ],
   h3: ["0.72rem", { lineHeight: "1", letterSpacing: "0", fontWeight: "700" }],
   h4: [
     "0.72rem",
-    { lineHeight: "normal", letterSpacing: "0.02em", fontWeight: "600" },
+    { lineHeight: "normal", letterSpacing: "2%", fontWeight: "600" },
   ],
 
   // ===== Paragraph S (12px) =====
   "para-s-bold": [
     "12px",
-    { lineHeight: "1.45", letterSpacing: "0.02em", fontWeight: "700" },
+    { lineHeight: "1.45", letterSpacing: "2%", fontWeight: "700" },
   ],
   "para-s-semibold": [
     "12px",
-    { lineHeight: "1.45", letterSpacing: "0.02em", fontWeight: "600" },
+    { lineHeight: "1.45", letterSpacing: "2%", fontWeight: "600" },
   ],
   "para-s-medium": [
     "12px",
-    { lineHeight: "1.45", letterSpacing: "0.02em", fontWeight: "500" },
+    { lineHeight: "1.45", letterSpacing: "2%", fontWeight: "500" },
   ],
   "para-s-regular": [
     "12px",
@@ -46,7 +46,7 @@ export const fontSize = {
   ],
   "para-m-semibold": [
     "0.72rem",
-    { lineHeight: "1.45", letterSpacing: "0.02em", fontWeight: "600" },
+    { lineHeight: "1.45", letterSpacing: "2%", fontWeight: "600" },
   ],
   "para-m-medium": [
     "0.72rem",

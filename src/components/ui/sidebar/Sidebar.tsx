@@ -166,22 +166,47 @@ export default function Sidebar({ user }: { user: AuthUser | null }) {
         collapsed ? "w-[72px]" : "w-[15%]"
       }`}
     >
-      {/* Header: logo + collapse button */}
+      {/* Header */}
       <div
         className={`flex items-center px-4 py-[14px] border-b border-dashed border-[#bbb] shrink-0 ${
-          collapsed ? "flex-col gap-3" : "justify-between"
+          collapsed ? "justify-center" : "justify-between"
         }`}
       >
-        <Logo size="Medium" showText={!collapsed} />
-        <Button
-          type="button"
-          variant="tertiary"
-          size="14px"
-          showIcon
-          icon="expanse"
-          onClick={handleResizeSidebar}
-          className="px-0 py-0"
-        />
+        {collapsed ? (
+          // Thu gọn: không còn nút collapse. Hover vào logo -> hiện icon expanse
+          // thế chỗ logo; click để mở rộng sidebar.
+          <button
+            type="button"
+            onClick={handleResizeSidebar}
+            title="Mở rộng"
+            aria-label="Mở rộng sidebar"
+            className="group relative flex items-center justify-center w-8 h-8"
+          >
+            <span className="group-hover:opacity-0">
+              <Logo size="Medium" showText={false} />
+            </span>
+            <span className="absolute inset-0 hidden items-center justify-center group-hover:flex">
+              <Icon
+                name="expanse"
+                size={22}
+                className="[&_path]:stroke-[#707071]"
+              />
+            </span>
+          </button>
+        ) : (
+          <>
+            <Logo size="Medium" showText />
+            <Button
+              type="button"
+              variant="tertiary"
+              size="14px"
+              showIcon
+              icon="collapse"
+              onClick={handleResizeSidebar}
+              className="px-0 py-0"
+            />
+          </>
+        )}
       </div>
 
       {/* Scrollable nav body: top sections grow, bottom section stays pinned */}

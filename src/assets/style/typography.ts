@@ -1,11 +1,19 @@
 export const fontFamily = {
   "be-vietnam": ['"Be Vietnam Pro"', "sans-serif"],
+  serif: ['"EB Garamond"', "serif"],
 } as const;
 
 /**
  * Typography tokens generated from Figma typography styles
  */
 export const fontSize = {
+  // ===== Serif heading (EB Garamond) — tiêu đề trang =====
+  // Figma: EB Garamond SemiBold 32, line-height Auto, letter-spacing -2%.
+  "heading-serif": [
+    "2rem",
+    { lineHeight: "normal", letterSpacing: "-0.02em", fontWeight: "600" },
+  ],
+
   // ===== Heading =====
   h1: [
     "1.485rem",

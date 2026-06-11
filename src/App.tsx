@@ -4,19 +4,21 @@ import { useAuthContext } from "./store/auth-store";
 import LoginPage from "./pages/login";
 import DashboardPage from "./pages/dashboard";
 import RegistrationPage from "./pages/registration";
+import FormPage from "./pages/form";
 import Loading from "./components/ui/Loading";
 
 function AppRoutes() {
-  const { isAuthenticated, isInitializing, user } = useAuthContext();
+  const { isAuthenticated, isInitializing, accountType } = useAuthContext();
 
   // Đang khôi phục phiên (reload) → chưa điều hướng, hiện Loading để tránh
   // nháy về /login trước khi refresh xong.
   if (isInitializing) return <Loading show />;
 
-  // After login: citizen → /registration, officer → /dashboard
+  // Trang đích theo loại tài khoản (suy từ endpoint login, không dựa role BE):
+  // citizen → /form, staff → /dashboard.
   const homeRoute = isAuthenticated
-    ? user?.role === "user"
-      ? "/registration"
+    ? accountType === "citizen"
+      ? "/form"
       : "/dashboard"
     : "/login";
 
@@ -42,6 +44,12 @@ function AppRoutes() {
           ) : (
             <Navigate to="/login" replace />
           )
+        }
+      />
+      <Route
+        path="/form"
+        element={
+          isAuthenticated ? <FormPage /> : <Navigate to="/login" replace />
         }
       />
       <Route path="*" element={<Navigate to={homeRoute} replace />} />

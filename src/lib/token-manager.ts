@@ -3,12 +3,21 @@
 let _accessToken: string | null = null;
 
 const REFRESH_TOKEN_KEY = "rt";
+const ACCOUNT_TYPE_KEY = "at"; // citizen | staff — cần persist để restore sau reload
 
 export const tokenManager = {
   setTokens(accessToken: string, refreshToken: string): void {
     _accessToken = accessToken;
     // TODO: move refresh token to httpOnly cookie once backend supports Set-Cookie
     sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  },
+
+  setAccountType(accountType: string): void {
+    sessionStorage.setItem(ACCOUNT_TYPE_KEY, accountType);
+  },
+
+  getAccountType(): string | null {
+    return sessionStorage.getItem(ACCOUNT_TYPE_KEY);
   },
 
   getAccessToken(): string | null {
@@ -22,6 +31,7 @@ export const tokenManager = {
   clearTokens(): void {
     _accessToken = null;
     sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(ACCOUNT_TYPE_KEY);
   },
 
   hasSession(): boolean {

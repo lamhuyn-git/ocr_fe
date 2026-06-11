@@ -11,8 +11,6 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
-// BE TokenResponse { access_token, refresh_token, token_type } -> AuthTokens.
-// BE không trả thời gian hết hạn nên không lưu expiry.
 function toTokens(data: any): AuthTokens {
   return {
     accessToken: data.access_token,

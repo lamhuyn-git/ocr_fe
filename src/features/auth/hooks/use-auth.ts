@@ -6,15 +6,21 @@ import {
   loginWithVneid,
   type LoginResponse,
 } from "../services/auth-api";
-import type { AccountCredentials, VneidCredentials, ApiError } from "../types";
+import type {
+  AccountCredentials,
+  VneidCredentials,
+  AccountType,
+  ApiError,
+} from "../types";
 
 export function useAuth() {
   const { dispatch, signOut, ...state } = useAuthContext();
 
   const onSuccess = useCallback(
-    (res: LoginResponse) => {
+    (res: LoginResponse, accountType: AccountType) => {
       tokenManager.setTokens(res.tokens.accessToken, res.tokens.refreshToken);
-      dispatch({ type: "LOGIN_SUCCESS", payload: res });
+      tokenManager.setAccountType(accountType);
+      dispatch({ type: "LOGIN_SUCCESS", payload: { ...res, accountType } });
     },
     [dispatch],
   );
@@ -32,7 +38,7 @@ export function useAuth() {
     async (credentials: AccountCredentials): Promise<string | null> => {
       dispatch({ type: "LOGIN_START" });
       try {
-        onSuccess(await loginWithAccount(credentials));
+        onSuccess(await loginWithAccount(credentials), "staff");
         return null;
       } catch (err) {
         onError(err);
@@ -48,7 +54,7 @@ export function useAuth() {
     async (credentials: VneidCredentials): Promise<string | null> => {
       dispatch({ type: "LOGIN_START" });
       try {
-        onSuccess(await loginWithVneid(credentials));
+        onSuccess(await loginWithVneid(credentials), "citizen");
         return null;
       } catch (err) {
         onError(err);

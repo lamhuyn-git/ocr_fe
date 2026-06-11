@@ -126,7 +126,7 @@ export const colors = {
   "text-disabled": grey["dark-hover"],
 
   // Border
-  "input-border": grey.hover,
+  "input-border": grey["dark-hover"],
   divider: black["light-active"],
 } as const;
 

@@ -30,16 +30,15 @@ export default function Logo({
   const { icon, text, gap } = sizeConfig[size];
 
   return (
-    <div className={`flex items-center ${gap} ${className ?? ""}`}>
+    // Màu mặc định text-text-main; truyền className (vd text-white) để đổi màu chữ.
+    <div className={`flex items-center text-text-main ${gap} ${className ?? ""}`}>
       <img
         src={vextractLogo}
         alt="VExtract logo"
         className={`shrink-0 ${icon}`}
       />
       {showText && (
-        <span
-          className={`font-extrabold text-text-main font-be-vietnam ${text}`}
-        >
+        <span className={`font-extrabold text-current font-be-vietnam ${text}`}>
           VExtract
         </span>
       )}

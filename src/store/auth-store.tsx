@@ -7,7 +7,12 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import type { AuthState, AuthUser, AuthTokens } from "../features/auth/types";
+import type {
+  AuthState,
+  AuthUser,
+  AuthTokens,
+  AccountType,
+} from "../features/auth/types";
 import { tokenManager } from "../lib/token-manager";
 import {
   revokeSession,
@@ -16,7 +21,10 @@ import {
 
 export type AuthAction =
   | { type: "LOGIN_START" }
-  | { type: "LOGIN_SUCCESS"; payload: { user: AuthUser; tokens: AuthTokens } }
+  | {
+      type: "LOGIN_SUCCESS";
+      payload: { user: AuthUser; tokens: AuthTokens; accountType: AccountType };
+    }
   | { type: "LOGIN_FAILURE"; payload: string }
   | { type: "LOGOUT" }
   | { type: "BOOTSTRAP_DONE" } // kết thúc khôi phục phiên, ở trạng thái chưa login
@@ -24,6 +32,7 @@ export type AuthAction =
 
 const initialState: AuthState = {
   user: null,
+  accountType: null,
   isAuthenticated: false,
   isLoading: false,
   isInitializing: true, // bắt đầu ở trạng thái "chưa biết", chờ restore
@@ -40,6 +49,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         isLoading: false,
         isInitializing: false,
         user: action.payload.user,
+        accountType: action.payload.accountType,
         isAuthenticated: true,
         error: null,
       };
@@ -67,9 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const didInit = useRef(false);
 
-  // Khôi phục phiên khi reload: nếu còn refresh token thì refresh + lấy lại user.
-  // useRef guard để không chạy 2 lần dưới StrictMode (tránh refresh token bị
-  // xoay vòng 2 lần gây lỗi).
   useEffect(() => {
     if (didInit.current) return;
     didInit.current = true;
@@ -83,7 +90,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     restoreSession(rt)
       .then((res) => {
         tokenManager.setTokens(res.tokens.accessToken, res.tokens.refreshToken);
-        dispatch({ type: "LOGIN_SUCCESS", payload: res });
+        // accountType lấy lại từ storage (BE không cho biết login bằng endpoint nào).
+        const accountType =
+          (tokenManager.getAccountType() as AccountType | null) ?? "citizen";
+        dispatch({ type: "LOGIN_SUCCESS", payload: { ...res, accountType } });
       })
       .catch(() => {
         tokenManager.clearTokens();

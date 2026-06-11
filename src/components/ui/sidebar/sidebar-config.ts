@@ -24,8 +24,8 @@ export const SIDEBAR_SECTIONS: NavSection[] = [
     items: [
       { icon: "home", label: "Trang chủ" },
       {
-        icon: "group",
-        label: "Cư trú",
+        icon: "locate",
+        label: "Quản lý cư trú",
         active: true,
         expanded: true,
         children: [
@@ -33,11 +33,10 @@ export const SIDEBAR_SECTIONS: NavSection[] = [
             label: "Tạm trú",
             active: true,
           },
-          { label: "Thường trú" },
         ],
       },
-      { icon: "document", label: "Lưu trú" },
-      { icon: "locate", label: "Quản lý quyền" },
+      { icon: "document", label: "Đơn vị hành chính" },
+      { icon: "group", label: "Quản lý người dùng" },
     ],
   },
   {

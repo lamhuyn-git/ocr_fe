@@ -4,6 +4,11 @@ import FieldLabel from "../../../components/ui/FieldLabel";
 import Select from "../../../components/ui/Select";
 import { fetchProcedures } from "../services/form-api";
 import type { SelectOption } from "../types";
+import {
+  fieldAnchorId,
+  REQUIRED_FIELD_ERROR,
+  type RequiredFieldKey,
+} from "../services/build-submit-payload";
 
 const HOUSEHOLD_TYPES = [
   { value: "new", label: "Đăng ký tạm trú lập hộ mới" },
@@ -15,7 +20,21 @@ const CASES: SelectOption[] = [
   { value: "ca-nhan", label: "Đăng ký tạm trú (cá nhân)" },
 ];
 
-export default function ProcedureSection({ expanded }: { expanded: boolean }) {
+type Props = {
+  expanded: boolean;
+  onChange?: (v: {
+    procedure: string;
+    caseValue: string;
+    householdType: string;
+  }) => void;
+  errors?: Set<RequiredFieldKey>;
+};
+
+export default function ProcedureSection({
+  expanded,
+  onChange,
+  errors,
+}: Props) {
   const [procedures, setProcedures] = useState<SelectOption[]>([]);
   const [procedure, setProcedure] = useState("");
   const [caseValue, setCaseValue] = useState("ho");
@@ -25,6 +44,11 @@ export default function ProcedureSection({ expanded }: { expanded: boolean }) {
     fetchProcedures().then(setProcedures);
   }, []);
 
+  // Báo state lên parent để gom payload nộp hồ sơ.
+  useEffect(() => {
+    onChange?.({ procedure, caseValue, householdType });
+  }, [procedure, caseValue, householdType, onChange]);
+
   return (
     <Card title="Thủ tục hành chính yêu cầu">
       <div
@@ -32,13 +56,14 @@ export default function ProcedureSection({ expanded }: { expanded: boolean }) {
           expanded ? "grid-cols-3" : "grid-cols-2"
         }`}
       >
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" id={fieldAnchorId("procedure")}>
           <FieldLabel required>Thủ tục</FieldLabel>
           <Select
             options={procedures}
             value={procedure}
             onChange={setProcedure}
             placeholder="Chọn thủ tục hành chính"
+            error={errors?.has("procedure") ? REQUIRED_FIELD_ERROR : undefined}
           />
         </div>
 

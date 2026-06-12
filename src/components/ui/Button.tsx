@@ -17,9 +17,12 @@ type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type"> & {
 };
 
 const sizeStyles: Record<ButtonSize, { wrapper: string; icon: number }> = {
-  "14px": { wrapper: "px-4 py-4 text-para-m-bold gap-2 rounded-lg", icon: 20 },
+  "14px": {
+    wrapper: "px-4 py-4 text-para-m-semibold gap-2 rounded-lg",
+    icon: 20,
+  },
   "12px": {
-    wrapper: "px-4 py-3 text-para-s-bold gap-1.5 rounded-md",
+    wrapper: "px-4 py-3 text-para-s-semibold gap-1.5 rounded-md",
     icon: 16,
   },
 };
@@ -56,11 +59,12 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const { wrapper, icon: iconSize } = sizeStyles[size];
+  // primary: icon ăn theo màu chữ (currentColor) thay vì màu stroke cứng của icon.
+  const iconColor = variant === "primary" ? "[&_path]:stroke-current" : "";
 
   return (
     <button
       {...rest}
-      // eslint-disable-next-line react/button-has-type
       type={type}
       disabled={disabled}
       className={`
@@ -73,13 +77,17 @@ export default function Button({
       `}
     >
       {showIcon && icon && (
-        <Icon name={icon} size={iconSize} className="shrink-0" />
+        <Icon name={icon} size={iconSize} className={`shrink-0 ${iconColor}`} />
       )}
 
-      <span>{text ?? children}</span>
+      <span className="leading-none">{text ?? children}</span>
 
       {showSubIcon && subIcon && (
-        <Icon name={subIcon} size={iconSize} className="shrink-0" />
+        <Icon
+          name={subIcon}
+          size={iconSize}
+          className={`shrink-0 ${iconColor}`}
+        />
       )}
     </button>
   );

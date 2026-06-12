@@ -6,7 +6,11 @@ import { fetchNotifyMethods, fetchResultMethods } from "../services/form-api";
 import type { SelectOption } from "../types";
 
 // THÔNG TIN NHẬN THÔNG BÁO TÌNH TRẠNG HỒ SƠ, KẾT QUẢ GIẢI QUYẾT HỒ SƠ.
-export default function NotificationSection() {
+export default function NotificationSection({
+  onChange,
+}: {
+  onChange?: (v: { notifyMethod: string }) => void;
+}) {
   const [notifyMethods, setNotifyMethods] = useState<SelectOption[]>([]);
   const [resultMethods, setResultMethods] = useState<SelectOption[]>([]);
   const [notify, setNotify] = useState("portal");
@@ -16,6 +20,11 @@ export default function NotificationSection() {
     fetchNotifyMethods().then(setNotifyMethods);
     fetchResultMethods().then(setResultMethods);
   }, []);
+
+  // Báo hình thức nhận thông báo lên parent để gom payload.
+  useEffect(() => {
+    onChange?.({ notifyMethod: notify });
+  }, [notify, onChange]);
 
   return (
     <Card title="Thông tin nhận thông báo tình trạng hồ sơ, kết quả giải quyết hồ sơ">

@@ -4,9 +4,19 @@ import FieldLabel from "../../../components/ui/FieldLabel";
 import Input from "../../../components/ui/Input";
 import Select from "../../../components/ui/Select";
 import { fetchGenders } from "../services/form-api";
-import type { SelectOption } from "../types";
+import type {
+  CitizenDetail,
+  SelectOption,
+  ApplicantType,
+  ApplicantForm,
+} from "../types";
+import {
+  fieldAnchorId,
+  REQUIRED_FIELD_ERROR,
+  type RequiredFieldKey,
+} from "../services/build-submit-payload";
 
-const APPLICANT_TYPES = [
+const APPLICANT_TYPES: { value: ApplicantType; label: string }[] = [
   {
     value: "self",
     label:
@@ -19,16 +29,37 @@ const APPLICANT_TYPES = [
   },
 ];
 
-// THÔNG TIN NGƯỜI ĐỀ NGHỊ ĐĂNG KÝ TẠM TRÚ. Dữ liệu auto-fill từ dân cư (mock).
-export default function ApplicantInfoSection({ userName }: { userName: string }) {
+type Props = {
+  userDetail?: CitizenDetail;
+  applicantType: ApplicantType;
+  onApplicantTypeChange: (t: ApplicantType) => void;
+  applicant: ApplicantForm;
+  onApplicantChange: (a: ApplicantForm) => void;
+  errors?: Set<RequiredFieldKey>;
+};
+
+// THÔNG TIN NGƯỜI ĐỀ NGHỊ. self -> auto-fill từ userDetail (khoá);
+// proxy -> dùng state `applicant` (parent) cho người dùng tự nhập.
+export default function ApplicantInfoSection({
+  userDetail,
+  applicantType,
+  onApplicantTypeChange,
+  applicant,
+  onApplicantChange,
+  errors,
+}: Props) {
   const [genders, setGenders] = useState<SelectOption[]>([]);
-  const [applicantType, setApplicantType] = useState("self");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
 
   useEffect(() => {
     fetchGenders().then(setGenders);
   }, []);
+
+  const isSelf = applicantType === "self";
+  // gender dân cư trả label ("Nam") -> map về value option ("nam").
+  const selfGender =
+    genders.find((g) => g.label === userDetail?.gender)?.value ?? "";
+  const set = (patch: Partial<ApplicantForm>) =>
+    onApplicantChange({ ...applicant, ...patch });
 
   return (
     <Card title="Thông tin người đề nghị đăng ký tạm trú">
@@ -42,7 +73,7 @@ export default function ApplicantInfoSection({ userName }: { userName: string })
               type="radio"
               name="applicantType"
               checked={applicantType === t.value}
-              onChange={() => setApplicantType(t.value)}
+              onChange={() => onApplicantTypeChange(t.value)}
               className="accent-primary mt-1"
             />
             {t.label}
@@ -51,36 +82,97 @@ export default function ApplicantInfoSection({ userName }: { userName: string })
       </div>
 
       <div className="grid grid-cols-4 gap-x-8 gap-y-5">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" id={fieldAnchorId("applicantName")}>
           <FieldLabel required>Họ và tên</FieldLabel>
-          <Input value={userName.toUpperCase()} disabled />
+          <Input
+            value={
+              isSelf
+                ? (userDetail?.fullName?.toUpperCase() ?? "")
+                : applicant.fullName
+            }
+            onChange={(e) => set({ fullName: e.target.value })}
+            disabled={isSelf}
+            placeholder="Họ và tên"
+            error={
+              errors?.has("applicantName") ? REQUIRED_FIELD_ERROR : undefined
+            }
+          />
         </div>
         <div className="flex flex-col gap-2">
           <FieldLabel required>Định dạng</FieldLabel>
-          <Select options={[]} disabled placeholder="Ngày, tháng, năm" />
+          <Select options={[]} disabled placeholder="Ngày/tháng/năm" />
         </div>
-        <div className="flex flex-col gap-2">
+        <div
+          className="flex flex-col gap-2"
+          id={fieldAnchorId("applicantBirthday")}
+        >
           <FieldLabel required>Ngày tháng năm sinh</FieldLabel>
-          <Input value="14/12/1999" disabled rightIcon="calendar" />
+          <Input
+            value={isSelf ? (userDetail?.birthday ?? "") : applicant.birthday}
+            onChange={(e) => set({ birthday: e.target.value })}
+            disabled={isSelf}
+            rightIcon="calendar"
+            placeholder="dd/mm/yyyy"
+            error={
+              errors?.has("applicantBirthday")
+                ? REQUIRED_FIELD_ERROR
+                : undefined
+            }
+          />
         </div>
-        <div className="flex flex-col gap-2">
+        <div
+          className="flex flex-col gap-2"
+          id={fieldAnchorId("applicantGender")}
+        >
           <FieldLabel required>Giới tính</FieldLabel>
-          <Select options={genders} value="nam" disabled placeholder="Nam" />
+          <Select
+            options={genders}
+            value={isSelf ? selfGender : applicant.gender}
+            onChange={(v) => set({ gender: v })}
+            disabled={isSelf}
+            placeholder="Giới tính"
+            error={
+              errors?.has("applicantGender") ? REQUIRED_FIELD_ERROR : undefined
+            }
+          />
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-x-8 gap-y-5 mt-5">
-        <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-4 gap-x-8 gap-y-5 mt-5">
+        <div
+          className="flex flex-col gap-2"
+          id={fieldAnchorId("applicantNationalId")}
+        >
           <FieldLabel required>Số định danh cá nhân</FieldLabel>
-          <Input value="0987654312345" disabled />
+          <Input
+            value={
+              isSelf ? (userDetail?.nationalId ?? "") : applicant.nationalId
+            }
+            onChange={(e) => set({ nationalId: e.target.value })}
+            disabled={isSelf}
+            placeholder="Số định danh cá nhân"
+            error={
+              errors?.has("applicantNationalId")
+                ? REQUIRED_FIELD_ERROR
+                : undefined
+            }
+          />
         </div>
         <div className="flex flex-col gap-2">
           <FieldLabel>SĐT liên hệ</FieldLabel>
-          <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="SĐT liên hệ" />
+          <Input
+            value={isSelf ? (userDetail?.phone ?? "") : applicant.phone}
+            onChange={(e) => set({ phone: e.target.value })}
+            placeholder="Số điện thoại liên hệ"
+          />
         </div>
         <div className="flex flex-col gap-2">
           <FieldLabel>Email</FieldLabel>
-          <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+          <Input
+            value={isSelf ? (userDetail?.email ?? "") : applicant.email}
+            onChange={(e) => set({ email: e.target.value })}
+            placeholder="Email"
+          />
         </div>
       </div>
     </Card>

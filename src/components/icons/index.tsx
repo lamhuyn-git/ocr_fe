@@ -4,6 +4,7 @@ type IconProps = {
   name: IconName;
   size?: number;
   className?: string;
+  onClick?: () => void;
 };
 
 /**
@@ -11,7 +12,12 @@ type IconProps = {
  * Each icon in iconMap returns a full <svg> element, so we wrap in a
  * sized <span> and let the inner SVG scale to fill it.
  */
-export default function Icon({ name, size = 20, className }: IconProps) {
+export default function Icon({
+  name,
+  size = 20,
+  className,
+  onClick,
+}: IconProps) {
   const Content = iconMap[name];
   if (!Content) return null;
 
@@ -20,6 +26,7 @@ export default function Icon({ name, size = 20, className }: IconProps) {
       className={`inline-flex items-center justify-center shrink-0 [&>svg]:w-full [&>svg]:h-full ${className ?? ""}`}
       style={{ width: size, height: size }}
       aria-hidden
+      onClick={onClick}
     >
       <Content />
     </span>

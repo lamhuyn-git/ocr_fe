@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Icon from "../icons";
 import Button from "./Button";
 import Logo from "./Logo";
 import drum from "../../assets/drum.svg";
+import { useAuthContext } from "../../store/auth-store";
 
 const NAV_LINKS = ["Đăng ký tạm trú", "Tra cứu hồ sơ", "Hỗ trợ"];
 
@@ -20,6 +21,19 @@ export default function Header({ userName }: { userName: string }) {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Menu account (đăng xuất)
+  const { signOut } = useAuthContext();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node))
+        setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
   }, []);
 
   return (
@@ -64,13 +78,46 @@ export default function Header({ userName }: { userName: string }) {
             showIcon
             icon="notification"
           />
-          <div className="flex items-center gap-2 bg-white rounded-full pl-1 pr-3 py-1">
-            <div className="w-7 h-7 rounded-full bg-primary-light flex items-center justify-center">
-              <Icon name="account" size={16} className="text-primary" />
-            </div>
-            <span className="text-para-s-semibold text-text-main">
-              {userName}
-            </span>
+          <div ref={menuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((o) => !o)}
+              className="flex items-center gap-2 bg-white rounded-full pl-1 pr-3 py-1"
+            >
+              <div className="w-7 h-7 rounded-full bg-primary-light flex items-center justify-center">
+                <Icon name="account" size={16} className="text-primary" />
+              </div>
+              <span className="text-para-s-semibold text-text-main">
+                {userName}
+              </span>
+            </button>
+
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-40 rounded-lg bg-white shadow-card z-50 py-2">
+                <Button
+                  type="button"
+                  variant="tertiary"
+                  size="12px"
+                  text="Đăng xuất"
+                  showIcon
+                  icon="logout"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    void signOut().catch(() => {});
+                  }}
+                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-s-medium text-grey-dark-active [&_path]:stroke-grey-dark-active hover:bg-grey transition-colors"
+                />
+                <Button
+                  type="button"
+                  variant="tertiary"
+                  size="12px"
+                  text="Cài đặt"
+                  showIcon
+                  icon="setting"
+                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-s-medium text-grey-dark-active [&_path]:stroke-grey-dark-active hover:bg-grey transition-colors"
+                />
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -86,12 +133,17 @@ export default function Header({ userName }: { userName: string }) {
           <h1 className="font-serif text-heading-serif uppercase text-[2rem]">
             Hồ sơ đăng ký tạm trú
           </h1>
-          <div className="mt-3 text-para-m-regular text-white/70 leading-relaxed">
+          <div className="mt-3 text-para-m-regular text-white/70 leading-relaxed ">
             <p>
-              Bạn đang đăng nhập bằng tài khoản công vụ Vui lòng điền đầy đủ
-              thông tin để đăng nhập.
+              Khai và nộp hồ sơ đăng ký tạm trú trực tuyến. Vui lòng kiểm tra,
+              điền đầy đủ và chính xác các thông tin bên dưới trước khi nộp.
             </p>
-            <p>Lưu ý: Các trường thông tin có (*) là các trường bắt buộc.</p>
+            <p className="mt-1">
+              Thông tin cá nhân được tự động lấy từ Cơ sở dữ liệu quốc gia về
+              dân cư. Các trường có dấu{" "}
+              <span className="font-semibold text-white">(*)</span> là bắt buộc
+              phải điền.
+            </p>
           </div>
         </div>
       </div>

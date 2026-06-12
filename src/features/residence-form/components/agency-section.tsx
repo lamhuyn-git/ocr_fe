@@ -3,6 +3,11 @@ import type { SelectOption } from "../types";
 import FieldLabel from "../../../components/ui/FieldLabel";
 import Card from "../../../components/ui/Card";
 import Input from "../../../components/ui/Input";
+import {
+  fieldAnchorId,
+  REQUIRED_FIELD_ERROR,
+  type RequiredFieldKey,
+} from "../services/build-submit-payload";
 
 type Props = {
   provinces: SelectOption[];
@@ -13,6 +18,7 @@ type Props = {
   ward: string;
   onWardChange: (v: string) => void;
   agency: string;
+  errors?: Set<RequiredFieldKey>;
 };
 
 export default function AgencySection({
@@ -24,11 +30,12 @@ export default function AgencySection({
   ward,
   onWardChange,
   agency,
+  errors,
 }: Props) {
   return (
-    <Card title="Cơ quan thực hiện" variant="primary">
+    <Card title="Cơ quan thực hiện" active>
       <div className="grid grid-cols-2 gap-x-8 gap-y-5 ">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" id={fieldAnchorId("province")}>
           <FieldLabel required>Tỉnh/Thành phố</FieldLabel>
           <Select
             options={provinces}
@@ -36,10 +43,11 @@ export default function AgencySection({
             onChange={onProvinceChange}
             placeholder="Chọn Tỉnh/Thành phố"
             className="border-grey-hover"
+            error={errors?.has("province") ? REQUIRED_FIELD_ERROR : undefined}
           />
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" id={fieldAnchorId("ward")}>
           <FieldLabel required>Xã/Phường/Đặc khu</FieldLabel>
           <Select
             options={wards}
@@ -48,6 +56,7 @@ export default function AgencySection({
             loading={wardsLoading}
             disabled={!province}
             placeholder="Chọn Xã/Phường/Đặc khu"
+            error={errors?.has("ward") ? REQUIRED_FIELD_ERROR : undefined}
           />
         </div>
 

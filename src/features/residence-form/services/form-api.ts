@@ -1,4 +1,4 @@
-import type { SelectOption } from "../types";
+import type { SelectOption, CitizenDetail } from "../types";
 import {
   GENDERS,
   NOTIFY_METHODS,
@@ -31,7 +31,27 @@ export async function fetchProcedures(): Promise<SelectOption[]> {
   const data = await apiFetch<any[]>("/api/v1/form/type", {
     auth: true,
   });
-  return data.map((w) => ({ value: w.id, label: w.name }));
+  return data.map((t) => ({ value: t.id, label: t.type_name }));
+}
+
+export async function fetchCitizenDetail(
+  userId: string,
+): Promise<CitizenDetail> {
+  const data = await apiFetch<any>(
+    `/api/v1/citizens?user_id=${encodeURIComponent(userId)}`,
+    { auth: true },
+  );
+  return {
+    id: data.id,
+    userId: data.user_id,
+    nationalId: data.so_dinh_danh,
+    fullName: data.ho_chu_dem_va_ten,
+    birthday: data.ngay_sinh,
+    gender: data.gioi_tinh,
+    phone: data.so_dien_thoai,
+    email: data.email,
+    isActive: data.is_active,
+  };
 }
 
 export async function fetchGenders(): Promise<SelectOption[]> {

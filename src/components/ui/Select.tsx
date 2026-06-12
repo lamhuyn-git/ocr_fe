@@ -10,6 +10,8 @@ type SelectProps = {
   disabled?: boolean;
   loading?: boolean;
   className?: string;
+  hasError?: boolean; // viền đỏ, không message
+  error?: string; // viền đỏ + message dưới
 };
 
 export default function Select({
@@ -20,7 +22,10 @@ export default function Select({
   disabled,
   loading,
   className,
+  hasError: hasErrorProp = false,
+  error,
 }: SelectProps) {
+  const hasError = !!error || hasErrorProp;
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState(""); // từ khoá autofill/search
   const ref = useRef<HTMLDivElement>(null);
@@ -30,7 +35,6 @@ export default function Select({
     setQuery("");
   };
 
-  // Đóng dropdown khi click ra ngoài.
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) close();
@@ -42,22 +46,33 @@ export default function Select({
   const selected = options.find((o) => o.value === value);
   const isDisabled = disabled || loading;
 
-  // Lọc options theo từ khoá (không phân biệt hoa thường).
-  const q = query.trim().toLowerCase();
+  // Chuẩn hoá: bỏ dấu tiếng Việt + thường hoá -> search không dấu.
+  const noAccent = (s: string) =>
+    s
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
+
+  const q = noAccent(query.trim());
   const filtered = q
-    ? options.filter((o) => o.label.toLowerCase().includes(q))
+    ? options.filter((o) => noAccent(o.label).includes(q))
     : options;
 
   return (
-    <div ref={ref} className={`relative w-full ${className ?? ""}`}>
+    <div className="flex flex-col gap-2 w-full">
+      <div ref={ref} className={`relative w-full ${className ?? ""}`}>
       <button
         type="button"
         disabled={isDisabled}
         onClick={() => (open ? close() : setOpen(true))}
-        className={`w-full flex items-center justify-between gap-2 px-4 py-3.5 rounded-lg border border-input-border text-left transition-colors ${
+        className={`w-full flex items-center justify-between gap-2 px-4 py-4 rounded-lg border text-left transition-colors ${
           isDisabled
-            ? "bg-grey cursor-not-allowed"
-            : "bg-white hover:border-secondary"
+            ? "bg-grey-hover cursor-not-allowed border-input-border"
+            : hasError
+              ? "bg-white border-red"
+              : "bg-white border-input-border hover:border-secondary"
         }`}
       >
         <span
@@ -121,6 +136,14 @@ export default function Select({
             )}
           </div>
         </div>
+      )}
+      </div>
+
+      {/* Error message — italic đỏ */}
+      {error && (
+        <p className="text-para-m-regular italic text-red leading-[1.45]">
+          {error}
+        </p>
       )}
     </div>
   );

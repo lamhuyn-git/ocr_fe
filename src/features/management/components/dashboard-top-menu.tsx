@@ -12,7 +12,9 @@ export default function DashboardTopMenu() {
       {/* Breadcrumb */}
       <div className="flex items-center gap-1">
         <Icon name="home" size={16} className="text-text-placeholder" />
-        <span className="text-para-s-semibold text-text-placeholder">Trang chủ</span>
+        <span className="text-para-s-semibold text-text-placeholder">
+          Trang chủ
+        </span>
         <span className="text-para-s-semibold text-text-main px-1">/</span>
         <span className="text-para-s-semibold text-text-main">Cư trú</span>
       </div>
@@ -22,11 +24,15 @@ export default function DashboardTopMenu() {
         <button className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-grey transition-colors">
           <Icon name="calendar" size={16} className="text-text-placeholder" />
           <span className="text-para-s-semibold text-text-placeholder">
-            Ngày {today}
+            {today}
           </span>
         </button>
         <button className="flex items-center justify-center p-2 rounded-lg hover:bg-grey transition-colors">
-          <Icon name="notification" size={16} className="text-text-placeholder" />
+          <Icon
+            name="notification"
+            size={16}
+            className="text-text-placeholder"
+          />
         </button>
       </div>
     </div>

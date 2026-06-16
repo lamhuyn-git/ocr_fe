@@ -16,7 +16,12 @@ import {
   fetchWards,
   fetchAgency,
   fetchCitizenDetail,
+  submitResidenceForm,
 } from "../features/residence-form/services/form-api";
+import {
+  uploadImages,
+  type UploadItem,
+} from "../features/residence-form/services/upload-api";
 import type {
   CitizenDetail,
   SelectOption,
@@ -68,10 +73,15 @@ export default function FormPage() {
   });
   const [notifyMethod, setNotifyMethod] = useState("portal");
   const [members, setMembers] = useState<Member[]>([]);
+  // Ảnh đính kèm (chưa upload, kèm kind) + cờ đang nộp (upload S3 -> submit).
+  const [attachmentFiles, setAttachmentFiles] = useState<UploadItem[]>([]);
+  const [submitting, setSubmitting] = useState(false);
 
   // Các trường bắt buộc còn thiếu (highlight inline) + nội dung toast lỗi.
   const [errorFields, setErrorFields] = useState<RequiredFieldKey[]>([]);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ title: string; message: string } | null>(
+    null,
+  );
 
   // onChange ổn định (useCallback) để effect con không lặp vô hạn.
   const handleProcedureChange = useCallback(setProcedureData, []);
@@ -81,6 +91,7 @@ export default function FormPage() {
     [],
   );
   const handleMembersChange = useCallback(setMembers, []);
+  const handleAttachmentsChange = useCallback(setAttachmentFiles, []);
 
   useEffect(() => {
     fetchProvinces().then(setProvinces);
@@ -95,11 +106,12 @@ export default function FormPage() {
 
   // Gom state hiện tại thành input cho validate/build payload.
   const buildInput = (): SubmitInput => ({
+    submitBy: user?.id ?? "",
     notifyMethod,
     caseValue: procedureData.caseValue,
     householdType: procedureData.householdType,
     formTypeId: procedureData.procedure,
-    orgId: agency,
+    orgId: ward,
     provinceId: province,
     wardId: ward,
     address: residenceData.address,
@@ -111,7 +123,6 @@ export default function FormPage() {
     members,
   });
 
-  // Xoá lỗi inline ngay khi trường đã được điền (lỗi biến mất lúc người dùng sửa).
   useEffect(() => {
     if (errorFields.length === 0) return;
     const stillMissing = validateSubmit(buildInput());
@@ -120,7 +131,6 @@ export default function FormPage() {
         ? prev
         : prev.filter((k) => stillMissing.includes(k)),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     province,
     ward,
@@ -135,7 +145,6 @@ export default function FormPage() {
   if (isInitializing) return <Loading show />;
   if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
 
-  // Chọn Tỉnh -> load Phường (reset phường + cơ quan cũ).
   function handleProvinceChange(value: string) {
     setProvince(value);
     setWard("");
@@ -148,30 +157,40 @@ export default function FormPage() {
     fetchCitizenDetail(user!.id).then(setUserDetail);
   }
 
-  // Chọn Phường -> suy ra Cơ quan thực hiện từ tên phường + mở rộng form.
   function handleWardChange(value: string) {
     setWard(value);
-    const name = wards.find((w) => w.value === value)?.label ?? "";
-    fetchAgency(name).then(setAgency);
+    const ward_id = wards.find((w) => w.value === value)?.label ?? "";
+    fetchAgency(ward_id).then(setAgency);
   }
 
   function handleSaveDraft() {
     console.log("Save form as draft");
   }
 
-  // Kiểm tra trường bắt buộc -> báo lỗi + scroll nếu thiếu, ngược lại log payload.
-  function handleSubmit() {
+  async function handleSubmit(agreed: boolean) {
+    if (submitting) return;
+
+    if (!agreed) {
+      setToast({
+        title: "Thiếu thông tin bắt buộc",
+        message:
+          "Vui lòng xác nhận chịu trách nhiệm về lời khai trước khi nộp.",
+      });
+      return;
+    }
+
     const input = buildInput();
     const missing = validateSubmit(input);
 
     if (missing.length > 0) {
       setErrorFields(missing);
-      // >1 trường: thông báo gọn; đúng 1 trường: chỉ rõ trường nào.
-      setToast(
-        missing.length > 1
-          ? "Vui lòng điền đầy đủ các trường bắt buộc còn thiếu."
-          : `Vui lòng nhập "${REQUIRED_FIELD_LABELS[missing[0]]}".`,
-      );
+      setToast({
+        title: "Thiếu thông tin bắt buộc",
+        message:
+          missing.length > 1
+            ? "Vui lòng điền đầy đủ các trường bắt buộc còn thiếu."
+            : `Vui lòng nhập "${REQUIRED_FIELD_LABELS[missing[0]]}".`,
+      });
       // Scroll tới field lỗi đầu tiên (đợi render xong).
       requestAnimationFrame(() => {
         document
@@ -183,7 +202,25 @@ export default function FormPage() {
 
     setErrorFields([]);
     setToast(null);
-    console.log(JSON.stringify(buildSubmitPayload(input)));
+    setSubmitting(true);
+    try {
+      // Upload ảnh đính kèm lên S3 và nhận path_url cho từng file.
+      const paths = await uploadImages(attachmentFiles);
+      const evidences = paths.map((path_url) => ({ path_url }));
+
+      // Gom payload (FormCreate) kèm evidences rồi nộp hồ sơ.
+      const payload = buildSubmitPayload({ ...input, evidences });
+      await submitResidenceForm(payload);
+
+      setToast({ title: "Thành công", message: "Nộp hồ sơ thành công." });
+    } catch (e) {
+      const msg =
+        (e as { message?: string })?.message ??
+        "Nộp hồ sơ thất bại, vui lòng thử lại.";
+      setToast({ title: "Nộp hồ sơ thất bại", message: msg });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const expanded = !!ward;
@@ -204,9 +241,11 @@ export default function FormPage() {
 
   return (
     <div className="min-h-screen bg-grey flex flex-col">
+      {/* Overlay loading khi đang upload ảnh / nộp hồ sơ */}
+      <Loading show={submitting} />
       {toast && (
         <div className="fixed top-6 right-6 z-[100] w-full max-w-md">
-          <Notification title="Thiếu thông tin bắt buộc" message={toast} />
+          <Notification title={toast.title} message={toast.message} />
         </div>
       )}
       <Header userName={user.name} />
@@ -252,13 +291,17 @@ export default function FormPage() {
 
             <HouseholdMembersSection onChange={handleMembersChange} />
 
-            <AttachmentsSection />
+            <AttachmentsSection onChange={handleAttachmentsChange} />
           </>
         )}
 
         <NotificationSection onChange={handleNotifyChange} />
 
-        <FormActions onSaveDraft={handleSaveDraft} onSubmit={handleSubmit} />
+        <FormActions
+          onSaveDraft={handleSaveDraft}
+          onSubmit={handleSubmit}
+          loading={submitting}
+        />
       </main>
 
       <Footer></Footer>

@@ -11,13 +11,13 @@ import {
 } from "../services/build-submit-payload";
 
 const HOUSEHOLD_TYPES = [
-  { value: "new", label: "Đăng ký tạm trú lập hộ mới" },
-  { value: "existing", label: "Đăng ký tạm trú vào hộ đã có" },
+  { value: "add_new", label: "Đăng ký tạm trú lập hộ mới" },
+  { value: "add_to_existing", label: "Đăng ký tạm trú vào hộ đã có" },
 ];
 
 const CASES: SelectOption[] = [
-  { value: "ho", label: "Đăng ký tạm trú (nhân khẩu, hộ)" },
-  { value: "ca-nhan", label: "Đăng ký tạm trú (cá nhân)" },
+  { value: "residence_registration", label: "Đăng ký tạm trú (nhân khẩu, hộ)" },
+  { value: "list_registration", label: "Đăng ký theo danh sách" },
 ];
 
 type Props = {
@@ -37,8 +37,8 @@ export default function ProcedureSection({
 }: Props) {
   const [procedures, setProcedures] = useState<SelectOption[]>([]);
   const [procedure, setProcedure] = useState("");
-  const [caseValue, setCaseValue] = useState("ho");
-  const [householdType, setHouseholdType] = useState("new");
+  const [householdType, setHouseholdType] = useState("add_new");
+  const [caseValue, setCaseValue] = useState("residence_registration");
 
   useEffect(() => {
     fetchProcedures().then(setProcedures);
@@ -59,7 +59,10 @@ export default function ProcedureSection({
         <div className="flex flex-col gap-2" id={fieldAnchorId("procedure")}>
           <FieldLabel required>Thủ tục</FieldLabel>
           <Select
-            options={procedures}
+            options={procedures.map((item) => ({
+              label: item.label,
+              value: item.value,
+            }))}
             value={procedure}
             onChange={setProcedure}
             placeholder="Chọn thủ tục hành chính"

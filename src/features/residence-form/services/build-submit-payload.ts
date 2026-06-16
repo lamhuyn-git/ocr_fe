@@ -1,33 +1,34 @@
-import type { ApplicantForm, ApplicantType, CitizenDetail, Member } from "../types";
+import type {
+  ApplicantForm,
+  ApplicantType,
+  CitizenDetail,
+  Member,
+} from "../types";
 
-// Cấu trúc payload nộp hồ sơ (khớp contract BE).
+export type EvidencePayload = {
+  path_url: string;
+};
+
+export type FormSpecPayload = {
+  form_id: string;
+  case: string | null;
+  type: string | null;
+  location_register: string | null;
+  registered_user_id: string | null;
+  register_content: unknown | null;
+};
+
 export type ResidenceSubmitPayload = {
-  form_json: null;
-  recieve_method: { notification_method: string };
-  thu_tuc_yeu_cau: { case: string; type: string; form_type_id: string };
-  co_quan_thuc_hien: { org_id: string; province_id: string };
-  thong_tin_de_nghi: { address: string; content: string; due_time: string };
-  thong_tin_nguoi_de_nghi: {
-    type: string; // themself | proxy
-    infor: {
-      name: string;
-      email: string;
-      gender: string;
-      birth_day: string;
-      id_number: string;
-      phone_number: string;
-    };
-  };
-  thanh_vien_cung_thay_doi: Array<{
-    name: string;
-    birth_day: string;
-    gender: string;
-    id_number: string;
-    relationship: string;
-  }>;
+  org_id: string;
+  form_type_id: string;
+  submit_by: string;
+  notification_on: string;
+  evidences: EvidencePayload[];
+  form_spec: FormSpecPayload;
 };
 
 export type SubmitInput = {
+  submitBy: string;
   notifyMethod: string;
   caseValue: string;
   householdType: string;
@@ -36,16 +37,15 @@ export type SubmitInput = {
   provinceId: string;
   wardId: string;
   address: string;
-  content: string;
+  content: string; // Nội dung đề nghị
   dueTime: string;
   applicantType: ApplicantType;
   userDetail?: CitizenDetail;
   applicant: ApplicantForm;
   members: Member[];
+  evidences?: EvidencePayload[];
 };
 
-// Khoá trường bắt buộc — dùng cho: hiển thị lỗi inline, anchor scroll, message.
-// Thứ tự khai báo = thứ tự xuất hiện trên form (để scroll tới lỗi đầu tiên).
 export type RequiredFieldKey =
   | "province"
   | "ward"
@@ -104,50 +104,38 @@ export function validateSubmit(input: SubmitInput): RequiredFieldKey[] {
   return missing;
 }
 
-// Gom toàn bộ state form thành payload theo đúng cấu trúc BE.
+// Gom toàn bộ state form thành payload theo đúng cấu trúc BE (FormCreate).
 export function buildSubmitPayload(input: SubmitInput): ResidenceSubmitPayload {
   const isSelf = input.applicantType === "self";
 
-  // self -> lấy từ dữ liệu dân cư; proxy -> người dùng tự khai.
-  const infor = isSelf
-    ? {
-        name: input.userDetail?.fullName ?? "",
-        email: input.userDetail?.email ?? "",
-        gender: input.userDetail?.gender ?? "",
-        birth_day: input.userDetail?.birthday ?? "",
-        id_number: input.userDetail?.nationalId ?? "",
-        phone_number: input.userDetail?.phone ?? "",
-      }
-    : {
-        name: input.applicant.fullName,
-        email: input.applicant.email,
-        gender: input.applicant.gender,
-        birth_day: input.applicant.birthday,
-        id_number: input.applicant.nationalId,
-        phone_number: input.applicant.phone,
-      };
+  // form_id chung cho form_spec & evidences (1 hồ sơ = 1 form_id).
+  const formId = crypto.randomUUID();
+
+  // Người được đăng ký cư trú: self -> chính user; proxy -> chưa xác định.
+  const registeredUserId = isSelf ? (input.userDetail?.userId ?? null) : null;
+
+  // register_content = Nội dung đề nghị (người dùng nhập).
+  const registerContent = input.content || null;
+
+  // evidences đã upload -> gắn form_id của hồ sơ này.
+  const evidences = (input.evidences ?? []).map((e) => ({
+    form_id: formId,
+    path_url: e.path_url,
+  }));
 
   return {
-    form_json: null,
-    recieve_method: { notification_method: input.notifyMethod },
-    thu_tuc_yeu_cau: {
-      case: input.caseValue,
-      type: input.householdType,
-      form_type_id: input.formTypeId,
+    org_id: input.orgId,
+    form_type_id: input.formTypeId,
+    submit_by: input.submitBy,
+    notification_on: input.notifyMethod,
+    evidences,
+    form_spec: {
+      form_id: formId,
+      case: input.caseValue || null,
+      type: input.householdType || null,
+      location_register: input.address || null,
+      registered_user_id: registeredUserId,
+      register_content: registerContent,
     },
-    co_quan_thuc_hien: { org_id: input.orgId, province_id: input.provinceId },
-    thong_tin_de_nghi: {
-      address: input.address,
-      content: input.content,
-      due_time: input.dueTime,
-    },
-    thong_tin_nguoi_de_nghi: { type: isSelf ? "themself" : "proxy", infor },
-    thanh_vien_cung_thay_doi: input.members.map((m) => ({
-      name: m.fullName,
-      birth_day: m.birthday,
-      gender: m.gender,
-      id_number: m.idNumber,
-      relationship: m.relationship,
-    })),
   };
 }

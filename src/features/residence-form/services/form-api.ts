@@ -5,6 +5,7 @@ import {
   RESULT_METHODS,
 } from "../data/mock-form-data";
 import { apiFetch } from "../../../lib/http-client";
+import type { ResidenceSubmitPayload } from "./build-submit-payload";
 
 const delay = (ms = 400) => new Promise<void>((r) => setTimeout(r, ms));
 
@@ -27,8 +28,18 @@ export async function fetchAgency(wardName: string): Promise<string> {
   return `Công an ${wardName}`;
 }
 
+export async function submitResidenceForm(
+  payload: ResidenceSubmitPayload,
+): Promise<unknown> {
+  return apiFetch("/api/v1/form", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function fetchProcedures(): Promise<SelectOption[]> {
-  const data = await apiFetch<any[]>("/api/v1/form/type", {
+  const data = await apiFetch<any[]>("/api/v1/form-types", {
     auth: true,
   });
   return data.map((t) => ({ value: t.id, label: t.type_name }));

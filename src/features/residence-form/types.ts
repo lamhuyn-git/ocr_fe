@@ -35,6 +35,8 @@ export type AttachmentDoc = {
   hasCsdl: boolean; // có khai thác CSDL/biểu mẫu điện tử
   quantity: number; // số lượng
   note: string; // ghi chú
+  files: File[]; // ảnh người dùng chọn cho dòng giấy tờ này (upload lúc nộp)
+  kind: string; // hint loại ảnh gửi BE để đặt key (vd "CT01" cho tờ khai cần OCR)
 };
 
 // Dữ liệu người đề nghị (dùng chung giữa ApplicantInfo & ResidenceRequest).

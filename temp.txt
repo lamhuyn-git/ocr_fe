@@ -1,0 +1,48 @@
+{
+  "form_json": null,
+  "recieve_method": { "notification_method": "sms" },
+  "thu_tuc_yeu_cau": {
+    "case": "dang_ky_nhan_khau_ho",
+    "type": "dang_ky_lap_ho_moi",
+    "form_type_id": "96a50bdd-3b78-4f9e-9a12-4a1d86d34732"
+  },
+  "co_quan_thuc_hien": {
+    "org_id": "423a17d7-e976-47df-9e78-838d422910b7",
+    "province_id": "d3b80149-ed6f-47e9-8039-c0bd8fe493f6"
+  },
+  "thong_tin_de_nghi": {
+    "address": "Số 12, đường Láng, P. Láng Thượng, Q. Đống Đa, TP. Hà Nội",
+    "content": "Đăng ký thường trú 01 nhân khẩu tại địa chỉ Số 12, đường Láng, P. Láng Thượng, Q. Đống Đa, TP. Hà Nội",
+    "due_time": "2026-07-15"
+  },
+  "thong_tin_nguoi_de_nghi": {
+    "type": "themself",
+    "infor": {
+      "name": "Nguyễn Văn An",
+      "email": "nguyenvanan@gmail.com",
+      "gender": "male",
+      "birth_day": "1990-05-12",
+      "id_number": "001090012345",
+      "phone_number": "0901234567"
+    }
+  },
+  "thanh_vien_cung_thay_doi": []
+}
+
+// class FormCreate(BaseModel):
+//     org_id: UUID
+//     form_type_id: UUID
+//     submit_by: UUID
+       notification_on: str 
+//     evidences: list[
+          form_id:  UUID
+          path_url: str = Field(min_length=1, max_length=512)
+        ]
+//     form_spec: {
+        form_id:            UUID
+        case:               str | None = Field(default=None, max_length=100)
+        type:               str | None = Field(default=None, max_length=100)
+        location_register:  str | None = Field(default=None, max_length=512)
+        registered_user_id: UUID | None = None
+        register_content:   Any | None = None
+      }

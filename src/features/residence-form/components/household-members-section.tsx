@@ -73,7 +73,7 @@ export default function MembersSection({
           <div
             className={`grid ${COLS} items-center gap-3 rounded-t-lg bg-secondary-light px-4 py-3 mb-3 text-para-s-semibold text-text-main`}
           >
-            <span>STT</span>
+            <span className="w-[3rem] text-center">STT</span>
             <span>Họ và tên (*)</span>
             <span>Ngày sinh (*)</span>
             <span>Giới tính (*)</span>
@@ -82,10 +82,10 @@ export default function MembersSection({
             <span />
           </div>
           {/* Rows */}
-          <div className="flex flex-col gap-3 mb-3">
+          <div className="flex flex-col gap-3 mb-3 px-4">
             {members.map((m, i) => (
-              <div key={m.id} className={`grid ${COLS} gap-3 items-center`}>
-                <span className="text-para-s-medium text-text-main pl-3">
+              <div key={m.id} className={`grid ${COLS} gap-2 items-center`}>
+                <span className="w-[3rem] text-center text-para-s-medium text-text-main">
                   {i + 1}
                 </span>
                 <Input

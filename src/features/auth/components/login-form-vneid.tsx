@@ -129,7 +129,7 @@ export default function LoginFormVneid({
       </form>
 
       {/* Phương thức khác — đăng nhập Google (demo) */}
-      <div className="flex flex-col gap-4 w-full">
+      {/* <div className="flex flex-col gap-4 w-full">
         <div className="flex items-end justify-between gap-6">
           <div className="flex flex-col gap-2 max-w-[42%]">
             <span className="text-h3 font-bold text-text-main leading-none">
@@ -150,7 +150,7 @@ export default function LoginFormVneid({
           </button>
         </div>
         <hr className="border-grey-hover" />
-      </div>
+      </div> */}
     </div>
   );
 }

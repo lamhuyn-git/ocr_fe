@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../../../components/ui/Card";
 import Icon from "../../../components/icons";
 import AttachmentDocumentsTable from "./attachment-documents-table";
+import { RENTAL_ATTACHMENT_DOCS } from "../data/mock-form-data";
+import type { AttachmentDoc } from "../types";
+import type { UploadItem } from "../services/upload-api";
 
 const ATTACHMENT_GROUPS = [
   "Đăng ký tạm trú tại chỗ ở hợp pháp do thuê, mượn, ở nhờ",
@@ -9,8 +12,26 @@ const ATTACHMENT_GROUPS = [
 
 // Khu vực đính kèm giấy tờ. Mỗi nhóm là 1 mục có thể mở/đóng;
 // khi mở sẽ hiện bảng giấy tờ cần đính kèm.
-export default function AttachmentsSection() {
+// State `docs` đặt ở đây (không ở table) để file đã chọn không mất khi đóng group.
+export default function AttachmentsSection({
+  onChange,
+}: {
+  onChange?: (items: UploadItem[]) => void;
+}) {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [docs, setDocs] = useState<AttachmentDoc[]>(() =>
+    RENTAL_ATTACHMENT_DOCS.map((d) => ({ ...d, files: [] })),
+  );
+
+  const update = (id: string, patch: Partial<AttachmentDoc>) =>
+    setDocs((list) => list.map((d) => (d.id === id ? { ...d, ...patch } : d)));
+
+  // Gom phẳng file đã chọn kèm kind của từng dòng, báo lên parent mỗi khi docs đổi.
+  useEffect(() => {
+    onChange?.(
+      docs.flatMap((d) => d.files.map((file) => ({ file, kind: d.kind }))),
+    );
+  }, [docs, onChange]);
 
   return (
     <Card title="Thông tin đề nghị đăng ký tạm trú">
@@ -40,7 +61,7 @@ export default function AttachmentsSection() {
 
               {open && (
                 <div className="pb-4">
-                  <AttachmentDocumentsTable />
+                  <AttachmentDocumentsTable docs={docs} onUpdate={update} />
                 </div>
               )}
             </div>

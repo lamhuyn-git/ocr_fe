@@ -1,67 +1,87 @@
-import { useState } from "react";
 import Input from "../../../components/ui/Input";
 import Select from "../../../components/ui/Select";
 import Icon from "../../../components/icons";
-import { DOC_FORMATS, RENTAL_ATTACHMENT_DOCS } from "../data/mock-form-data";
+import { DOC_FORMATS } from "../data/mock-form-data";
 import type { AttachmentDoc } from "../types";
 
-// 8 cột: STT | Tên giấy tờ | Hình thức | Tải file mẫu | Khai thác CSDL |
-// Đính kèm | Số lượng | Ghi chú
-const COLS =
-  "grid-cols-[44px_2.4fr_1.1fr_90px_1.7fr_130px_72px_1fr]";
+// Bề rộng cột theo tỷ lệ % — dùng CHUNG cho header và row để luôn thẳng hàng.
+// 8 cột, tổng = 100%. box-border nên padding nằm trong width.
+const COL = {
+  stt: "w-[4%]",
+  name: "w-[24%]",
+  format: "w-[13%]",
+  template: "w-[8%]",
+  csdl: "w-[17%]",
+  attach: "w-[13%]",
+  qty: "w-[7%]",
+  note: "w-[14%]",
+} as const;
 
-// Bảng giấy tờ cần đính kèm cho 1 nhóm thủ tục.
+// Giới hạn file đính kèm: chỉ ảnh, ≤ 10MB/file.
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+type Props = {
+  docs: AttachmentDoc[];
+  onUpdate: (id: string, patch: Partial<AttachmentDoc>) => void;
+};
+
+// Bảng giấy tờ cần đính kèm cho 1 nhóm thủ tục (controlled — state ở section cha).
 // Style table giống bảng thành viên hộ gia đình (header vàng nhạt, bo góc).
-export default function AttachmentDocumentsTable() {
-  const [docs, setDocs] = useState<AttachmentDoc[]>(RENTAL_ATTACHMENT_DOCS);
-
-  const update = (id: string, patch: Partial<AttachmentDoc>) =>
-    setDocs((list) =>
-      list.map((d) => (d.id === id ? { ...d, ...patch } : d)),
+export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
+  // Chọn file: lọc lấy ảnh hợp lệ, gộp vào danh sách hiện có của dòng.
+  const handleFiles = (doc: AttachmentDoc, fileList: FileList | null) => {
+    if (!fileList) return;
+    const valid = Array.from(fileList).filter(
+      (f) => f.type.startsWith("image/") && f.size <= MAX_FILE_SIZE,
     );
+    onUpdate(doc.id, { files: [...doc.files, ...valid] });
+  };
+
+  const removeFile = (doc: AttachmentDoc, index: number) =>
+    onUpdate(doc.id, { files: doc.files.filter((_, i) => i !== index) });
 
   return (
     <div className="flex flex-col rounded-lg bg-white shadow-card overflow-hidden">
       {/* Header */}
-      <div
-        className={`grid ${COLS} items-center gap-3 bg-secondary-light px-4 py-3 text-para-s-semibold text-text-main`}
-      >
-        <span>STT</span>
-        <span>
+      <div className="flex items-center bg-secondary-light px-4 py-3 text-para-s-semibold text-text-main">
+        <span className={`${COL.stt} pr-3`}>STT</span>
+        <span className={`${COL.name} pr-3`}>
           Tên giấy tờ<span className="text-[#E5392E]">*</span>
         </span>
-        <span>
+        <span className={`${COL.format} pr-3`}>
           Hình thức giấy tờ<span className="text-[#E5392E]">*</span>
         </span>
-        <span className="text-center">Tải file mẫu</span>
-        <span className="text-center leading-tight">
+        <span className={`${COL.template} pr-3 text-center`}>Tải file mẫu</span>
+        <span className={`${COL.csdl} pr-3 text-center leading-tight`}>
           Khai thác CSDL chuyên ngành/Biểu mẫu điện tử
         </span>
-        <span className="text-center">Đính kèm</span>
-        <span>Số lượng</span>
-        <span>Ghi chú</span>
+        <span className={`${COL.attach} pr-3 text-center`}>Đính kèm</span>
+        <span className={`${COL.qty} pr-3`}>Số lượng</span>
+        <span className={COL.note}>Ghi chú</span>
       </div>
 
       {/* Rows */}
       {docs.map((d, i) => (
         <div
           key={d.id}
-          className={`grid ${COLS} items-start gap-3 px-4 py-4 border-t border-divider ${
+          className={`flex items-center px-4 py-4 border-t border-divider ${
             i % 2 === 1 ? "bg-main-light/40" : ""
           }`}
         >
           {/* STT */}
-          <span className="text-para-s-medium text-text-main pt-2">
+          <span className={`${COL.stt} pr-3 text-para-s-medium text-text-main`}>
             {i + 1}
           </span>
 
           {/* Tên giấy tờ + checkbox */}
-          <label className="flex items-start gap-3 cursor-pointer">
+          <label
+            className={`${COL.name} pr-3 flex items-center gap-3 cursor-pointer`}
+          >
             <input
               type="checkbox"
               checked={d.checked}
-              onChange={(e) => update(d.id, { checked: e.target.checked })}
-              className="mt-1 h-4 w-4 shrink-0 accent-primary cursor-pointer"
+              onChange={(e) => onUpdate(d.id, { checked: e.target.checked })}
+              className="h-4 w-4 shrink-0 accent-primary cursor-pointer"
             />
             <span className="text-para-s-medium text-text-main leading-snug">
               {d.name}
@@ -69,15 +89,17 @@ export default function AttachmentDocumentsTable() {
           </label>
 
           {/* Hình thức giấy tờ */}
-          <Select
-            options={DOC_FORMATS}
-            value={d.format}
-            onChange={(v) => update(d.id, { format: v })}
-            placeholder="Hình thức"
-          />
+          <div className={`${COL.format} pr-3`}>
+            <Select
+              options={DOC_FORMATS}
+              value={d.format}
+              onChange={(v) => onUpdate(d.id, { format: v })}
+              placeholder="Hình thức"
+            />
+          </div>
 
           {/* Tải file mẫu */}
-          <div className="flex justify-center pt-1.5">
+          <div className={`${COL.template} pr-3 flex justify-center`}>
             {d.hasTemplate && (
               <button
                 type="button"
@@ -90,7 +112,7 @@ export default function AttachmentDocumentsTable() {
           </div>
 
           {/* Khai thác CSDL chuyên ngành/Biểu mẫu điện tử */}
-          <div className="flex justify-center pt-1">
+          <div className={`${COL.csdl} pr-3 flex justify-center`}>
             {d.hasCsdl && (
               <div className="flex items-center gap-2 rounded-md bg-grey px-2 py-1.5">
                 <button
@@ -111,27 +133,63 @@ export default function AttachmentDocumentsTable() {
             )}
           </div>
 
-          {/* Đính kèm */}
-          <div className="pt-0.5">
+          {/* Đính kèm — chọn ảnh + danh sách file đã chọn */}
+          <div className={`${COL.attach} pr-3 flex flex-col items-center gap-2`}>
             <label className="inline-flex cursor-pointer items-center rounded-md border border-divider bg-grey px-3 py-2 text-para-s-medium text-text-main hover:bg-secondary-light transition-colors">
               Choose Files
-              <input type="file" multiple className="hidden" />
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  handleFiles(d, e.target.files);
+                  e.target.value = ""; // reset để chọn lại cùng file vẫn fire
+                }}
+              />
             </label>
+
+            {d.files.length > 0 && (
+              <ul className="w-full flex flex-col gap-1">
+                {d.files.map((f, idx) => (
+                  <li
+                    key={`${f.name}-${idx}`}
+                    className="flex items-center justify-between gap-1 text-para-s-regular text-text-secondary"
+                  >
+                    <span className="truncate" title={f.name}>
+                      {f.name}
+                    </span>
+                    <button
+                      type="button"
+                      aria-label={`Xoá ${f.name}`}
+                      onClick={() => removeFile(d, idx)}
+                      className="shrink-0 text-text-placeholder hover:text-red transition-colors"
+                    >
+                      <Icon name="cancel" size={14} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Số lượng */}
-          <Input
-            value={String(d.quantity)}
-            onChange={(e) =>
-              update(d.id, { quantity: Number(e.target.value) || 0 })
-            }
-          />
+          <div className={`${COL.qty} pr-3`}>
+            <Input
+              value={String(d.quantity)}
+              onChange={(e) =>
+                onUpdate(d.id, { quantity: Number(e.target.value) || 0 })
+              }
+            />
+          </div>
 
           {/* Ghi chú */}
-          <Input
-            value={d.note}
-            onChange={(e) => update(d.id, { note: e.target.value })}
-          />
+          <div className={COL.note}>
+            <Input
+              value={d.note}
+              onChange={(e) => onUpdate(d.id, { note: e.target.value })}
+            />
+          </div>
         </div>
       ))}
     </div>

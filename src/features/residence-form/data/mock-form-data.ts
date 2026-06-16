@@ -51,12 +51,10 @@ export const GENDERS: SelectOption[] = [
 export const NOTIFY_METHODS: SelectOption[] = [
   { value: "portal", label: "Nhận qua cổng thông tin" },
   { value: "email", label: "Nhận qua Email" },
-  { value: "sms", label: "Nhận qua SMS" },
 ];
 
 export const RESULT_METHODS: SelectOption[] = [
   { value: "direct", label: "Nhận trực tiếp" },
-  { value: "post", label: "Nhận qua bưu điện" },
 ];
 
 // Quan hệ với chủ hộ (Luật Cư trú 2020 + Luật HN&GĐ 2014).
@@ -91,8 +89,14 @@ export const RELATIONSHIPS: SelectOption[] = [
   { value: "anh-ruot", label: "Anh ruột" },
   { value: "chi-ruot", label: "Chị ruột" },
   { value: "em-ruot", label: "Em ruột" },
-  { value: "anh-chi-em-cung-cha-khac-me", label: "Anh/chị/em cùng cha khác mẹ" },
-  { value: "anh-chi-em-cung-me-khac-cha", label: "Anh/chị/em cùng mẹ khác cha" },
+  {
+    value: "anh-chi-em-cung-cha-khac-me",
+    label: "Anh/chị/em cùng cha khác mẹ",
+  },
+  {
+    value: "anh-chi-em-cung-me-khac-cha",
+    label: "Anh/chị/em cùng mẹ khác cha",
+  },
   { value: "anh-re", label: "Anh rể" },
   { value: "em-re", label: "Em rể" },
   { value: "chi-dau", label: "Chị dâu" },
@@ -123,6 +127,7 @@ export const RENTAL_ATTACHMENT_DOCS = [
     hasCsdl: false,
     quantity: 0,
     note: "",
+    kind: "CT01", // tờ khai cần OCR → BE trích xuất ảnh có key chứa "CT01"
   },
   {
     id: "2",
@@ -136,5 +141,6 @@ export const RENTAL_ATTACHMENT_DOCS = [
     hasCsdl: true,
     quantity: 0,
     note: "",
+    kind: "RESIDENCE_PROOF", // giấy tờ chứng minh chỗ ở → KHÔNG OCR
   },
 ];

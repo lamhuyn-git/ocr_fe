@@ -21,7 +21,6 @@ export default function NotificationSection({
     fetchResultMethods().then(setResultMethods);
   }, []);
 
-  // Báo hình thức nhận thông báo lên parent để gom payload.
   useEffect(() => {
     onChange?.({ notifyMethod: notify });
   }, [notify, onChange]);
@@ -43,6 +42,7 @@ export default function NotificationSection({
             <FieldLabel required>Hình thức nhận kết quả</FieldLabel>
             <Select
               options={resultMethods}
+              disabled
               value={result}
               onChange={setResult}
               placeholder="Chọn hình thức nhận kết quả"

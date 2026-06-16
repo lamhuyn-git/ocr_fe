@@ -76,6 +76,8 @@ export default function FormPage() {
   // Ảnh đính kèm (chưa upload, kèm kind) + cờ đang nộp (upload S3 -> submit).
   const [attachmentFiles, setAttachmentFiles] = useState<UploadItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  // Đổi key -> remount toàn bộ form để reset cả state nội bộ của các section con.
+  const [resetKey, setResetKey] = useState(0);
 
   // Các trường bắt buộc còn thiếu (highlight inline) + nội dung toast lỗi.
   const [errorFields, setErrorFields] = useState<RequiredFieldKey[]>([]);
@@ -167,6 +169,31 @@ export default function FormPage() {
     console.log("Save form as draft");
   }
 
+  // Reset toàn bộ form về trạng thái ban đầu sau khi nộp thành công.
+  function resetForm() {
+    setProvince("");
+    setWard("");
+    setAgency("");
+    setWards([]);
+    setUserDetail(undefined);
+    setApplicantType("self");
+    setApplicant({
+      fullName: "",
+      birthday: "",
+      gender: "",
+      nationalId: "",
+      phone: "",
+      email: "",
+    });
+    setProcedureData({ procedure: "", caseValue: "ho", householdType: "new" });
+    setResidenceData({ address: "", content: "", dueTime: "" });
+    setNotifyMethod("portal");
+    setMembers([]);
+    setAttachmentFiles([]);
+    setErrorFields([]);
+    setResetKey((k) => k + 1); // remount -> reset state nội bộ các section
+  }
+
   async function handleSubmit(agreed: boolean) {
     if (submitting) return;
 
@@ -213,6 +240,7 @@ export default function FormPage() {
       await submitResidenceForm(payload);
 
       setToast({ title: "Thành công", message: "Nộp hồ sơ thành công." });
+      resetForm();
     } catch (e) {
       const msg =
         (e as { message?: string })?.message ??
@@ -250,7 +278,10 @@ export default function FormPage() {
       )}
       <Header userName={user.name} />
 
-      <main className="w-full max-w-[1400px] mx-auto px-10 py-10 pb-12 flex flex-col gap-4 flex-1">
+      <main
+        key={resetKey}
+        className="w-full max-w-[1400px] mx-auto px-10 py-10 pb-12 flex flex-col gap-4 flex-1"
+      >
         <AgencySection
           provinces={provinces}
           province={province}

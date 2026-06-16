@@ -13,11 +13,7 @@ type Props = {
   wardLabel: string;
   ownerName: string; // chủ hộ = người đề nghị (từ ApplicantInfo)
   ownerNationalId: string;
-  onChange?: (v: {
-    address: string;
-    content: string;
-    dueTime: string;
-  }) => void;
+  onChange?: (v: { address: string; content: string; dueTime: string }) => void;
   errors?: Set<RequiredFieldKey>;
 };
 
@@ -37,7 +33,9 @@ export default function ResidenceRequestSection({
   const [until, setUntil] = useState("");
 
   // Nội dung đề nghị tự gợi ý theo địa chỉ, tới khi người dùng tự sửa.
-  const autoContent = address ? `Đăng ký tạm trú 01 nhân khẩu ${address}` : "";
+  const autoContent = address
+    ? `Đăng ký tạm trú 01 nhân khẩu tại ${address}`
+    : "";
   const contentValue = contentEdited ? content : autoContent;
 
   // Báo state lên parent để gom payload nộp hồ sơ.
@@ -110,10 +108,7 @@ export default function ResidenceRequestSection({
       </div>
 
       <div className="grid grid-cols-2 gap-x-8 gap-y-5">
-        <div
-          className="flex flex-col gap-2 mt-5"
-          id={fieldAnchorId("dueTime")}
-        >
+        <div className="flex flex-col gap-2 mt-5" id={fieldAnchorId("dueTime")}>
           <FieldLabel required>Thời hạn tạm trú đề nghị đến ngày</FieldLabel>
           <Input
             value={until}

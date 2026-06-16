@@ -4,6 +4,7 @@ import { tokenManager } from "../../../lib/token-manager";
 import {
   loginWithAccount,
   loginWithVneid,
+  loginWithGoogleTokens,
   type LoginResponse,
 } from "../services/auth-api";
 import type {
@@ -66,10 +67,32 @@ export function useAuth() {
     [dispatch, onSuccess, onError],
   );
 
+  // Hoàn tất đăng nhập Google (chỉ dành cho công dân — theo ràng buộc backend).
+  const completeGoogleLogin = useCallback(
+    async (accessToken: string, refreshToken: string): Promise<boolean> => {
+      dispatch({ type: "LOGIN_START" });
+      try {
+        onSuccess(await loginWithGoogleTokens(accessToken, refreshToken), "citizen");
+        return true;
+      } catch (err) {
+        onError(err);
+        return false;
+      }
+    },
+    [dispatch, onSuccess, onError],
+  );
+
   const clearError = useCallback(
     () => dispatch({ type: "CLEAR_ERROR" }),
     [dispatch],
   );
 
-  return { ...state, signInWithAccount, signInWithVneid, signOut, clearError };
+  return {
+    ...state,
+    signInWithAccount,
+    signInWithVneid,
+    completeGoogleLogin,
+    signOut,
+    clearError,
+  };
 }

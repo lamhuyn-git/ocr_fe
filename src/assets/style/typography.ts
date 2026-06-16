@@ -11,7 +11,14 @@ export const fontSize = {
   // Figma: EB Garamond SemiBold 32, line-height Auto, letter-spacing -2%.
   "heading-serif": [
     "2rem",
-    { lineHeight: "normal", letterSpacing: "-0.02em", fontWeight: "600" },
+    { lineHeight: "normal", letterSpacing: "2%", fontWeight: "500" },
+  ],
+
+  // Serif subheading (EB Garamond) — tiêu đề phụ, vd "Tinh thần dự án".
+  // Figma: EB Garamond Medium 20, line-height 145%, letter-spacing 0%.
+  "subheading-serif": [
+    "1.45rem",
+    { lineHeight: "1.45", letterSpacing: "0", fontWeight: "500" },
   ],
 
   // ===== Heading =====

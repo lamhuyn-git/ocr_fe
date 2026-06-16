@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./store/auth-store";
 import { useAuthContext } from "./store/auth-store";
 import LoginPage from "./pages/login";
+import AuthCallbackPage from "./pages/auth-callback";
+import IntroductionPage from "./pages/introduction";
 import DashboardPage from "./pages/dashboard";
 import RegistrationPage from "./pages/registration";
 import FormPage from "./pages/form";
@@ -24,6 +26,18 @@ function AppRoutes() {
 
   return (
     <Routes>
+      {/* Đích redirect OAuth Google — public, tự xử lý token rồi điều hướng. */}
+      <Route path="/auth/callback" element={<AuthCallbackPage />} />
+      <Route
+        path="/introduction"
+        element={
+          isAuthenticated ? (
+            <Navigate to={homeRoute} replace />
+          ) : (
+            <IntroductionPage />
+          )
+        }
+      />
       <Route
         path="/login"
         element={

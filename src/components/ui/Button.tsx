@@ -29,8 +29,8 @@ const sizeStyles: Record<ButtonSize, { wrapper: string; icon: number }> = {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-primary-light " +
-    "hover:bg-primary-hover " +
+    "bg-main text-primary-light " +
+    "hover:bg-main-hover " +
     "disabled:bg-main-light disabled:text-text-disabled",
 
   secondary:

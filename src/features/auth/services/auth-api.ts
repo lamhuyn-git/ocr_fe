@@ -18,8 +18,6 @@ function toTokens(data: any): AuthTokens {
   };
 }
 
-// Lấy user hiện tại bằng access token. Dùng chung cho cả login lẫn restore.
-// Phải truyền token thủ công vì lúc gọi, token chưa được lưu vào tokenManager.
 async function fetchCurrentUser(accessToken: string): Promise<AuthUser> {
   const data = await apiFetch<any>("/api/v1/auth/me", {
     method: "GET",
@@ -65,7 +63,44 @@ export async function loginWithAccount(
   return { tokens, user };
 }
 
-// Đổi refresh token lấy access token mới.
+export function loginWithGG() {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL ?? "";
+  window.location.href = `${baseUrl}/api/v1/auth/google/login`;
+}
+
+export async function loginWithGoogleTokens(
+  accessToken: string,
+  refreshToken: string,
+): Promise<LoginResponse> {
+  const user = await fetchCurrentUser(accessToken);
+  return { tokens: { accessToken, refreshToken }, user };
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  await apiFetch<{ message: string }>("/api/v1/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function verifyOtp(email: string, otp: string): Promise<void> {
+  await apiFetch<{ message: string }>("/api/v1/auth/verify-otp", {
+    method: "POST",
+    body: JSON.stringify({ email, otp }),
+  });
+}
+
+export async function resetPassword(
+  email: string,
+  otp: string,
+  newPassword: string,
+): Promise<void> {
+  await apiFetch<{ message: string }>("/api/v1/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify({ email, otp, new_password: newPassword }),
+  });
+}
+
 export async function refreshAccessToken(
   refreshToken: string,
 ): Promise<AuthTokens> {
@@ -77,8 +112,6 @@ export async function refreshAccessToken(
   );
 }
 
-// Khôi phục phiên khi reload: refresh -> lấy lại user.
-// Ném lỗi nếu refresh token hết hạn/không hợp lệ; caller tự dọn token.
 export async function restoreSession(
   refreshToken: string,
 ): Promise<LoginResponse> {
@@ -87,7 +120,6 @@ export async function restoreSession(
   return { tokens, user };
 }
 
-// Logout: cần access token (auth) + gửi refresh token trong body để BE thu hồi.
 export async function revokeSession(refreshToken: string): Promise<void> {
   await apiFetch<void>("/api/v1/auth/logout", {
     method: "POST",

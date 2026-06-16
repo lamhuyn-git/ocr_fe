@@ -1,14 +1,14 @@
 import { useState } from "react";
-import LoginProgressBar from "./login-progress-bar";
 import Input from "../../../components/ui/Input";
 import Button from "../../../components/ui/Button";
+import ForgotPasswordModal from "./forgot-password-modal";
 import { useAuth } from "../hooks/use-auth";
 
 type LoginFormAccountProps = {
-  onBack: () => void;
+  stepLabel: string;
 };
 
-export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
+export default function LoginFormAccount({ stepLabel }: LoginFormAccountProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{
@@ -16,6 +16,8 @@ export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
     password?: string;
   }>({});
   const [apiErrorOnFields, setApiErrorOnFields] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [resetDone, setResetDone] = useState(false);
 
   const { signInWithAccount, isLoading, error, clearError } = useAuth();
 
@@ -39,40 +41,35 @@ export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
     if (apiError) setApiErrorOnFields(true);
   }
 
-  function handleRequestNewPassword() {
-    console.log("Request new password button clicked");
-  }
-
   return (
-    <div className="relative flex flex-col gap-10 items-center">
-      <Button
-        type="button"
-        variant="tertiary"
-        size="14px"
-        text="Quay lại"
-        showIcon
-        icon="chevron-left"
-        onClick={onBack}
-        style={{ position: "absolute", top: "-14%", left: "-2%" }}
-      />
-
+    <div className="mx-auto w-full max-w-[40%] flex flex-col gap-8">
       {/* Header */}
-      <div className="flex flex-col gap-2 items-center w-full">
-        <p className="text-h1 font-bold text-text-main text-center leading-none">
-          Đăng nhập
+      <div className="flex flex-col gap-3 w-full">
+        <h1 className="text-heading-serif text-[1.8rem] font-serif uppercase text-text-main">
+          Đăng nhập — Xác minh thông tin
+        </h1>
+        <p className="text-para-m-regular font-normal text-text-secondary leading-[1.6]">
+          {stepLabel} Trường hợp không đăng nhập được, vui lòng{" "}
+          <a href="#" className="font-semibold underline text-text-main">
+            xem hướng dẫn
+          </a>
+          .
         </p>
-        <div className="flex flex-col gap-4 items-center w-full">
-          <p className="text-para-m-regular font-normal text-text-main text-center">
-            Bước 2: Đăng nhập bằng Tài khoản cấp bởi Cổng dịch vụ công quốc gia.
-          </p>
-          <LoginProgressBar step={2} />
-        </div>
       </div>
 
       {/* API error banner */}
       {error && (
         <div className="w-full rounded-lg bg-red-50 border border-red-200 px-4 py-3">
           <p className="text-para-m-regular text-red-600">{error}</p>
+        </div>
+      )}
+
+      {/* Đặt lại mật khẩu thành công → mời đăng nhập lại bằng mật khẩu mới */}
+      {resetDone && (
+        <div className="w-full rounded-lg bg-secondary-light border border-secondary-light-active px-4 py-3">
+          <p className="text-para-m-regular text-secondary-dark">
+            Đặt lại mật khẩu thành công. Vui lòng đăng nhập bằng mật khẩu mới.
+          </p>
         </div>
       )}
 
@@ -120,40 +117,37 @@ export default function LoginFormAccount({ onBack }: LoginFormAccountProps) {
           disabled={isLoading}
         />
 
-        {/* <Button
+        <Button
           type="button"
           variant="secondary"
           size="14px"
+          showIcon
+          icon="reload"
           text="Yêu cầu cấp lại mật khẩu"
           className="w-full justify-center"
-          onClick={handleRequestNewPassword}
+          onClick={() => {
+            if (!email.trim()) {
+              setFieldErrors((p) => ({ ...p, email: "Vui lòng nhập email." }));
+              return;
+            }
+            setResetDone(false);
+            setShowForgot(true);
+          }}
           disabled={isLoading}
-        /> */}
-
-        <div className="flex mt-2 gap-1 items-start justify-between w-full text-para-m-regular text-text-main whitespace-nowrap">
-          <a
-            href="#"
-            className="text-para-m-regular color-grey-hover underline "
-          >
-            Xem hướng dẫn đăng nhập
-          </a>
-          <Button
-            type="button"
-            variant="tertiary"
-            size="12px"
-            text="Quên mật khẩu?"
-            onClick={handleRequestNewPassword}
-            className="text-para-m-semibold "
-            style={{
-              padding: 0,
-              fontSize: "0.72rem",
-              fontWeight: 600,
-              letterSpacing: "0.02em",
-              color: "#242424",
-            }}
-          />
-        </div>
+        />
       </form>
+
+      {showForgot && (
+        <ForgotPasswordModal
+          email={email}
+          onClose={() => setShowForgot(false)}
+          onSuccess={() => {
+            setShowForgot(false);
+            setResetDone(true);
+            setPassword("");
+          }}
+        />
+      )}
     </div>
   );
 }

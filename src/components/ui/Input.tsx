@@ -117,10 +117,10 @@ export default function Input({
               type="button"
               disabled={disabled}
               onClick={() => setShowPassword((v) => !v)}
-              className="shrink-0 transition-colors disabled:cursor-not-allowed"
+              className="shrink-0 flex items-center transition-colors disabled:cursor-not-allowed"
               aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
             >
-              <Icon name={showPassword ? "eye-hide" : "eye-show"} size={20} />
+              <Icon name={showPassword ? "eye-hide" : "eye-show"} size={16} />
             </button>
           )}
 

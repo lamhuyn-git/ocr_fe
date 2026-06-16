@@ -40,6 +40,14 @@ export async function apiFetch<T>(
       message = detail;
     } else if (Array.isArray(detail) && detail[0]?.msg) {
       message = detail[0].msg;
+    } else if (typeof body?.error === "string") {
+      // slowapi (rate limit) trả {"error": "..."} thay vì {"detail": ...}.
+      message = body.error;
+    }
+
+    // Quá nhiều lần thử — thông báo thân thiện thay cho text kỹ thuật.
+    if (res.status === 429) {
+      message = "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau ít phút.";
     }
 
     throw {

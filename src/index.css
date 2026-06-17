@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tô stroke icon KPI bằng gradient (ghi đè thuộc tính stroke trong SVG).
+   Dùng CSS thường vì Tailwind không sinh được arbitrary value chứa url(#id). */
+.kpi-icon-gradient path {
+  stroke: url(#kpi-icon-gradient);
+  stroke-width: 2;
+}
+
 @layer base {
   *,
   *::before,

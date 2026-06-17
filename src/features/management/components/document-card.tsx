@@ -3,13 +3,17 @@ import { STATUS_CONFIG } from "../types";
 
 type DocumentCardProps = {
   doc: DocumentRecord;
+  onClick?: () => void;
 };
 
-export default function DocumentCard({ doc }: DocumentCardProps) {
+export default function DocumentCard({ doc, onClick }: DocumentCardProps) {
   const status = STATUS_CONFIG[doc.status];
 
   return (
-    <div className="flex flex-col bg-grey rounded shadow-[0_0_4px_rgba(182,192,187,0.25)] cursor-pointer hover:shadow-md transition-shadow">
+    <div
+      onClick={onClick}
+      className="flex flex-col bg-grey rounded shadow-[0_0_4px_rgba(182,192,187,0.25)] cursor-pointer hover:shadow-md transition-shadow"
+    >
       {/* Header: ID + Status */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-[#f0f0f0]">
         <div className="flex items-center gap-2">

@@ -10,6 +10,7 @@ type SelectProps = {
   disabled?: boolean;
   loading?: boolean;
   className?: string;
+  triggerClassName?: string; // ghi đè style của nút trigger (vd: padding)
   hasError?: boolean; // viền đỏ, không message
   error?: string; // viền đỏ + message dưới
 };
@@ -22,6 +23,7 @@ export default function Select({
   disabled,
   loading,
   className,
+  triggerClassName,
   hasError: hasErrorProp = false,
   error,
 }: SelectProps) {
@@ -73,7 +75,7 @@ export default function Select({
             : hasError
               ? "bg-white border-red"
               : "bg-white border-input-border hover:border-secondary"
-        }`}
+        } ${triggerClassName ?? ""}`}
       >
         <span
           className={`text-para-m-regular truncate ${

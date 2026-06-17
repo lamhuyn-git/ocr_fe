@@ -28,7 +28,7 @@ export const fontSize = {
   ],
   h2: [
     "1.125rem",
-    { lineHeight: "normal", letterSpacing: "2%", fontWeight: "700" },
+    { lineHeight: "normal", letterSpacing: "2%", fontWeight: "500" },
   ],
   h3: ["0.72rem", { lineHeight: "1", letterSpacing: "0", fontWeight: "700" }],
   h4: [

@@ -142,9 +142,15 @@ function NavSectionBlock({
   );
 }
 
-export default function Sidebar({ user }: { user: AuthUser | null }) {
+export default function Sidebar({
+  user,
+  defaultCollapsed = false,
+}: {
+  user: AuthUser | null;
+  defaultCollapsed?: boolean;
+}) {
   const { signOut } = useAuthContext();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const topSections = SIDEBAR_SECTIONS.slice(0, -1);
 
   // Gắn handler cho item logout (signOut gọi API /auth/logout rồi dọn phiên).
@@ -163,7 +169,7 @@ export default function Sidebar({ user }: { user: AuthUser | null }) {
   return (
     <aside
       className={`flex flex-col h-full shrink-0 border-r border-dashed border-[#bbb] transition-[width] duration-200 ${
-        collapsed ? "w-[72px]" : "w-[15%]"
+        collapsed ? "w-[72px]" : "w-[13%]"
       }`}
     >
       {/* Header */}
@@ -185,7 +191,7 @@ export default function Sidebar({ user }: { user: AuthUser | null }) {
             <span className="group-hover:opacity-0">
               <Logo size="Medium" showText={false} />
             </span>
-            <span className="absolute inset-0 hidden items-center justify-center group-hover:flex">
+            <span className="absolute inset-0 hidden items-center justify-center group-hover:flex p-0">
               <Icon
                 name="expanse"
                 size={22}
@@ -203,7 +209,7 @@ export default function Sidebar({ user }: { user: AuthUser | null }) {
               showIcon
               icon="collapse"
               onClick={handleResizeSidebar}
-              className="px-0 py-0"
+              className="!p-0"
             />
           </>
         )}

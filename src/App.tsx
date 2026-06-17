@@ -7,6 +7,7 @@ import IntroductionPage from "./pages/introduction";
 import DashboardPage from "./pages/dashboard";
 import RegistrationPage from "./pages/registration";
 import FormPage from "./pages/form";
+import FormDetailPage from "./pages/form-detail";
 import Loading from "./components/ui/Loading";
 
 function AppRoutes() {
@@ -64,6 +65,16 @@ function AppRoutes() {
         path="/form"
         element={
           isAuthenticated ? <FormPage /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/form-detail"
+        element={
+          isAuthenticated ? (
+            <FormDetailPage />
+          ) : (
+            <Navigate to="/login" replace />
+          )
         }
       />
       <Route path="*" element={<Navigate to={homeRoute} replace />} />

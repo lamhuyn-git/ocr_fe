@@ -1,16 +1,109 @@
-export default function DashboardContentHeader() {
+import { useEffect, useRef, useState } from "react";
+import Select from "../../../components/ui/Select";
+import type { SelectOption } from "../../residence-form/types";
+import {
+  fetchProvinces,
+  fetchWards,
+} from "../../residence-form/services/form-api";
+
+// Mặc định chọn sẵn địa bàn khi mở dashboard (khớp theo tên không dấu).
+const DEFAULT_PROVINCE_MATCH = "ho chi minh";
+const DEFAULT_WARD_MATCH = "sai gon";
+
+// Bỏ dấu tiếng Việt + thường hoá để so khớp tên không phụ thuộc dấu/hoa-thường.
+const noAccent = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
+
+type DashboardContentHeaderProps = {
+  province: string;
+  ward: string;
+  onProvinceChange: (value: string) => void;
+  onWardChange: (value: string) => void;
+};
+
+export default function DashboardContentHeader({
+  province,
+  ward,
+  onProvinceChange,
+  onWardChange,
+}: DashboardContentHeaderProps) {
+  const [provinces, setProvinces] = useState<SelectOption[]>([]);
+  const [wards, setWards] = useState<SelectOption[]>([]);
+  const [wardsLoading, setWardsLoading] = useState(false);
+
+  // Lưu id tỉnh mặc định đã chọn để chỉ auto-chọn phường mặc định cho tỉnh đó.
+  const defaultProvinceId = useRef<string | null>(null);
+  const wardDefaultApplied = useRef(false);
+
+  useEffect(() => {
+    fetchProvinces().then(setProvinces);
+  }, []);
+
+  // Auto-chọn tỉnh mặc định (HCM) 1 lần khi danh sách tỉnh đã tải và chưa chọn.
+  useEffect(() => {
+    if (province || provinces.length === 0 || defaultProvinceId.current) return;
+    const match = provinces.find((p) =>
+      noAccent(p.label).includes(DEFAULT_PROVINCE_MATCH),
+    );
+    if (match) {
+      defaultProvinceId.current = match.value;
+      onProvinceChange(match.value);
+    }
+  }, [provinces, province, onProvinceChange]);
+
+  // Auto-chọn phường mặc định (Sài Gòn) 1 lần, chỉ cho tỉnh mặc định ở trên.
+  useEffect(() => {
+    if (wardDefaultApplied.current || ward || wards.length === 0) return;
+    if (!defaultProvinceId.current || province !== defaultProvinceId.current)
+      return;
+    const match = wards.find((w) =>
+      noAccent(w.label).includes(DEFAULT_WARD_MATCH),
+    );
+    if (match) {
+      wardDefaultApplied.current = true;
+      onWardChange(match.value);
+    }
+  }, [wards, ward, province, onWardChange]);
+
+  // Tải danh sách phường mỗi khi tỉnh đổi. Cờ `stale` huỷ kết quả cũ nếu
+  // người dùng đổi tỉnh nhanh (tránh race: response tỉnh cũ về sau).
+  useEffect(() => {
+    if (!province) {
+      setWards([]);
+      return;
+    }
+    let stale = false;
+    setWardsLoading(true);
+    fetchWards(province)
+      .then((data) => {
+        if (!stale) setWards(data);
+      })
+      .finally(() => {
+        if (!stale) setWardsLoading(false);
+      });
+    return () => {
+      stale = true;
+    };
+  }, [province]);
+
   return (
     <div className="flex items-center justify-between shrink-0">
       {/* Left: title + badge + subtitle */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <h1 className="text-h2 text-text-main">Quản lý Cư trú</h1>
+          <h2 className="text-para-m-semibold text-[1.5rem]">Quản lý Cư trú</h2>
           <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-light text-para-s-semibold text-primary">
             59
           </span>
         </div>
         <p className="text-para-s-regular text-text-placeholder">
-          Xác nhận kết quả AI trước khi ra quyết định
+          Hệ thống trích xuất hỗ trợ phân tích, cán bộ kiểm duyệt và quyết định
+          cuối cùng
         </p>
       </div>
 
@@ -20,24 +113,32 @@ export default function DashboardContentHeader() {
           <span className="text-para-s-medium text-text-placeholder whitespace-nowrap">
             Tỉnh/Thành phố
           </span>
-          <button className="flex items-center justify-between gap-2 px-3 py-2 bg-white border border-input-border rounded-lg min-w-[160px] shadow-[0_0_4px_rgba(182,192,187,0.25)]">
-            <span className="text-para-s-medium text-text-main">Hà Nội</span>
-            <svg width="12" height="8" viewBox="0 0 12 8" fill="none" className="shrink-0">
-              <path d="M1 1l5 5 5-5" stroke="#707071" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </button>
+          <div className="w-[180px]">
+            <Select
+              value={province}
+              options={provinces}
+              placeholder="Chọn tỉnh/thành phố"
+              onChange={onProvinceChange}
+              triggerClassName="!p-2"
+            />
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="text-para-s-medium text-text-placeholder whitespace-nowrap">
             Phường/Xã
           </span>
-          <button className="flex items-center justify-between gap-2 px-3 py-2 bg-white border border-input-border rounded-lg min-w-[160px] shadow-[0_0_4px_rgba(182,192,187,0.25)]">
-            <span className="text-para-s-medium text-text-main">Long Bình</span>
-            <svg width="12" height="8" viewBox="0 0 12 8" fill="none" className="shrink-0">
-              <path d="M1 1l5 5 5-5" stroke="#707071" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </button>
+          <div className="w-[180px]">
+            <Select
+              value={ward}
+              options={wards}
+              placeholder="Chọn phường/xã"
+              onChange={onWardChange}
+              disabled={!province}
+              loading={wardsLoading}
+              triggerClassName="!p-2"
+            />
+          </div>
         </div>
       </div>
     </div>

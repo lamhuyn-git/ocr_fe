@@ -2,17 +2,13 @@ import { useState } from "react";
 import Input from "../../../components/ui/Input";
 import Button from "../../../components/ui/Button";
 import { useAuth } from "../hooks/use-auth";
-import { GoogleLogo } from "../../../components/icons/google-logo";
 
 type LoginFormVneidProps = {
   stepLabel: string;
   onGoogleLogin?: () => void;
 };
 
-export default function LoginFormVneid({
-  stepLabel,
-  onGoogleLogin,
-}: LoginFormVneidProps) {
+export default function LoginFormVneid({ stepLabel }: LoginFormVneidProps) {
   const [nationalId, setNationalId] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{

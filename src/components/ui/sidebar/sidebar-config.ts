@@ -31,7 +31,6 @@ export const SIDEBAR_SECTIONS: NavSection[] = [
         children: [
           {
             label: "Tạm trú",
-            active: true,
           },
         ],
       },

@@ -1,19 +1,6 @@
 import { apiFetch } from "../../../lib/http-client";
 import { fetchProcedures } from "../../residence-form/services/form-api";
-import type { DocumentRecord, DocumentStatus } from "../types";
-
-// Trạng thái backend (FormStatus) -> trạng thái hiển thị trên card (5 nhóm).
-const STATUS_MAP: Record<string, DocumentStatus> = {
-  draft: "pending",
-  submitted: "pending",
-  processing: "processing",
-  extracted: "processing",
-  under_review: "reviewing",
-  returned: "reviewing",
-  approved: "completed",
-  rejected: "overdue",
-  failed: "overdue",
-};
+import type { DocumentRecord } from "../types";
 
 type FormResponse = {
   id: string;
@@ -82,7 +69,7 @@ export async function getListForm(
 
   return forms.map((f) => ({
     id: f.id,
-    status: STATUS_MAP[f.status] ?? "pending",
+    status: f.status, // giữ status gốc backend để FormStatus tự ánh xạ nhãn/màu
     submittedDate: formatDate(f.created_at),
     handler: f.submit_by ?? "—",
     formType: (f.form_type_id && typeNameById.get(f.form_type_id)) || "—",

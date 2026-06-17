@@ -1,8 +1,6 @@
 import { useState } from "react";
 import Icon from "../../../components/icons";
-import CollapsibleCard from "./collapsible-card";
-import ExtractionStatusBadge from "./extraction-status-badge";
-import ExtractionVerifyDetail from "./extraction-verify-detail";
+import ExtractionFieldCard from "./extraction-field-card";
 import {
   EXTRACTION_STATUS_CONFIG,
   type ExtractionSection,
@@ -13,25 +11,28 @@ import {
 type ExtractionPanelProps = {
   procedure: ProcedureInfo;
   sections: ExtractionSection[];
+  activeId: string; // section đang chọn (đồng bộ panel trái)
   checkedFields: number;
   totalFields: number;
 };
 
-// Panel phải: "Kết quả trích xuất" — chú thích + thủ tục + tiến độ + accordion.
 export default function ExtractionPanel({
   procedure,
   sections,
+  activeId,
   checkedFields,
   totalFields,
 }: ExtractionPanelProps) {
   const [procedureOpen, setProcedureOpen] = useState(true);
   const progress = totalFields > 0 ? (checkedFields / totalFields) * 100 : 0;
+  // Chỉ hiện field của section đang chọn bên trái.
+  const activeFields =
+    sections.find((s) => s.id === activeId)?.fields ?? [];
 
   return (
-    <aside className="flex flex-col gap-3 w-[380px] shrink-0 h-full overflow-y-auto px-4 py-4 border-l border-input-border">
-      {/* Tiêu đề + chú thích trạng thái */}
+    <aside className="flex flex-col gap-3 w-[30%] shrink-0 h-full overflow-y-auto px-4 py-4 border-l border-dashed border-black-light-active">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <h3 className="text-para-m-semibold text-text-main">
+        <h3 className="text-text-main text-[0.85rem] font-semibold">
           Kết quả trích xuất:
         </h3>
         <div className="flex items-center gap-2">
@@ -95,29 +96,16 @@ export default function ExtractionPanel({
         </span>
       </div>
 
-      {/* Các mục accordion kết quả */}
-      {sections.map((section) => (
-        <CollapsibleCard
-          key={section.id}
-          title={section.title}
-          defaultOpen
-          rightSlot={
-            section.status ? (
-              <ExtractionStatusBadge status={section.status} />
-            ) : undefined
-          }
-        >
-          {section.verify ? (
-            <ExtractionVerifyDetail detail={section.verify} />
-          ) : (
-            <div className="flex flex-col gap-3">
-              {section.fields?.map((f) => (
-                <FieldRow key={f.label} label={f.label} value={f.value} stacked />
-              ))}
-            </div>
-          )}
-        </CollapsibleCard>
-      ))}
+      {/* Field của section đang chọn (so khớp 1-1 với field online bên trái) */}
+      {activeFields.length > 0 ? (
+        activeFields.map((field) => (
+          <ExtractionFieldCard key={field.id} field={field} />
+        ))
+      ) : (
+        <p className="text-para-s-regular text-text-placeholder py-4 text-center">
+          Không có trường trích xuất cho mục này.
+        </p>
+      )}
     </aside>
   );
 }

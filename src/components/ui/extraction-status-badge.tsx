@@ -1,6 +1,9 @@
-import { EXTRACTION_STATUS_CONFIG, type ExtractionStatus } from "../types";
+import {
+  EXTRACTION_STATUS_CONFIG,
+  type ExtractionStatus,
+} from "../../features/form-detail/types";
 
-// Badge trạng thái kiểm tra: chấm màu + nhãn (Hợp lệ / Không hợp lệ / Cần xem).
+// Badge kiểu chấm tròn cho trạng thái kiểm tra từng mục trích xuất.
 export default function ExtractionStatusBadge({
   status,
 }: {

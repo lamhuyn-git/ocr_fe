@@ -11,9 +11,9 @@ export default function DocumentToolbar({
   onTabChange,
 }: DocumentToolbarProps) {
   return (
-    <div className="flex flex-col shrink-0">
+    <div className="flex justify-between shrink-0 border-b border-dashed border-black-light-active px-6">
       {/* Tabs */}
-      <div className="flex items-center gap-6 border-b border-input-border px-1">
+      <div className="flex items-center gap-6 ">
         <TabButton
           label="Tờ khai CT01"
           active={activeTab === "ct01"}
@@ -30,7 +30,11 @@ export default function DocumentToolbar({
       <div className="flex items-center gap-1 py-2">
         <button className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-grey transition-colors">
           <span className="text-para-s-medium text-text-main">14</span>
-          <Icon name="chevron-down" size={12} className="text-text-placeholder" />
+          <Icon
+            name="chevron-down"
+            size={12}
+            className="text-text-placeholder"
+          />
         </button>
         <Divider />
         <ToolText label="T" />

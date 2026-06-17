@@ -93,14 +93,10 @@ export default function DashboardContentHeader({
 
   return (
     <div className="flex items-center justify-between shrink-0">
-      {/* Left: title + badge + subtitle */}
       <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <h2 className="text-para-m-semibold text-[1.5rem]">Quản lý Cư trú</h2>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-light text-para-s-semibold text-primary">
-            59
-          </span>
-        </div>
+        <h2 className="text-[1.25rem] font-semibold text-text-main">
+          QUẢN LÝ CƯ TRÚ
+        </h2>
         <p className="text-para-s-regular text-text-placeholder">
           Hệ thống trích xuất hỗ trợ phân tích, cán bộ kiểm duyệt và quyết định
           cuối cùng

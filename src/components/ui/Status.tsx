@@ -58,7 +58,7 @@ type FormStatusProps = {
   className?: string;
 };
 
-export default function FormStatus({ status, className }: FormStatusProps) {
+export default function Status({ status, className }: FormStatusProps) {
   // Status lạ -> pill xám + hiển thị nguyên giá trị (tránh vỡ UI).
   const { label, className: colorClass } = FORM_STATUS_CONFIG[
     status as FormStatusKey

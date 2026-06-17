@@ -1,19 +1,43 @@
-export type DocumentStatus = "pending" | "processing" | "reviewing" | "completed" | "overdue";
+export type DocumentStatus =
+  | "pending"
+  | "processing"
+  | "reviewing"
+  | "completed"
+  | "overdue";
 
 export type DocumentRecord = {
   id: string;
-  status: DocumentStatus;
+  status: string;
   submittedDate: string;
   handler: string;
   formType: string;
   extractedSections: string[];
 };
 
-export const STATUS_CONFIG: Record<DocumentStatus, { label: string; bg: string; text: string }> = {
-  pending: { label: "Chưa xử lý", bg: "bg-yellow-light", text: "text-yellow-hover" },
-  processing: { label: "Đang xử lý", bg: "bg-[#e8f4fd]", text: "text-[#2196f3]" },
-  reviewing: { label: "Đang kiểm tra", bg: "bg-[#fff3e0]", text: "text-[#f57c00]" },
-  completed: { label: "Hoàn thành", bg: "bg-[#e8f5e9]", text: "text-[#388e3c]" },
+export const STATUS_CONFIG: Record<
+  DocumentStatus,
+  { label: string; bg: string; text: string }
+> = {
+  pending: {
+    label: "Chưa xử lý",
+    bg: "bg-yellow-light",
+    text: "text-yellow-hover",
+  },
+  processing: {
+    label: "Đang xử lý",
+    bg: "bg-[#e8f4fd]",
+    text: "text-[#2196f3]",
+  },
+  reviewing: {
+    label: "Đang kiểm tra",
+    bg: "bg-[#fff3e0]",
+    text: "text-[#f57c00]",
+  },
+  completed: {
+    label: "Hoàn thành",
+    bg: "bg-[#e8f5e9]",
+    text: "text-[#388e3c]",
+  },
   overdue: { label: "Quá hạn", bg: "bg-red-light", text: "text-red" },
 };
 
@@ -57,10 +81,7 @@ export const MOCK_DOCUMENTS: DocumentRecord[] = [
     submittedDate: "09/05/2025",
     handler: "Phạm Thị D",
     formType: "Mẫu CT03",
-    extractedSections: [
-      "Thông tin người đề nghị",
-      "Thông tin địa chỉ cư trú",
-    ],
+    extractedSections: ["Thông tin người đề nghị", "Thông tin địa chỉ cư trú"],
   },
   {
     id: "0000005",
@@ -101,9 +122,6 @@ export const MOCK_DOCUMENTS: DocumentRecord[] = [
     submittedDate: "07/05/2025",
     handler: "Phạm Thị D",
     formType: "Mẫu CT03",
-    extractedSections: [
-      "Thông tin người đề nghị",
-      "Thông tin địa chỉ cư trú",
-    ],
+    extractedSections: ["Thông tin người đề nghị", "Thông tin địa chỉ cư trú"],
   },
 ];

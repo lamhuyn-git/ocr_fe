@@ -11,6 +11,23 @@
   stroke-width: 2;
 }
 
+/* Hiệu ứng float lên + fade khi đổi trang. `backwards` để sau khi chạy xong
+   không giữ transform (tránh tạo containing-block ảnh hưởng phần tử fixed). */
+@keyframes page-float-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: page-float-up 0.35s ease-out backwards;
+}
+
 @layer base {
   *,
   *::before,

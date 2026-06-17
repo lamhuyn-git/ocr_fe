@@ -44,21 +44,24 @@ export type OnlineInfoSection = {
   rows: LabelValue[];
 };
 
-// Chi tiết kiểm tra dạng đối chiếu (vd: Cơ quan thực hiện).
-export type VerifyDetail = {
-  currentValue: string;
-  latestResult: string;
-  checkResult: string;
+// 1 field trong panel phải ("Kết quả trích xuất"): giá trị hệ thống trích xuất
+// + giá trị BE đề xuất (suggest) + kết quả kiểm tra. Ứng 1-1 với field online.
+export type ExtractionField = {
+  id: string;
+  label: string;
+  value: string; // giá trị hệ thống trích xuất (hiển thị chính)
+  suggestValue?: string; // "Gần nhất" - BE đề xuất (hiện khi có)
+  status: ExtractionStatus;
+  checkResult: string; // vd: "Khớp với CSDL"
   historyCount: number;
 };
 
-// Mục accordion ở panel phải ("Kết quả trích xuất").
+// Nhóm extraction theo section (id khớp onlineSections) -> panel phải chỉ hiện
+// field của section đang chọn bên trái.
 export type ExtractionSection = {
   id: string;
   title: string;
-  status?: ExtractionStatus;
-  verify?: VerifyDetail; // card đối chiếu (có nút hành động)
-  fields?: LabelValue[]; // card danh sách trường
+  fields: ExtractionField[];
 };
 
 // Thành viên trong hộ cùng thay đổi (mục 11 của tờ khai).

@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { AuthProvider } from "./store/auth-store";
 import { useAuthContext } from "./store/auth-store";
 import LoginPage from "./pages/login";
@@ -12,6 +18,7 @@ import Loading from "./components/ui/Loading";
 
 function AppRoutes() {
   const { isAuthenticated, isInitializing, accountType } = useAuthContext();
+  const location = useLocation();
 
   // Đang khôi phục phiên (reload) → chưa điều hướng, hiện Loading để tránh
   // nháy về /login trước khi refresh xong.
@@ -26,7 +33,9 @@ function AppRoutes() {
     : "/login";
 
   return (
-    <Routes>
+    // key đổi theo route -> remount + chạy lại hiệu ứng float-up mỗi lần đổi trang.
+    <div key={location.pathname} className="page-enter">
+      <Routes location={location}>
       {/* Đích redirect OAuth Google — public, tự xử lý token rồi điều hướng. */}
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route
@@ -78,7 +87,8 @@ function AppRoutes() {
         }
       />
       <Route path="*" element={<Navigate to={homeRoute} replace />} />
-    </Routes>
+      </Routes>
+    </div>
   );
 }
 

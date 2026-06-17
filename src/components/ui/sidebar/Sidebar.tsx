@@ -40,9 +40,11 @@ function BranchIcon({
 function NavItemRow({
   item,
   collapsed,
+  activeChild,
 }: {
   item: NavItem;
   collapsed: boolean;
+  activeChild?: string;
 }) {
   return (
     <div className="flex flex-col gap-1">
@@ -89,30 +91,30 @@ function NavItemRow({
       {/* Sub-items (ẩn khi thu gọn) */}
       {!collapsed && item.children && item.expanded && (
         <div className="flex flex-col gap-2">
-          {item.children.map((child) => (
-            <button
-              key={child.label}
-              className={`flex items-center gap-2 w-full p-2 rounded-lg text-left transition-colors ${
-                child.active
-                  ? "bg-white shadow-[0_0_4px_rgba(182,192,187,0.25)]"
-                  : "hover:bg-grey-hover"
-              }`}
-            >
-              <BranchIcon
-                active={child.active}
-                className="shrink-0 ml-[0.5rem]"
-              />
-              <span
-                className={`text-para-s-medium mt-[4px] ${
-                  child.active
-                    ? "text-para-s-semibold color-black text-para-s-semibold"
-                    : "text-para-s-medium color-grey-dark-active leading-none"
+          {item.children.map((child) => {
+            const isActive = child.active || child.label === activeChild;
+            return (
+              <button
+                key={child.label}
+                className={`flex items-center gap-2 w-full p-2 rounded-lg text-left transition-colors ${
+                  isActive
+                    ? "bg-white shadow-[0_0_4px_rgba(182,192,187,0.25)]"
+                    : "hover:bg-grey-hover"
                 }`}
               >
-                {child.label}
-              </span>
-            </button>
-          ))}
+                <BranchIcon active={isActive} className="shrink-0 ml-[0.5rem]" />
+                <span
+                  className={`text-para-s-medium mt-[4px] ${
+                    isActive
+                      ? "text-para-s-semibold color-black text-para-s-semibold"
+                      : "text-para-s-medium color-grey-dark-active leading-none"
+                  }`}
+                >
+                  {child.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -122,9 +124,11 @@ function NavItemRow({
 function NavSectionBlock({
   section,
   collapsed,
+  activeChild,
 }: {
   section: NavSection;
   collapsed: boolean;
+  activeChild?: string;
 }) {
   return (
     <div className="flex flex-col gap-2 px-4">
@@ -135,7 +139,12 @@ function NavSectionBlock({
       )}
       <div className="flex flex-col gap-2">
         {section.items.map((item) => (
-          <NavItemRow key={item.label} item={item} collapsed={collapsed} />
+          <NavItemRow
+            key={item.label}
+            item={item}
+            collapsed={collapsed}
+            activeChild={activeChild}
+          />
         ))}
       </div>
     </div>
@@ -145,9 +154,12 @@ function NavSectionBlock({
 export default function Sidebar({
   user,
   defaultCollapsed = false,
+  activeChild,
 }: {
   user: AuthUser | null;
   defaultCollapsed?: boolean;
+  // Nhãn item con đang active (vd "Tạm trú" khi ở trang chi tiết hồ sơ).
+  activeChild?: string;
 }) {
   const { signOut } = useAuthContext();
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
@@ -223,6 +235,7 @@ export default function Sidebar({
               key={section.title}
               section={section}
               collapsed={collapsed}
+              activeChild={activeChild}
             />
           ))}
         </div>

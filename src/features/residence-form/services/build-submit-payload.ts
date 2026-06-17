@@ -10,12 +10,17 @@ export type EvidencePayload = {
 };
 
 export type FormSpecPayload = {
-  form_id: string;
   case: string | null;
   type: string | null;
+  submit_type: string | null;
   location_register: string | null;
   registered_user_id: string | null;
-  register_content: unknown | null;
+  registered_user_name: string | null;
+  registered_user_birth: string | null;
+  registered_user_gender: string | null;
+  registered_user_phone: string | null;
+  registered_user_mail: string | null;
+  register_content: string | null;
 };
 
 export type ResidenceSubmitPayload = {
@@ -108,34 +113,28 @@ export function validateSubmit(input: SubmitInput): RequiredFieldKey[] {
 export function buildSubmitPayload(input: SubmitInput): ResidenceSubmitPayload {
   const isSelf = input.applicantType === "self";
 
-  // form_id chung cho form_spec & evidences (1 hồ sơ = 1 form_id).
-  const formId = crypto.randomUUID();
-
-  // Người được đăng ký cư trú: self -> chính user; proxy -> chưa xác định.
-  const registeredUserId = isSelf ? (input.userDetail?.userId ?? null) : null;
-
-  // register_content = Nội dung đề nghị (người dùng nhập).
-  const registerContent = input.content || null;
-
-  // evidences đã upload -> gắn form_id của hồ sơ này.
-  const evidences = (input.evidences ?? []).map((e) => ({
-    form_id: formId,
-    path_url: e.path_url,
-  }));
+  // Người được đăng ký cư trú: self -> dữ liệu dân cư; proxy -> người tự khai.
+  const person = isSelf ? input.userDetail : input.applicant;
 
   return {
     org_id: input.orgId,
     form_type_id: input.formTypeId,
     submit_by: input.submitBy,
     notification_on: input.notifyMethod,
-    evidences,
+    evidences: (input.evidences ?? []).map((e) => ({ path_url: e.path_url })),
     form_spec: {
-      form_id: formId,
       case: input.caseValue || null,
       type: input.householdType || null,
+      submit_type: input.applicantType || null,
       location_register: input.address || null,
-      registered_user_id: registeredUserId,
-      register_content: registerContent,
+      // registered_user_id chỉ có khi self (lấy từ tài khoản dân cư).
+      registered_user_id: isSelf ? (input.userDetail?.userId ?? null) : null,
+      registered_user_name: person?.fullName || null,
+      registered_user_birth: person?.birthday || null,
+      registered_user_gender: person?.gender || null,
+      registered_user_phone: person?.phone || null,
+      registered_user_mail: person?.email || null,
+      register_content: input.content || null,
     },
   };
 }

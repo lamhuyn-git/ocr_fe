@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Icon from "../../../components/icons";
 import DocumentToolbar from "./document-toolbar";
-import Ct01Declaration from "./ct01-declaration";
 import type { FormDetail } from "../types";
 import Status from "../../../components/ui/Status";
 
@@ -12,6 +11,11 @@ export default function DocumentCenterPanel({
   detail: FormDetail;
 }) {
   const [tab, setTab] = useState<"ct01" | "attachments">("ct01");
+
+  // Ảnh tờ khai CT01 vs ảnh giấy tờ đính kèm khác.
+  console.info(detail);
+  const ct01Images = detail.evidences.filter((e) => e.isCt01);
+  const attachmentImages = detail.evidences.filter((e) => !e.isCt01);
 
   return (
     <main className="flex flex-col flex-1 min-w-0 h-full overflow-hidden border-l border-dashed border-black-light-active">
@@ -65,22 +69,51 @@ export default function DocumentCenterPanel({
 
       {/* Nội dung cuộn */}
       <div className="flex-1 overflow-y-auto px-6 py-4 bg-grey">
-        {tab === "ct01" ? (
-          <div className="rounded-lg shadow-[0_0_8px_rgba(182,192,187,0.3)]">
-            <Ct01Declaration data={detail.declaration} />
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center gap-2 py-20 text-text-placeholder">
-            <Icon
-              name="paperclip"
-              size={32}
-              className="text-text-placeholder"
-            />
-            <span className="text-para-s-regular">Chưa có hồ sơ đính kèm</span>
-          </div>
-        )}
+        {(() => {
+          // Mỗi tab hiển thị ảnh tương ứng: CT01 -> ảnh tờ khai, còn lại -> đính kèm.
+          const images = tab === "ct01" ? ct01Images : attachmentImages;
+          const alt = tab === "ct01" ? "Ảnh tờ khai CT01" : "Giấy tờ đính kèm";
+          if (images.length === 0) {
+            return (
+              <div className="flex flex-col items-center justify-center gap-2 py-20 text-text-placeholder">
+                <Icon name="paperclip" size={32} />
+                <span className="text-para-s-regular">
+                  {tab === "ct01"
+                    ? "Chưa có ảnh tờ khai CT01"
+                    : "Chưa có hồ sơ đính kèm"}
+                </span>
+              </div>
+            );
+          }
+          return (
+            <div className="flex flex-col gap-4">
+              {images.map((img) => (
+                <EvidencePreview key={img.id} url={img.url} alt={alt} />
+              ))}
+            </div>
+          );
+        })()}
       </div>
     </main>
+  );
+}
+
+// Ảnh minh chứng: bấm để mở ảnh gốc ở tab mới.
+function EvidencePreview({ url, alt }: { url: string; alt: string }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className="block overflow-hidden rounded-lg bg-white shadow-[0_0_8px_rgba(182,192,187,0.3)]"
+    >
+      <img
+        src={url}
+        alt={alt}
+        loading="lazy"
+        className="w-full h-auto object-contain"
+      />
+    </a>
   );
 }
 

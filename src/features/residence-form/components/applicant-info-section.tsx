@@ -61,6 +61,21 @@ export default function ApplicantInfoSection({
   const set = (patch: Partial<ApplicantForm>) =>
     onApplicantChange({ ...applicant, ...patch });
 
+  // Tự nộp: đồng bộ dữ liệu dân cư vào `applicant` để payload có nguồn duy nhất
+  // từ section này (gender lưu theo value, không phải label).
+  useEffect(() => {
+    if (!isSelf || !userDetail) return;
+    onApplicantChange({
+      fullName: userDetail.fullName ?? "",
+      birthday: userDetail.birthday ?? "",
+      gender: selfGender,
+      nationalId: userDetail.nationalId ?? "",
+      phone: userDetail.phone ?? "",
+      email: userDetail.email ?? "",
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSelf, userDetail, selfGender]);
+
   return (
     <Card title="Thông tin người đề nghị đăng ký tạm trú">
       <div className="flex flex-col gap-3 mb-6">

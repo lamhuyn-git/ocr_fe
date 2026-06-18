@@ -4,6 +4,11 @@ import type {
   CitizenDetail,
   Member,
 } from "../types";
+import { GENDERS } from "../data/mock-form-data";
+
+// Map giới tính từ value option ("nam") -> label gửi BE ("Nam"/"Nữ"/"Khác").
+const genderLabel = (value?: string): string | null =>
+  GENDERS.find((g) => g.value === value)?.label ?? null;
 
 export type EvidencePayload = {
   path_url: string;
@@ -14,7 +19,7 @@ export type FormSpecPayload = {
   type: string | null;
   submit_type: string | null;
   location_register: string | null;
-  registered_user_id: string | null;
+  registered_user_cccd: string | null;
   registered_user_name: string | null;
   registered_user_birth: string | null;
   registered_user_gender: string | null;
@@ -49,6 +54,7 @@ export type SubmitInput = {
   applicant: ApplicantForm;
   members: Member[];
   evidences?: EvidencePayload[];
+  attachmentCount: number; // số ảnh giấy tờ đã chọn (để validate bắt buộc)
 };
 
 export type RequiredFieldKey =
@@ -61,7 +67,8 @@ export type RequiredFieldKey =
   | "applicantNationalId"
   | "address"
   | "content"
-  | "dueTime";
+  | "dueTime"
+  | "attachments";
 
 export const REQUIRED_FIELD_LABELS: Record<RequiredFieldKey, string> = {
   province: "Tỉnh/Thành phố",
@@ -74,6 +81,7 @@ export const REQUIRED_FIELD_LABELS: Record<RequiredFieldKey, string> = {
   address: "Địa chỉ",
   content: "Nội dung đề nghị",
   dueTime: "Thời hạn tạm trú đề nghị",
+  attachments: "Ảnh giấy tờ đính kèm",
 };
 
 // id DOM của ô bọc field (để scrollIntoView tới field lỗi đầu tiên).
@@ -94,9 +102,9 @@ export function validateSubmit(input: SubmitInput): RequiredFieldKey[] {
   need(input.wardId, "ward");
   need(input.formTypeId, "procedure");
 
-  // Thông tin người đề nghị (self -> dữ liệu dân cư, proxy -> tự khai).
-  const person =
-    input.applicantType === "self" ? input.userDetail : input.applicant;
+  // Thông tin người đề nghị luôn lấy từ section "Thông tin người đề nghị"
+  // (self đã được đồng bộ dữ liệu dân cư vào `applicant`).
+  const person = input.applicant;
   need(person?.fullName, "applicantName");
   need(person?.birthday, "applicantBirthday");
   need(person?.gender, "applicantGender");
@@ -106,15 +114,16 @@ export function validateSubmit(input: SubmitInput): RequiredFieldKey[] {
   need(input.content, "content");
   need(input.dueTime, "dueTime");
 
+  // Ảnh giấy tờ đính kèm là bắt buộc (ít nhất 1 ảnh).
+  if (input.attachmentCount <= 0) missing.push("attachments");
+
   return missing;
 }
 
 // Gom toàn bộ state form thành payload theo đúng cấu trúc BE (FormCreate).
 export function buildSubmitPayload(input: SubmitInput): ResidenceSubmitPayload {
-  const isSelf = input.applicantType === "self";
-
-  // Người được đăng ký cư trú: self -> dữ liệu dân cư; proxy -> người tự khai.
-  const person = isSelf ? input.userDetail : input.applicant;
+  // Người được đăng ký cư trú luôn lấy từ section "Thông tin người đề nghị".
+  const person = input.applicant;
 
   return {
     org_id: input.orgId,
@@ -127,11 +136,11 @@ export function buildSubmitPayload(input: SubmitInput): ResidenceSubmitPayload {
       type: input.householdType || null,
       submit_type: input.applicantType || null,
       location_register: input.address || null,
-      // registered_user_id chỉ có khi self (lấy từ tài khoản dân cư).
-      registered_user_id: isSelf ? (input.userDetail?.userId ?? null) : null,
+      // registered_user_cccd lấy từ Số định danh cá nhân (CCCD) của người đề nghị.
+      registered_user_cccd: person?.nationalId || null,
       registered_user_name: person?.fullName || null,
       registered_user_birth: person?.birthday || null,
-      registered_user_gender: person?.gender || null,
+      registered_user_gender: genderLabel(person?.gender),
       registered_user_phone: person?.phone || null,
       registered_user_mail: person?.email || null,
       register_content: input.content || null,

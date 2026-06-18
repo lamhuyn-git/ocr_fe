@@ -103,7 +103,9 @@ export default function ExtractionPanel({
         ))
       ) : (
         <p className="text-para-s-regular text-text-placeholder py-4 text-center">
-          Không có trường trích xuất cho mục này.
+          {activeId === "members"
+            ? "Không có thành viên nào cùng thay đổi."
+            : "Không có trường trích xuất cho mục này."}
         </p>
       )}
     </aside>

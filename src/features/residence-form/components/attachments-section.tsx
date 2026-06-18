@@ -15,8 +15,10 @@ const ATTACHMENT_GROUPS = [
 // State `docs` đặt ở đây (không ở table) để file đã chọn không mất khi đóng group.
 export default function AttachmentsSection({
   onChange,
+  error,
 }: {
   onChange?: (items: UploadItem[]) => void;
+  error?: boolean;
 }) {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [docs, setDocs] = useState<AttachmentDoc[]>(() =>
@@ -39,6 +41,12 @@ export default function AttachmentsSection({
         (*) Vui lòng đính kèm các tệp hình ảnh về các loại giấy tờ sau để giúp
         cơ quan chức năng xác minh và giải quyết nhanh hồ sơ của ông/bà
       </p>
+
+      {error && (
+        <p className="text-para-s-regular text-red-500 mb-4">
+          Vui lòng đính kèm ít nhất một ảnh giấy tờ.
+        </p>
+      )}
 
       <div className="flex flex-col">
         {ATTACHMENT_GROUPS.map((label) => {

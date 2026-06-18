@@ -73,19 +73,31 @@ export default function FormPage() {
   });
   const [notifyMethod, setNotifyMethod] = useState("portal");
   const [members, setMembers] = useState<Member[]>([]);
-  // Ảnh đính kèm (chưa upload, kèm kind) + cờ đang nộp (upload S3 -> submit).
   const [attachmentFiles, setAttachmentFiles] = useState<UploadItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  // Đổi key -> remount toàn bộ form để reset cả state nội bộ của các section con.
   const [resetKey, setResetKey] = useState(0);
 
-  // Các trường bắt buộc còn thiếu (highlight inline) + nội dung toast lỗi.
+  //  toast lỗi cho các trường bắt buộc còn thiếu
   const [errorFields, setErrorFields] = useState<RequiredFieldKey[]>([]);
   const [toast, setToast] = useState<{ title: string; message: string } | null>(
     null,
   );
 
-  // onChange ổn định (useCallback) để effect con không lặp vô hạn.
+  // Đổi sang "khai hộ" -> xoá dữ liệu đã đồng bộ từ tài khoản để nhập mới.
+  const handleApplicantTypeChange = useCallback((t: ApplicantType) => {
+    setApplicantType(t);
+    if (t === "proxy") {
+      setApplicant({
+        fullName: "",
+        birthday: "",
+        gender: "",
+        nationalId: "",
+        phone: "",
+        email: "",
+      });
+    }
+  }, []);
+
   const handleProcedureChange = useCallback(setProcedureData, []);
   const handleResidenceChange = useCallback(setResidenceData, []);
   const handleNotifyChange = useCallback(
@@ -99,14 +111,13 @@ export default function FormPage() {
     fetchProvinces().then(setProvinces);
   }, []);
 
-  // Tự ẩn toast lỗi sau 5s.
+  // Toast lỗi tắt sau 10s.
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(() => setToast(null), 5000);
+    const t = setTimeout(() => setToast(null), 10000);
     return () => clearTimeout(t);
   }, [toast]);
 
-  // Gom state hiện tại thành input cho validate/build payload.
   const buildInput = (): SubmitInput => ({
     submitBy: user?.id ?? "",
     notifyMethod,
@@ -123,6 +134,7 @@ export default function FormPage() {
     userDetail,
     applicant,
     members,
+    attachmentCount: attachmentFiles.length,
   });
 
   useEffect(() => {
@@ -141,6 +153,7 @@ export default function FormPage() {
     applicant,
     userDetail,
     applicantType,
+    attachmentFiles,
     errorFields.length,
   ]);
 
@@ -237,6 +250,8 @@ export default function FormPage() {
 
       // Gom payload (FormCreate) kèm evidences rồi nộp hồ sơ.
       const payload = buildSubmitPayload({ ...input, evidences });
+      // Log payload trước khi gọi API để dễ kiểm tra dữ liệu gửi lên.
+      console.log("Submit /api/v1/form payload:", payload);
       await submitResidenceForm(payload);
 
       setToast({ title: "Thành công", message: "Nộp hồ sơ thành công." });
@@ -305,7 +320,7 @@ export default function FormPage() {
             <ApplicantInfoSection
               userDetail={userDetail}
               applicantType={applicantType}
-              onApplicantTypeChange={setApplicantType}
+              onApplicantTypeChange={handleApplicantTypeChange}
               applicant={applicant}
               onApplicantChange={setApplicant}
               errors={errorSet}
@@ -322,7 +337,12 @@ export default function FormPage() {
 
             <HouseholdMembersSection onChange={handleMembersChange} />
 
-            <AttachmentsSection onChange={handleAttachmentsChange} />
+            <div id={fieldAnchorId("attachments")}>
+              <AttachmentsSection
+                onChange={handleAttachmentsChange}
+                error={errorSet.has("attachments")}
+              />
+            </div>
           </>
         )}
 

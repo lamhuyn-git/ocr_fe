@@ -90,6 +90,13 @@ export type FormDeclaration = {
   members: HouseholdMember[];
 };
 
+// Ảnh minh chứng đã nộp (tờ khai CT01 + giấy tờ đính kèm).
+export type EvidenceImage = {
+  id: string;
+  url: string;
+  isCt01: boolean; // true: ảnh tờ khai CT01; false: giấy tờ đính kèm khác
+};
+
 // Tổng hợp dữ liệu của trang chi tiết hồ sơ.
 export type FormDetail = {
   code: string;
@@ -101,4 +108,5 @@ export type FormDetail = {
   checkedFields: number;
   totalFields: number;
   declaration: FormDeclaration;
+  evidences: EvidenceImage[];
 };

@@ -159,4 +159,6 @@ export const MOCK_FORM_DETAIL: FormDetail = {
       "Đăng ký tạm trú 01 nhân khẩu tại số 125 đường Nguyễn Duy Trinh, phường An Phú, thành phố Thủ Đức, TP.HCM.",
     members: [],
   },
+
+  evidences: [],
 };

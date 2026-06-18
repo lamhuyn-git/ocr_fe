@@ -45,7 +45,10 @@ export default function OnlineInfoPanel({
           <div className="flex flex-col gap-2">
             <InfoRow label="Hình thức:" value={procedure.hinhThuc} />
             <InfoRow label="Trường hợp:" value={procedure.truongHop} />
-            <InfoRow label="Người khai:" value={procedure.truongHop} />
+            <InfoRow
+              label="Người khai:"
+              value={procedure.nguoiKhai ? procedure.nguoiKhai : ""}
+            />
           </div>
         )}
       </div>

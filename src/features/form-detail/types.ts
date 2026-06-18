@@ -110,4 +110,5 @@ export type FormDetail = {
   totalFields: number;
   declaration: FormDeclaration;
   evidences: EvidenceImage[];
+  reviewNote: string | null; // ghi chú duyệt (hiện khi chưa có kết quả trích xuất)
 };

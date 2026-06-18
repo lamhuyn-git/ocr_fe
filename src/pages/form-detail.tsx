@@ -88,6 +88,7 @@ export default function FormDetailPage() {
             activeId={activeSectionId}
             selectedFieldId={selectedField?.id}
             onSelectField={setSelectedField}
+            reviewNote={detail.reviewNote}
           />
         </div>
 

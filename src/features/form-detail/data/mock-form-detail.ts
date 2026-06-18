@@ -161,4 +161,5 @@ export const MOCK_FORM_DETAIL: FormDetail = {
   },
 
   evidences: [],
+  reviewNote: null,
 };

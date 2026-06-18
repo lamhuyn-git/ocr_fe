@@ -11,6 +11,7 @@ type ExtractionPanelProps = {
   activeId: string; // section đang chọn (đồng bộ panel trái)
   selectedFieldId?: string; // field đang chọn (để vẽ box trên ảnh)
   onSelectField?: (field: ExtractionField) => void;
+  reviewNote?: string | null; // hiện khi chưa có kết quả trích xuất
 };
 
 // Panel phải: kết quả trích xuất theo từng field của section đang chọn bên trái.
@@ -19,8 +20,11 @@ export default function ExtractionPanel({
   activeId,
   selectedFieldId,
   onSelectField,
+  reviewNote,
 }: ExtractionPanelProps) {
   const activeFields = sections.find((s) => s.id === activeId)?.fields ?? [];
+  // Chưa có field trích xuất nào trên toàn hồ sơ -> hiển thị ghi chú duyệt.
+  const hasAnyField = sections.some((s) => s.fields.length > 0);
 
   return (
     <aside className="bg-white flex flex-col gap-3 w-[30%] shrink-0 h-full overflow-y-auto shadow-[0_0_8px_rgba(182,192,187,0.3)] rounded-[0.5rem]">
@@ -47,8 +51,17 @@ export default function ExtractionPanel({
         </div>
       </div>
 
-      {/* Field của section đang chọn (so khớp 1-1 với field online bên trái) */}
-      {activeFields.length > 0 ? (
+      {/* Chưa có kết quả trích xuất -> hiển thị ghi chú duyệt. */}
+      {!hasAnyField ? (
+        <div className="mx-4 rounded-xl border border-input-border bg-white p-3">
+          <p className="text-para-s-regular text-text-placeholder mb-1">
+            Ghi chú:
+          </p>
+          <p className="text-para-s-medium text-text-main">
+            {reviewNote || "Chưa có kết quả trích xuất cho hồ sơ này."}
+          </p>
+        </div>
+      ) : activeFields.length > 0 ? (
         activeFields.map((field) => (
           <div key={field.id} className="flex flex-col px-4">
             <ExtractionFieldCard

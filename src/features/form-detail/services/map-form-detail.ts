@@ -79,7 +79,8 @@ const SECTION_ORDER = ["agency", "applicant", "request", "members"];
 // 1 validated_result -> 1 field hiển thị ở panel phải.
 const toField = (r: ValidatedResult): ExtractionField => {
   const cfg = FIELD_CONFIG[r.label];
-  const value = r.final_value ?? r.raw_value ?? "";
+  // OCR đọc rỗng ("") -> fallback sang giá trị gợi ý để vẫn hiển thị.
+  const value = r.final_value || r.raw_value || r.suggested_value || "";
   const suggest = r.suggested_value ?? "";
   return {
     id: r.id,
@@ -92,6 +93,13 @@ const toField = (r: ValidatedResult): ExtractionField => {
     historyCount: 1,
     position: r.position,
   };
+};
+
+// Ưu tiên sắp xếp field theo trạng thái: invalid > cần xem > hợp lệ.
+const STATUS_PRIORITY: Record<ExtractionStatus, number> = {
+  invalid: 0,
+  review: 1,
+  valid: 2,
 };
 
 const buildExtractionSections = (
@@ -107,7 +115,9 @@ const buildExtractionSections = (
   return SECTION_ORDER.map((id) => ({
     id,
     title: SECTION_TITLES[id],
-    fields: bySection.get(id) ?? [],
+    fields: (bySection.get(id) ?? []).sort(
+      (a, b) => STATUS_PRIORITY[a.status] - STATUS_PRIORITY[b.status],
+    ),
   }));
 };
 
@@ -201,6 +211,7 @@ export function mapFormDetail(res: FormDetailResponse): FormDetail {
     onlineSections: buildOnlineSections(c, agencyName),
     extractionSections: buildExtractionSections(results),
     declaration: buildDeclaration(c, agencyName),
+    reviewNote: res.review_note ?? null,
     // warped_img -> tab tờ khai CT01; residence_proof -> tab đính kèm.
     evidences: [
       res.evidences?.warped_img && {

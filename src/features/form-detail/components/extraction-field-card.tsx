@@ -4,13 +4,23 @@ import type { ExtractionField } from "../types";
 
 // Card 1 field ở panel phải: giá trị trích xuất + suggest (BE đề xuất)
 // + kết quả kiểm tra + lịch sử + 3 nút hành động.
+// Bấm card -> chọn field để vẽ box vị trí lên ảnh CT01.
 export default function ExtractionFieldCard({
   field,
+  selected,
+  onSelect,
 }: {
   field: ExtractionField;
+  selected?: boolean;
+  onSelect?: (field: ExtractionField) => void;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-input-border bg-white p-3">
+    <div
+      onClick={() => onSelect?.(field)}
+      className={`flex flex-col gap-3 rounded-xl border bg-white p-3 cursor-pointer transition-colors ${
+        selected ? "border-black" : "border-input-border"
+      }`}
+    >
       {/* Label + badge trạng thái */}
       <div className="flex items-center justify-between gap-2">
         <span className="text-para-s-regular text-text-placeholder">

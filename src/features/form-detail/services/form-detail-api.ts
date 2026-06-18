@@ -39,7 +39,7 @@ export type FormEvidences = {
 
 export type ValidatedResult = {
   id: string;
-  position: unknown | null;
+  position: number[] | null; // bbox [x, y, width, height] trên ảnh đã nắn
   label: string; // mã field BE (vd "gioi_tinh", "kinh_gui")
   raw_value: string | null; // giá trị OCR trích xuất
   suggested_value: string | null; // giá trị BE đề xuất (đối chiếu CSDL)

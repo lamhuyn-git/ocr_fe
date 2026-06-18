@@ -54,6 +54,7 @@ export type ExtractionField = {
   status: ExtractionStatus;
   checkResult: string; // vd: "Khớp với CSDL"
   historyCount: number;
+  position?: number[] | null; // bbox [x, y, width, height] trên ảnh CT01 (để vẽ box)
 };
 
 // Nhóm extraction theo section (id khớp onlineSections) -> panel phải chỉ hiện

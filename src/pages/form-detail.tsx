@@ -5,9 +5,13 @@ import DashboardTopMenu from "../features/management/components/dashboard-top-me
 import OnlineInfoPanel from "../features/form-detail/components/online-info-panel";
 import DocumentCenterPanel from "../features/form-detail/components/document-center-panel";
 import ExtractionPanel from "../features/form-detail/components/extraction-panel";
+import FormDetailFooter from "../features/form-detail/components/form-detail-footer";
 import { fetchFormDetail } from "../features/form-detail/services/form-detail-api";
 import { mapFormDetail } from "../features/form-detail/services/map-form-detail";
-import type { FormDetail } from "../features/form-detail/types";
+import type {
+  ExtractionField,
+  FormDetail,
+} from "../features/form-detail/types";
 import Loading from "../components/ui/Loading";
 import { useAuthContext } from "../store/auth-store";
 
@@ -21,6 +25,16 @@ export default function FormDetailPage() {
   const [loading, setLoading] = useState(true);
   // Section đang chọn — dùng chung cho panel trái (điều hướng) & phải (kết quả).
   const [activeSectionId, setActiveSectionId] = useState("");
+  // Field đang chọn ở panel phải -> vẽ box vị trí trên ảnh CT01.
+  const [selectedField, setSelectedField] = useState<ExtractionField | null>(
+    null,
+  );
+
+  // Đổi section thì bỏ chọn field (field cũ không thuộc section mới).
+  const handleSectionChange = (id: string) => {
+    setActiveSectionId(id);
+    setSelectedField(null);
+  };
 
   useEffect(() => {
     if (!formId) {
@@ -66,17 +80,21 @@ export default function FormDetailPage() {
             procedure={detail.procedure}
             sections={detail.onlineSections}
             activeId={activeSectionId}
-            onActiveChange={setActiveSectionId}
+            onActiveChange={handleSectionChange}
           />
-          <DocumentCenterPanel detail={detail} />
+          <DocumentCenterPanel detail={detail} highlight={selectedField} />
           <ExtractionPanel
-            procedure={detail.procedure}
             sections={detail.extractionSections}
             activeId={activeSectionId}
-            checkedFields={detail.checkedFields}
-            totalFields={detail.totalFields}
+            selectedFieldId={selectedField?.id}
+            onSelectField={setSelectedField}
           />
         </div>
+
+        <FormDetailFooter
+          checkedFields={detail.checkedFields}
+          totalFields={detail.totalFields}
+        />
       </div>
     </div>
   );

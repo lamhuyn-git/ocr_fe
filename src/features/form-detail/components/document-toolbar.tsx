@@ -11,7 +11,7 @@ export default function DocumentToolbar({
   onTabChange,
 }: DocumentToolbarProps) {
   return (
-    <div className="flex justify-between shrink-0 border-b border-dashed border-black-light-active px-6">
+    <div className="flex justify-between shrink-0 border-b border-black-light px-6">
       {/* Tabs */}
       <div className="flex items-center gap-6 ">
         <TabButton

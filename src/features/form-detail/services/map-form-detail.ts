@@ -90,6 +90,7 @@ const toField = (r: ValidatedResult): ExtractionField => {
     status: FIELD_STATUS[r.status] ?? "review",
     checkResult: r.note ?? "",
     historyCount: 1,
+    position: r.position,
   };
 };
 

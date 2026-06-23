@@ -82,7 +82,7 @@ export default function ApplicantInfoSection({
         {APPLICANT_TYPES.map((t) => (
           <label
             key={t.value}
-            className="flex items-start gap-2 cursor-pointer text-para-s-medium text-text-main"
+            className="flex items-start gap-2 cursor-pointer text-para-m-medium text-text-main"
           >
             <input
               type="radio"
@@ -97,7 +97,10 @@ export default function ApplicantInfoSection({
       </div>
 
       <div className="grid grid-cols-4 gap-x-8 gap-y-5">
-        <div className="flex flex-col gap-2" id={fieldAnchorId("applicantName")}>
+        <div
+          className="flex flex-col gap-2"
+          id={fieldAnchorId("applicantName")}
+        >
           <FieldLabel required>Họ và tên</FieldLabel>
           <Input
             value={

@@ -74,7 +74,7 @@ export default function ProcedureSection({
           {HOUSEHOLD_TYPES.map((t) => (
             <label
               key={t.value}
-              className="flex items-center gap-2 cursor-pointer text-para-s-medium text-text-main"
+              className="flex items-center gap-2 cursor-pointer text-para-m-medium text-text-main"
             >
               <input
                 type="radio"

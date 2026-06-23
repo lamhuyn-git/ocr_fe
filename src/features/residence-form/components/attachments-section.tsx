@@ -37,13 +37,13 @@ export default function AttachmentsSection({
 
   return (
     <Card title="Thông tin đề nghị đăng ký tạm trú">
-      <p className="text-para-s-regular text-text-placeholder mb-4">
+      <p className="text-para-m-regular text-text-placeholder mb-4">
         (*) Vui lòng đính kèm các tệp hình ảnh về các loại giấy tờ sau để giúp
         cơ quan chức năng xác minh và giải quyết nhanh hồ sơ của ông/bà
       </p>
 
       {error && (
-        <p className="text-para-s-regular text-red-500 mb-4">
+        <p className="text-para-m-regular text-red-500 mb-4">
           Vui lòng đính kèm ít nhất một ảnh giấy tờ.
         </p>
       )}
@@ -57,7 +57,7 @@ export default function AttachmentsSection({
                 type="button"
                 onClick={() => setOpenGroup(open ? null : label)}
                 aria-expanded={open}
-                className="flex w-full items-center justify-between gap-4 py-4 text-left text-para-s-medium text-text-main"
+                className="flex w-full items-center justify-between gap-4 py-4 text-left text-para-m-medium text-text-main"
               >
                 {label}
                 <Icon

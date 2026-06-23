@@ -12,7 +12,7 @@ export default function Card({
 }) {
   return (
     <section
-      className={`rounded-2xl p-[2px] ${
+      className={`rounded-2xl p-[0.125rem] ${
         active ? "bg-main border border-primary" : "bg-main-light"
       }`}
     >
@@ -21,7 +21,7 @@ export default function Card({
           active ? "text-white" : "text-text-secondary"
         }`}
       >
-        <span className="text-para-s-semibold uppercase tracking-[0.02em]">
+        <span className="text-para-m-semibold uppercase tracking-[0.02em]">
           {title}
         </span>
       </div>

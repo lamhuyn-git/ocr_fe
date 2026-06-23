@@ -60,7 +60,7 @@ export default function LoginPage() {
   if (isAuthenticated && user) {
     return (
       <LoginLayout>
-        <div className="mx-auto w-full max-w-[420px] flex flex-col gap-6 items-center">
+        <div className="mx-auto w-full max-w-[26.25rem] flex flex-col gap-6 items-center">
           <p className="text-h1 font-bold text-text-main text-center leading-none">
             Đăng nhập thành công
           </p>

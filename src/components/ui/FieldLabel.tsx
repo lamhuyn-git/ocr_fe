@@ -8,7 +8,7 @@ export default function FieldLabel({
   required?: boolean;
 }) {
   return (
-    <span className="text-para-s-semibold text-text-main">
+    <span className="text-para-m-semibold text-text-main">
       {children}
       {required && " (*)"}
     </span>

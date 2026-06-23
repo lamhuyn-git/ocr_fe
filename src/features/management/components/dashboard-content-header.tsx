@@ -24,6 +24,7 @@ type DashboardContentHeaderProps = {
   ward: string;
   onProvinceChange: (value: string) => void;
   onWardChange: (value: string) => void;
+  locationLocked?: boolean; // khoá bộ lọc tỉnh/phường (vd: cán bộ cấp phường)
 };
 
 export default function DashboardContentHeader({
@@ -31,6 +32,7 @@ export default function DashboardContentHeader({
   ward,
   onProvinceChange,
   onWardChange,
+  locationLocked = false,
 }: DashboardContentHeaderProps) {
   const [provinces, setProvinces] = useState<SelectOption[]>([]);
   const [wards, setWards] = useState<SelectOption[]>([]);
@@ -56,8 +58,10 @@ export default function DashboardContentHeader({
     }
   }, [provinces, province, onProvinceChange]);
 
-  // Auto-chọn phường mặc định (Sài Gòn) 1 lần, chỉ cho tỉnh mặc định ở trên.
+  // Auto-chọn phường mặc định (Sài Gòn) chỉ khi bị khoá địa bàn (ward_admin).
+  // super_admin tự chọn → hiện placeholder "Chọn phường tại đây".
   useEffect(() => {
+    if (!locationLocked) return;
     if (wardDefaultApplied.current || ward || wards.length === 0) return;
     if (!defaultProvinceId.current || province !== defaultProvinceId.current)
       return;
@@ -68,7 +72,7 @@ export default function DashboardContentHeader({
       wardDefaultApplied.current = true;
       onWardChange(match.value);
     }
-  }, [wards, ward, province, onWardChange]);
+  }, [locationLocked, wards, ward, province, onWardChange]);
 
   // Tải danh sách phường mỗi khi tỉnh đổi. Cờ `stale` huỷ kết quả cũ nếu
   // người dùng đổi tỉnh nhanh (tránh race: response tỉnh cũ về sau).
@@ -94,10 +98,8 @@ export default function DashboardContentHeader({
   return (
     <div className="flex items-center justify-between shrink-0">
       <div className="flex flex-col gap-1">
-        <h2 className="text-[1.25rem] font-semibold text-text-main">
-          QUẢN LÝ CƯ TRÚ
-        </h2>
-        <p className="text-para-s-regular text-text-placeholder">
+        <h2 className="text-h2 font-semibold text-text-main">QUẢN LÝ CƯ TRÚ</h2>
+        <p className="text-para-m-regular text-text-placeholder">
           Hệ thống trích xuất hỗ trợ phân tích, cán bộ kiểm duyệt và quyết định
           cuối cùng
         </p>
@@ -106,31 +108,32 @@ export default function DashboardContentHeader({
       {/* Right: filter dropdowns */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <span className="text-para-s-medium text-text-placeholder whitespace-nowrap">
+          <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
             Tỉnh/Thành phố
           </span>
-          <div className="w-[180px]">
+          <div className="w-[11.25rem]">
             <Select
               value={province}
               options={provinces}
               placeholder="Chọn tỉnh/thành phố"
               onChange={onProvinceChange}
+              disabled={locationLocked}
               triggerClassName="!p-2"
             />
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-para-s-medium text-text-placeholder whitespace-nowrap">
+          <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
             Phường/Xã
           </span>
-          <div className="w-[180px]">
+          <div className="w-[11.25rem]">
             <Select
               value={ward}
               options={wards}
-              placeholder="Chọn phường/xã"
+              placeholder="Chọn phường tại đây"
               onChange={onWardChange}
-              disabled={!province}
+              disabled={locationLocked || !province}
               loading={wardsLoading}
               triggerClassName="!p-2"
             />

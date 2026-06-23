@@ -22,11 +22,11 @@ export default function IntroductionPage() {
 
         {/* Khối thông tin nổi bật */}
         <div className="text-center rounded-xl border border-grey-hover px-5 py-4">
-          <p className="text-para-s-regular text-text-secondary">
+          <p className="text-para-m-regular text-text-secondary">
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry.
           </p>
-          <div className="mt-3 flex flex-row item-center justify-center gap-y-1.5 text-para-s-regular text-text-secondary">
+          <div className="mt-3 flex flex-row item-center justify-center gap-y-1.5 text-para-m-regular text-text-secondary">
             <a
               href="https://www.kaggle.com/datasets/lamhuynkg/ocr-vietnamese-data"
               className=" w-[25%] before:mr-2 before:content-['•']"
@@ -71,7 +71,7 @@ export default function IntroductionPage() {
           <img
             src={introVextract}
             alt="Minh hoạ dự án Vextract"
-            className="h-[120px] w-[200px] shrink-0 rounded-xl object-cover"
+            className="h-[7.5rem] w-[12.5rem] shrink-0 rounded-xl object-cover"
           />
         </div>
       </div>

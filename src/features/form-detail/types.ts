@@ -1,6 +1,3 @@
-// Kiểu dữ liệu cho trang "Chi tiết hồ sơ" (kết quả trích xuất).
-
-// Trạng thái kiểm tra của từng trường/mục trích xuất.
 export type ExtractionStatus = "valid" | "invalid" | "review";
 
 export const EXTRACTION_STATUS_CONFIG: Record<
@@ -63,6 +60,12 @@ export type ExtractionSection = {
   id: string;
   title: string;
   fields: ExtractionField[];
+};
+
+// Kết quả đánh dấu 1 field (valid / invalid) — lưu trước khi submit.
+export type SaveChangeFieldItem = {
+  id: string; // field.id (UUID)
+  status: "valid" | "invalid";
 };
 
 // Thành viên trong hộ cùng thay đổi (mục 11 của tờ khai).

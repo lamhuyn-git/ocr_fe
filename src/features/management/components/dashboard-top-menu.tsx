@@ -27,7 +27,7 @@ export default function DashboardTopMenu({
         });
 
   return (
-    <div className="flex items-center justify-between px-4 py-[14px] bg-white border-b border-dashed border-black-light-active shrink-0">
+    <div className="flex items-center justify-between px-4 py-[0.875rem] bg-white border-b border-dashed border-black-light-active shrink-0">
       {/* Item đầu "Trang chủ" (home) + các mục breadcrumb truyền vào. */}
       <Breadcrumb items={[{ label: "Trang chủ" }, ...breadcrumb]} />
 
@@ -35,7 +35,7 @@ export default function DashboardTopMenu({
       <div className="flex items-center gap-1">
         <button className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-grey transition-colors">
           <Icon name="calendar" size={16} className="text-text-placeholder" />
-          <span className="text-para-s-semibold text-text-placeholder">
+          <span className="text-para-m-semibold text-text-placeholder">
             Ngày {today}
           </span>
         </button>

@@ -14,18 +14,18 @@ type KpiItem = {
 };
 
 const KPI_ITEMS: KpiItem[] = [
-  { icon: "timer", key: "received", label: "Hồ sơ mới tiếp nhận" },
-  { icon: "document", key: "processing", label: "Hồ sơ đang xử lý" },
-  { icon: "reload", key: "backlog", label: "Hồ sơ còn tồn đọng" },
-  { icon: "overtime", key: "overdue", label: "Hồ sơ đã quá hạn" },
+  { icon: "timer", key: "received_today", label: "Hồ sơ mới tiếp nhận" },
+  { icon: "reload", key: "overdue", label: "Hồ sơ còn tồn đọng" },
+  { icon: "document", key: "failed", label: "Hồ sơ bị lỗi" },
+  { icon: "overtime", key: "saved", label: "Hồ sơ chưa hoàn thành" },
   { icon: "confirm", key: "completed", label: "Hồ sơ đã hoàn thành" },
 ];
 
 const EMPTY_COUNTS: KpiCounts = {
-  received: 0,
-  processing: 0,
-  backlog: 0,
+  received_today: 0,
   overdue: 0,
+  failed: 0,
+  saved: 0,
   completed: 0,
 };
 
@@ -79,7 +79,7 @@ export default function DashboardKpiBar({
       {KPI_ITEMS.map((item, idx) => (
         <div
           key={idx}
-          className="relative flex flex-1 items-center gap-4 px-2 py-2 rounded-[1rem] bg-gradient-to-b from-white/25 to-white/55 backdrop-blur-xl border-[0.5px] border-white/60 shadow-[0_8px_30px_rgba(19,53,36,0.08),inset_0_1px_0_rgba(255,255,255,0.7)]"
+          className="relative flex flex-1 items-center gap-4 px-2 py-2 rounded-[1rem] bg-gradient-to-b from-white/25 to-white/55 backdrop-blur-xl border-[0.03125rem] border-white/60 shadow-[0_8px_30px_rgba(19,53,36,0.08),inset_0_1px_0_rgba(255,255,255,0.7)]"
         >
           {/* Icon tile — frosted white với shadow nhẹ */}
           <div className="flex items-center justify-center px-3 py-3 rounded-2xl shrink-0 bg-white/80 border border-white/70 shadow-[0_2px_8px_rgba(19,53,36,0.08)]">

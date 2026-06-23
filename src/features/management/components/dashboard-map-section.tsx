@@ -51,7 +51,7 @@ export default function DashboardMapSection({
 
         {/* Tag góc trái */}
         <div className="absolute top-5 left-4 z-10">
-          <span className="inline-flex items-center px-4 py-2 rounded-full bg-main text-white text-para-s-semibold shadow-card">
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-main text-white text-para-m-semibold shadow-card">
             BẢN ĐỒ KHU VỰC
           </span>
         </div>
@@ -65,7 +65,7 @@ export default function DashboardMapSection({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Tìm khu vực..."
-                className="h-9 w-44 rounded-lg px-3 bg-white shadow-card text-para-s-regular text-text-main outline-none"
+                className="h-9 w-44 rounded-lg px-3 bg-white shadow-card text-para-m-regular text-text-main outline-none"
               />
             )}
             <button

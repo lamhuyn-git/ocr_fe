@@ -75,3 +75,32 @@ export async function fetchFormDetail(
     { auth: true },
   );
 }
+
+export type AdminSaveChangeFieldItem = {
+  id: string;
+  status: "valid" | "invalid";
+};
+
+export type SaveChangeRequest = {
+  form_id: string;
+  confirmed_by: string | null;
+  updated_fields: AdminSaveChangeFieldItem[] | null;
+};
+
+export async function saveFormChanges(req: SaveChangeRequest): Promise<void> {
+  await apiFetch("/api/v1/form/admin/save_change", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify(req),
+  });
+}
+
+// Kích hoạt lại trích xuất OCR cho 1 form (chạy bất đồng bộ phía BE).
+export async function reextractForm(
+  formId: string,
+): Promise<{ form_id_db: string; status: string }> {
+  return apiFetch(
+    `/api/v1/form/reextract?form_id=${encodeURIComponent(formId)}`,
+    { method: "POST", auth: true },
+  );
+}

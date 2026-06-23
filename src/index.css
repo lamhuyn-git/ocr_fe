@@ -37,6 +37,9 @@
 
   html {
     scroll-behavior: smooth;
+    /* Scale toàn bộ UI về 0.8x: 1rem = 12.8px. Mọi kích thước được khai báo
+       bằng rem (= designPx / 16) nên co lại đồng đều theo root font-size này. */
+    font-size: 80%;
   }
 
   body {

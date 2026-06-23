@@ -41,7 +41,7 @@ export default function DocumentsSection({
           <span className="text-para-m-semibold text-text-main">
             Danh sách hồ sơ đăng ký tạm trú
           </span>
-          <span className="text-para-s-regular text-text-placeholder">
+          <span className="text-para-m-regular text-text-placeholder">
             Rà soát thông tin trước khi tiến hành phê duyệt hồ sơ
           </span>
         </div>
@@ -49,7 +49,7 @@ export default function DocumentsSection({
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-2 px-3 py-2 border border-input-border rounded-lg hover:bg-grey transition-colors">
             <Icon name="filter" size={14} className="text-text-placeholder" />
-            <span className="text-para-s-medium text-text-main">Lọc hồ sơ</span>
+            <span className="text-para-m-medium text-text-main">Lọc hồ sơ</span>
           </button>
 
           <div className="flex items-center border border-input-border rounded-lg overflow-hidden">
@@ -66,11 +66,11 @@ export default function DocumentsSection({
       {/* Documents grid */}
       <div className="p-4 overflow-y-auto flex-1">
         {loading ? (
-          <div className="py-8 text-center text-para-s-regular text-text-placeholder">
+          <div className="py-8 text-center text--regular text-text-placeholder">
             Đang tải hồ sơ...
           </div>
         ) : documents.length === 0 ? (
-          <div className="py-8 text-center text-para-s-regular text-text-placeholder">
+          <div className="py-8 text-center text-para-m-regular text-text-placeholder">
             Chưa có hồ sơ nào
           </div>
         ) : (

@@ -71,7 +71,7 @@ export default function MembersSection({
         {/* Header */}
         <div className="flex flex-col rounded-lg bg-white shadow-card">
           <div
-            className={`grid ${COLS} items-center gap-3 rounded-t-lg bg-secondary-light px-4 py-3 mb-3 text-para-s-semibold text-text-main`}
+            className={`grid ${COLS} items-center gap-3 rounded-t-lg bg-secondary-light px-4 py-3 mb-3 text-para-m-semibold text-text-main`}
           >
             <span className="w-[3rem] text-center">STT</span>
             <span>Họ và tên (*)</span>
@@ -85,7 +85,7 @@ export default function MembersSection({
           <div className="flex flex-col gap-3 mb-3 px-4">
             {members.map((m, i) => (
               <div key={m.id} className={`grid ${COLS} gap-2 items-center`}>
-                <span className="w-[3rem] text-center text-para-s-medium text-text-main">
+                <span className="w-[3rem] text-center text-para-m-medium text-text-main">
                   {i + 1}
                 </span>
                 <Input

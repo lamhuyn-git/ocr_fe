@@ -29,7 +29,7 @@ export default function DocumentToolbar({
       {/* Toolbar định dạng (chỉ hiển thị, không xử lý) */}
       <div className="flex items-center gap-1 py-2">
         <button className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-grey transition-colors">
-          <span className="text-para-s-medium text-text-main">14</span>
+          <span className="text-para-m-medium text-text-main">14</span>
           <Icon
             name="chevron-down"
             size={12}

@@ -3,74 +3,74 @@ export const fontFamily = {
   serif: ['"EB Garamond"', "serif"],
 } as const;
 
-/**
- * Typography tokens generated from Figma typography styles
- */
 export const fontSize = {
-  // ===== Serif heading (EB Garamond) — tiêu đề trang =====
-  // Figma: EB Garamond SemiBold 32, line-height Auto, letter-spacing -2%.
   "heading-serif": [
     "2rem",
     { lineHeight: "normal", letterSpacing: "2%", fontWeight: "500" },
   ],
 
-  // Serif subheading (EB Garamond) — tiêu đề phụ, vd "Tinh thần dự án".
-  // Figma: EB Garamond Medium 20, line-height 145%, letter-spacing 0%.
   "subheading-serif": [
     "1.45rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "500" },
   ],
 
-  // ===== Heading =====
   h1: [
     "1.485rem",
     { lineHeight: "normal", letterSpacing: "0", fontWeight: "700" },
   ],
+
   h2: [
     "1.125rem",
     { lineHeight: "normal", letterSpacing: "2%", fontWeight: "500" },
   ],
+
   h3: ["0.72rem", { lineHeight: "1", letterSpacing: "0", fontWeight: "700" }],
+
   h4: [
     "0.72rem",
     { lineHeight: "normal", letterSpacing: "2%", fontWeight: "600" },
   ],
 
-  // ===== Paragraph S (12px) =====
   "para-s-bold": [
-    "12px",
+    "0.65rem",
     { lineHeight: "1.45", letterSpacing: "2%", fontWeight: "700" },
   ],
+
   "para-s-semibold": [
-    "12px",
+    "0.65rem",
     { lineHeight: "1.45", letterSpacing: "2%", fontWeight: "600" },
   ],
+
   "para-s-medium": [
-    "12px",
+    "0.65rem",
     { lineHeight: "1.45", letterSpacing: "2%", fontWeight: "500" },
   ],
+
   "para-s-regular": [
-    "12px",
+    "0.65rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "400" },
   ],
 
-  // ===== Paragraph M (14px) =====
   "para-m-bold": [
     "0.72rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "700" },
   ],
+
   "para-m-semibold": [
     "0.72rem",
     { lineHeight: "1.45", letterSpacing: "2%", fontWeight: "600" },
   ],
+
   "para-m-medium": [
     "0.72rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "500" },
   ],
+
   "para-m-regular": [
     "0.72rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "400" },
   ],
+
   "para-m-light": [
     "0.72rem",
     { lineHeight: "1.45", letterSpacing: "0", fontWeight: "300" },

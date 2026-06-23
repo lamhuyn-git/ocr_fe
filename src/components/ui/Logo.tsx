@@ -11,13 +11,13 @@ type LogoProps = {
 const sizeConfig = {
   Large: {
     icon: "w-12 h-12",
-    text: "text-base tracking-[0.32px]",
+    text: "text-base tracking-[0.02rem]",
     gap: "gap-1",
   },
-  Medium: { icon: "w-8 h-8", text: "text-xs tracking-[0.24px]", gap: "gap-1" },
+  Medium: { icon: "w-8 h-8", text: "text-xs tracking-[0.015rem]", gap: "gap-1" },
   Small: {
     icon: "w-4 h-4",
-    text: "text-[6px] tracking-[0.12px]",
+    text: "text-[0.375rem] tracking-[0.0075rem]",
     gap: "gap-0.5",
   },
 };

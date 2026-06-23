@@ -295,7 +295,7 @@ export default function FormPage() {
 
       <main
         key={resetKey}
-        className="w-full max-w-[1400px] mx-auto px-10 py-10 pb-12 flex flex-col gap-4 flex-1"
+        className="w-full max-w-[87.5rem] mx-auto px-10 py-10 pb-12 flex flex-col gap-4 flex-1"
       >
         <AgencySection
           provinces={provinces}

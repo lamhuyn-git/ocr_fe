@@ -21,7 +21,7 @@ export default function OnlineInfoPanel({
   return (
     <aside className="flex flex-col w-[20%] shrink-0 h-full overflow-y-auto bg-white  shadow-[0_0_8px_rgba(182,192,187,0.3)] rounded-[0.5rem]">
       <h3 className=" px-4 pt-4 pb-3 text-text-main text-[0.85rem] font-semibold border-b border-black-light">
-        Điều hướng hồ sơ:
+        Thông tin hồ sơ số:
       </h3>
       {/* Thẻ thủ tục hành chính yêu cầu */}
       <div className="flex flex-col gap-2 bg-white px-4 py-3 border-b border-black-light">
@@ -30,7 +30,7 @@ export default function OnlineInfoPanel({
           onClick={() => setProcedureOpen((o) => !o)}
           className="flex items-center justify-between gap-2 w-full "
         >
-          <span className="text-para-s-semibold text-text-secondary">
+          <span className="text-para-m-semibold text-text-secondary">
             Thông tin thủ tục hành chính yêu cầu
           </span>
           <Icon
@@ -68,10 +68,10 @@ export default function OnlineInfoPanel({
                   key={row.label}
                   className="flex flex-col gap-1 bg-[#F6F7F9] p-3 rounded-[0.25rem]"
                 >
-                  <span className="text-para-s-regular text-text-placeholder">
+                  <span className="text-para-m-regular text-text-placeholder">
                     {row.label}
                   </span>
-                  <span className="text-para-s-medium text-text-main">
+                  <span className="text-para-m-medium text-text-main">
                     {row.value}
                   </span>
                 </div>
@@ -87,10 +87,10 @@ export default function OnlineInfoPanel({
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start gap-2">
-      <span className="text-para-s-regular text-text-placeholder w-[90px] shrink-0">
+      <span className="text-para-m-regular text-text-placeholder w-[5.625rem] shrink-0">
         {label}
       </span>
-      <span className="text-para-s-medium text-text-main flex-1">{value}</span>
+      <span className="text-para-m-medium text-text-main flex-1">{value}</span>
     </div>
   );
 }

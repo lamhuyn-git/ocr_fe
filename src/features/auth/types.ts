@@ -23,7 +23,8 @@ export type AuthUser = {
   id: string;
   name: string;
   email: string;
-  role: "user" | "admin";
+  // ward_admin: cán bộ cấp phường/xã — bị khoá bộ lọc địa bàn (tỉnh/phường).
+  role: "user" | "admin" | "ward_admin";
 };
 
 export type AuthState = {

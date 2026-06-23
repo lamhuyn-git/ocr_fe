@@ -6,14 +6,29 @@ import DashboardMapSection from "../features/management/components/dashboard-map
 import DocumentsSection from "../features/management/components/documents-section";
 import { useAuthContext } from "../store/auth-store";
 
+// Module-level: tồn tại suốt SPA session (reset khi refresh/login lại),
+// giữ nguyên khi navigate dashboard → form-detail → back.
+let _province = "";
+let _ward = "";
+
 export default function DashboardPage() {
   const { user } = useAuthContext();
-  const [province, setProvince] = useState("");
-  const [ward, setWard] = useState("");
+  const [province, setProvince] = useState(_province);
+  const [ward, setWard] = useState(_ward);
+
+  // Cán bộ cấp phường bị khoá địa bàn — không cho đổi tỉnh/phường.
+  const isWardAdmin = user?.role === "ward_admin";
 
   const handleProvinceChange = useCallback((value: string) => {
+    _province = value;
+    _ward = "";
     setProvince(value);
     setWard("");
+  }, []);
+
+  const handleWardChange = useCallback((value: string) => {
+    _ward = value;
+    setWard(value);
   }, []);
 
   return (
@@ -27,7 +42,8 @@ export default function DashboardPage() {
               province={province}
               ward={ward}
               onProvinceChange={handleProvinceChange}
-              onWardChange={setWard}
+              onWardChange={handleWardChange}
+              locationLocked={isWardAdmin}
             />
           </div>
           <div className="snap-start shrink-0">

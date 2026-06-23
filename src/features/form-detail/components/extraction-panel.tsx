@@ -1,9 +1,11 @@
 import ExtractionFieldCard from "./extraction-field-card";
+import Badge from "../../../components/ui/Badge";
 import {
   EXTRACTION_STATUS_CONFIG,
   type ExtractionField,
   type ExtractionSection,
   type ExtractionStatus,
+  type SaveChangeFieldItem,
 } from "../types";
 
 type ExtractionPanelProps = {
@@ -11,6 +13,8 @@ type ExtractionPanelProps = {
   activeId: string; // section đang chọn (đồng bộ panel trái)
   selectedFieldId?: string; // field đang chọn (để vẽ box trên ảnh)
   onSelectField?: (field: ExtractionField) => void;
+  onMark?: (item: SaveChangeFieldItem) => void;
+  onUnmark?: (id: string) => void;
   reviewNote?: string | null; // hiện khi chưa có kết quả trích xuất
 };
 
@@ -20,6 +24,8 @@ export default function ExtractionPanel({
   activeId,
   selectedFieldId,
   onSelectField,
+  onMark,
+  onUnmark,
   reviewNote,
 }: ExtractionPanelProps) {
   const activeFields = sections.find((s) => s.id === activeId)?.fields ?? [];
@@ -30,22 +36,12 @@ export default function ExtractionPanel({
     <aside className="bg-white flex flex-col gap-3 w-[30%] shrink-0 h-full overflow-y-auto shadow-[0_0_8px_rgba(182,192,187,0.3)] rounded-[0.5rem]">
       <div className="px-4 pt-4 pb-3 flex items-center justify-between gap-2 flex-wrap border-b border-black-light">
         <h3 className="text-text-main text-[0.85rem] font-semibold">
-          Kết quả trích xuất:
+          Kết quả so khớp:
         </h3>
         <div className="flex items-center gap-2">
           {(Object.keys(EXTRACTION_STATUS_CONFIG) as ExtractionStatus[]).map(
             (s) => (
-              <span
-                key={s}
-                className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 ${EXTRACTION_STATUS_CONFIG[s].bg} ${EXTRACTION_STATUS_CONFIG[s].text}`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${EXTRACTION_STATUS_CONFIG[s].dot}`}
-                />
-                <span className="text-para-s-medium">
-                  {EXTRACTION_STATUS_CONFIG[s].label}
-                </span>
-              </span>
+              <Badge key={s} status={s} />
             ),
           )}
         </div>
@@ -54,10 +50,10 @@ export default function ExtractionPanel({
       {/* Chưa có kết quả trích xuất -> hiển thị ghi chú duyệt. */}
       {!hasAnyField ? (
         <div className="mx-4 rounded-xl border border-input-border bg-white p-3">
-          <p className="text-para-s-regular text-text-placeholder mb-1">
+          <p className="text-para-m-regular text-text-placeholder mb-1">
             Ghi chú:
           </p>
-          <p className="text-para-s-medium text-text-main">
+          <p className="text-para-m-medium text-text-main">
             {reviewNote || "Chưa có kết quả trích xuất cho hồ sơ này."}
           </p>
         </div>
@@ -68,11 +64,13 @@ export default function ExtractionPanel({
               field={field}
               selected={field.id === selectedFieldId}
               onSelect={onSelectField}
+              onMark={onMark}
+              onUnmark={onUnmark}
             />
           </div>
         ))
       ) : (
-        <p className="text-para-s-regular text-text-placeholder py-4 text-center">
+        <p className="text-para-m-regular text-text-placeholder py-4 text-center">
           {activeId === "members"
             ? "Không có thành viên nào cùng thay đổi."
             : "Không có trường trích xuất cho mục này."}

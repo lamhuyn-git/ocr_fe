@@ -80,23 +80,23 @@ export async function getListForm(
 
 // 5 nhóm KPI hiển thị trên dashboard.
 export type KpiCounts = {
-  received: number; // mới tiếp nhận
-  processing: number; // đang xử lý
-  backlog: number; // còn tồn đọng
-  overdue: number; // đã quá hạn
-  completed: number; // đã hoàn thành
+  received_today: number;
+  overdue: number;
+  failed: number;
+  saved: number;
+  completed: number;
 };
 
 // Trạng thái backend -> nhóm KPI để đếm.
 const KPI_STATUS_GROUP: Record<string, keyof KpiCounts> = {
-  submitted: "received",
-  processing: "processing",
-  extracted: "backlog",
-  under_review: "backlog",
-  failed: "backlog",
+  submitted: "received_today",
+  processing: "received_today",
+  extracted: "received_today",
   overdue: "overdue",
+  failed: "failed",
+  gate_rejected: "failed",
+  reviewed: "saved",
   returned: "completed",
-  require_adjust: "completed",
 };
 
 export async function getFormStatusCounts(
@@ -112,7 +112,7 @@ export async function getFormStatusCounts(
   if (params.fromDay) query.set("date_from", params.fromDay);
   if (params.toDay) query.set("date_to", params.toDay);
   // Lấy số lượng lớn để đếm đủ (backend chưa có endpoint count riêng).
-  query.set("page_size", "1000");
+  query.set("page_size", "10");
 
   const forms = await apiFetch<FormResponse[]>(
     `/api/v1/form/list?${query.toString()}`,
@@ -120,10 +120,10 @@ export async function getFormStatusCounts(
   );
 
   const counts: KpiCounts = {
-    received: 0,
-    processing: 0,
-    backlog: 0,
+    received_today: 0,
     overdue: 0,
+    failed: 0,
+    saved: 0,
     completed: 0,
   };
   for (const f of forms) {

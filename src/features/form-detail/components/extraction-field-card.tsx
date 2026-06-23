@@ -1,46 +1,73 @@
-import Icon from "../../../components/icons";
-import ExtractionStatusBadge from "../../../components/ui/extraction-status-badge";
-import type { ExtractionField } from "../types";
+import { useState } from "react";
+import Badge from "../../../components/ui/Badge";
+import Button from "../../../components/ui/Button";
+import type { ExtractionField, SaveChangeFieldItem } from "../types";
 
 // Card 1 field ở panel phải: giá trị trích xuất + suggest (BE đề xuất)
-// + kết quả kiểm tra + lịch sử + 3 nút hành động.
-// Bấm card -> chọn field để vẽ box vị trí lên ảnh CT01.
+// + kết quả kiểm tra + lịch sử + 2 nút đánh dấu hợp lệ / không hợp lệ.
+// Bấm phần thân card -> chọn field để vẽ box vị trí lên ảnh CT01.
+// Bấm nút hợp lệ / không hợp lệ -> đánh dấu field, không trigger chọn card.
 export default function ExtractionFieldCard({
   field,
   selected,
   onSelect,
+  onMark,
+  onUnmark,
 }: {
   field: ExtractionField;
   selected?: boolean;
   onSelect?: (field: ExtractionField) => void;
+  onMark?: (item: SaveChangeFieldItem) => void;
+  onUnmark?: (id: string) => void;
 }) {
+  // null = chưa đánh dấu; "valid"/"invalid" = đã đánh dấu (hiện nút Hoàn tác).
+  const [markedStatus, setMarkedStatus] = useState<"valid" | "invalid" | null>(
+    null,
+  );
+
+  // Chỉ trigger onSelect khi click vào phần thân card, không phải button.
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    onSelect?.(field);
+  };
+
+  const handleMark = (status: "valid" | "invalid") => {
+    setMarkedStatus(status);
+    onMark?.({ id: field.id, status });
+  };
+
+  const handleUnmark = () => {
+    setMarkedStatus(null);
+    onUnmark?.(field.id);
+  };
+
+  const displayHistory = field.historyCount + (markedStatus !== null ? 1 : 0);
+
   return (
     <div
-      onClick={() => onSelect?.(field)}
+      onClick={handleCardClick}
       className={`flex flex-col gap-3 rounded-xl border bg-white p-3 cursor-pointer transition-colors ${
         selected ? "border-black" : "border-input-border"
       }`}
     >
       {/* Label + badge trạng thái */}
       <div className="flex items-center justify-between gap-2">
-        <span className="text-para-s-regular text-text-placeholder">
+        <span className="text-para-m-regular text-text-placeholder">
           {field.label}
         </span>
-        <ExtractionStatusBadge status={field.status} />
+        <Badge status={field.status} />
       </div>
 
       {/* Giá trị trích xuất + 'Gần nhất' (BE đề xuất) */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <span className="text-para-m-semibold text-text-main">
-          {field.value}
-        </span>
+        <span className="text-para-m-medium text-text-main">{field.value}</span>
         {field.suggestValue && (
           <span className="flex items-center gap-2 px-2 py-1 rounded-md bg-grey">
-            <span className="text-para-s-regular text-text-placeholder">
-              Gần nhất:
+            <span className="text-para-m-regular text-text-placeholder">
+              Kết quả đề xuất:
             </span>
-            <span className="text-para-s-medium text-text-main">
-              “{field.suggestValue}”
+            <span className="text-para-m-medium text-text-main">
+              "{field.suggestValue}"
             </span>
           </span>
         )}
@@ -48,39 +75,50 @@ export default function ExtractionFieldCard({
 
       {/* Kết quả kiểm tra */}
       <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-grey">
-        <span className="text-para-s-regular text-text-placeholder shrink-0">
+        <span className="text-para-m-regular text-text-placeholder shrink-0">
           Kết quả kiểm tra:
         </span>
-        <span className="text-para-s-medium text-text-main">
+        <span className="text-para-m-semibold text-text-main">
           {field.checkResult}
         </span>
       </div>
 
-      {/* Lịch sử */}
-      <span className="text-para-s-medium text-text-placeholder">
-        Lịch sử ({field.historyCount})
+      {/* Lịch sử — tăng 1 khi field đã được đánh dấu */}
+      <span className="text-para-m-medium text-text-placeholder">
+        Lịch sử ({displayHistory})
       </span>
 
-      {/* Hành động: chấp nhận (xanh, full-width) + chỉnh sửa + lấy gợi ý */}
-      <button className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-lg bg-secondary hover:bg-secondary-hover transition-colors">
-        <Icon name="confirm" size={16} className="[&_path]:stroke-white" />
-        <span className="text-para-s-semibold text-white">
-          Chấp nhận kết quả kiểm tra
-        </span>
-      </button>
+      {/* Hành động: toggle giữa 2 nút đánh dấu ↔ nút Hoàn tác */}
       <div className="flex items-center gap-2">
-        <button className="flex items-center justify-center gap-2 flex-1 px-3 py-2 rounded-lg border border-input-border hover:bg-grey transition-colors">
-          <Icon name="edit" size={16} className="text-text-placeholder" />
-          <span className="text-para-s-semibold text-text-main">
-            Chỉnh sửa giá trị hiện tại
-          </span>
-        </button>
-        <button className="flex items-center justify-center gap-2 flex-1 px-3 py-2 rounded-lg border border-input-border hover:bg-grey transition-colors">
-          <Icon name="reload" size={16} className="text-text-placeholder" />
-          <span className="text-para-s-semibold text-text-main">
-            Lấy kết quả gợi ý
-          </span>
-        </button>
+        {markedStatus !== null ? (
+          <Button
+            type="button"
+            variant="secondary"
+            size="12px"
+            text="Hoàn tác"
+            className="w-full"
+            onClick={handleUnmark}
+          />
+        ) : (
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              size="12px"
+              text="Trường không hợp lệ"
+              className="w-full"
+              onClick={() => handleMark("invalid")}
+            />
+            <Button
+              type="button"
+              variant="primary"
+              size="12px"
+              text="Trường hợp lệ"
+              className="w-full !bg-primary"
+              onClick={() => handleMark("valid")}
+            />
+          </>
+        )}
       </div>
     </div>
   );

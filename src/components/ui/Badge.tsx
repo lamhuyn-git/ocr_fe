@@ -1,30 +1,23 @@
-// Badge pill (style giống Status) cho kết quả kiểm tra trích xuất: 3 state.
-export type BadgeStatus = "valid" | "invalid" | "need_review";
+import {
+  EXTRACTION_STATUS_CONFIG,
+  type ExtractionStatus,
+} from "../../features/form-detail/types";
 
-type BadgeStyle = { label: string; className: string };
-
-const BADGE_CONFIG: Record<BadgeStatus, BadgeStyle> = {
-  valid: { label: "Hợp lệ", className: "bg-secondary text-white" },
-  invalid: { label: "Không hợp lệ", className: "bg-red text-white" },
-  need_review: {
-    label: "Cần xem xét",
-    className: "bg-yellow-light text-yellow-hover",
-  },
-};
-
+// Badge pill (chấm tròn + nhãn) cho trạng thái kiểm tra trích xuất: 3 state.
 type BadgeProps = {
-  status: BadgeStatus;
+  status: ExtractionStatus;
   className?: string;
 };
 
 export default function Badge({ status, className }: BadgeProps) {
-  const { label, className: colorClass } = BADGE_CONFIG[status];
+  const cfg = EXTRACTION_STATUS_CONFIG[status];
 
   return (
     <span
-      className={`inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1.5 text-para-s-semibold ${colorClass} ${className ?? ""}`}
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full ${cfg.bg} ${cfg.text} ${className ?? ""}`}
     >
-      {label}
+      <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+      <span className="text-para-m-semibold">{cfg.label}</span>
     </span>
   );
 }

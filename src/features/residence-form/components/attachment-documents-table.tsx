@@ -43,7 +43,7 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
   return (
     <div className="flex flex-col rounded-lg bg-white shadow-card overflow-hidden">
       {/* Header */}
-      <div className="flex items-center bg-secondary-light px-4 py-3 text-para-s-semibold text-text-main">
+      <div className="flex items-center bg-secondary-light px-4 py-3 text-para-m-semibold text-text-main">
         <span className={`${COL.stt} pr-3`}>STT</span>
         <span className={`${COL.name} pr-3`}>
           Tên giấy tờ<span className="text-[#E5392E]">*</span>
@@ -69,7 +69,7 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
           }`}
         >
           {/* STT */}
-          <span className={`${COL.stt} pr-3 text-para-s-medium text-text-main`}>
+          <span className={`${COL.stt} pr-3 text-para-m-medium text-text-main`}>
             {i + 1}
           </span>
 
@@ -83,7 +83,7 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
               onChange={(e) => onUpdate(d.id, { checked: e.target.checked })}
               className="h-4 w-4 shrink-0 accent-primary cursor-pointer"
             />
-            <span className="text-para-s-medium text-text-main leading-snug">
+            <span className="text-para-m-medium text-text-main leading-snug">
               {d.name}
             </span>
           </label>
@@ -134,8 +134,10 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
           </div>
 
           {/* Đính kèm — chọn ảnh + danh sách file đã chọn */}
-          <div className={`${COL.attach} pr-3 flex flex-col items-center gap-2`}>
-            <label className="inline-flex cursor-pointer items-center rounded-md border border-divider bg-grey px-3 py-2 text-para-s-medium text-text-main hover:bg-secondary-light transition-colors">
+          <div
+            className={`${COL.attach} pr-3 flex flex-col items-center gap-2`}
+          >
+            <label className="inline-flex cursor-pointer items-center rounded-md border border-divider bg-grey px-3 py-2 text-para-m-medium text-text-main hover:bg-secondary-light transition-colors">
               Choose Files
               <input
                 type="file"
@@ -154,7 +156,7 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
                 {d.files.map((f, idx) => (
                   <li
                     key={`${f.name}-${idx}`}
-                    className="flex items-center justify-between gap-1 text-para-s-regular text-text-secondary"
+                    className="flex items-center justify-between gap-1 text-para-m-regular text-text-secondary"
                   >
                     <span className="truncate" title={f.name}>
                       {f.name}

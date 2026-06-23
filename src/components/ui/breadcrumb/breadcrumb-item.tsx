@@ -17,8 +17,8 @@ export default function BreadcrumbItem({
   onClick,
 }: BreadcrumbItemProps) {
   const textClass = active
-    ? "text-para-s-semibold text-text-main"
-    : "text-para-s-medium text-text-placeholder";
+    ? "text-para-m-semibold text-text-main"
+    : "text-para-m-medium text-text-placeholder";
 
   return (
     <button type="button" onClick={onClick} className="flex items-center gap-1">

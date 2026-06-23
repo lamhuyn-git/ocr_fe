@@ -22,7 +22,7 @@ const sizeStyles: Record<ButtonSize, { wrapper: string; icon: number }> = {
     icon: 20,
   },
   "12px": {
-    wrapper: "px-4 py-3 text-para-s-semibold gap-1.5 rounded-md",
+    wrapper: "px-4 py-3 text-para-m-semibold gap-1.5 rounded-md",
     icon: 16,
   },
 };

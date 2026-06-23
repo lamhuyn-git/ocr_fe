@@ -71,8 +71,8 @@ function NavItemRow({
           <span
             className={`flex-1  ${
               item.active
-                ? "text-para-s-semibold color-black text-para-s-semibold"
-                : "text-para-s-medium color-grey-dark-active leading-none mt-[3px]"
+                ? "text-para-m-semibold color-black text-para-m-semibold"
+                : "text-para-m-medium color-grey-dark-active leading-none mt-[0.1875rem]"
             }`}
           >
             {item.label}
@@ -102,12 +102,15 @@ function NavItemRow({
                     : "hover:bg-grey-hover"
                 }`}
               >
-                <BranchIcon active={isActive} className="shrink-0 ml-[0.5rem]" />
+                <BranchIcon
+                  active={isActive}
+                  className="shrink-0 ml-[0.5rem]"
+                />
                 <span
-                  className={`text-para-s-medium mt-[4px] ${
+                  className={`text-para-m-medium mt-[0.25rem] ${
                     isActive
-                      ? "text-para-s-semibold color-black text-para-s-semibold"
-                      : "text-para-s-medium color-grey-dark-active leading-none"
+                      ? "text-para-m-semibold color-black text-para-m-semibold"
+                      : "text-para-m-medium color-grey-dark-active leading-none"
                   }`}
                 >
                   {child.label}
@@ -133,7 +136,7 @@ function NavSectionBlock({
   return (
     <div className="flex flex-col gap-2 px-4">
       {!collapsed && (
-        <span className="text-para-s-semibold text-text-secondary uppercase pl-2 tracking-[0.02em]">
+        <span className="text-para-m-semibold text-text-secondary uppercase pl-2 tracking-[0.02em]">
           {section.title}
         </span>
       )}
@@ -181,12 +184,12 @@ export default function Sidebar({
   return (
     <aside
       className={`flex flex-col h-full shrink-0 border-r border-dashed border-[#bbb] transition-[width] duration-200 ${
-        collapsed ? "w-[72px]" : "w-[13%]"
+        collapsed ? "w-[4.5rem]" : "w-[13%]"
       }`}
     >
       {/* Header */}
       <div
-        className={`flex items-center px-4 py-[14px] border-b border-dashed border-[#bbb] shrink-0 ${
+        className={`flex items-center px-4 py-[0.875rem] border-b border-dashed border-[#bbb] shrink-0 ${
           collapsed ? "justify-center" : "justify-between"
         }`}
       >
@@ -250,15 +253,15 @@ export default function Sidebar({
               collapsed ? "justify-center p-1 mx-3" : "gap-2 p-2 mx-4"
             }`}
           >
-            <div className="w-[34px] h-[34px] rounded-full bg-primary-light flex items-center justify-center shrink-0">
+            <div className="w-[2.125rem] h-[2.125rem] rounded-full bg-primary-light flex items-center justify-center shrink-0">
               <Icon name="account" size={18} className="text-primary" />
             </div>
             {!collapsed && (
               <div className="flex flex-col flex-1 min-w-0">
-                <span className="text-para-s-semibold text-text-main truncate">
+                <span className="text-para-m-semibold text-text-main truncate">
                   {user?.name ?? "Người dùng"}
                 </span>
-                <span className="text-para-s-regular text-text-placeholder truncate">
+                <span className="text-para-m-regular text-text-placeholder truncate">
                   {user?.email ?? ""}
                 </span>
               </div>

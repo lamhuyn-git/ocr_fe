@@ -22,9 +22,9 @@ export const boxShadow = {
  */
 export const borderRadius = {
   // Figma: login card, document items, panels
-  card:  "16px",
+  card:  "1rem",
   // Figma: buttons, inputs, sidebar items, dropdowns, badges
-  input: "8px",
+  input: "0.5rem",
 } as const;
 
 export type BoxShadowToken = keyof typeof boxShadow;

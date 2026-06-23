@@ -21,7 +21,7 @@ export default function FormActions({
   return (
     <div className="flex items-center justify-between gap-4">
       <label
-        className={`flex items-center gap-2 cursor-pointer text-para-s-medium ${
+        className={`flex items-center gap-2 cursor-pointer text-para-m-medium ${
           error ? "text-red" : "text-text-main"
         }`}
       >
@@ -34,7 +34,9 @@ export default function FormActions({
           }}
           className={`w-4 h-4 ${error ? "accent-red" : "accent-primary"}`}
         />
-        <p className="mt-[4px]">Tôi xin chịu trách nhiệm về lời khai trên</p>
+        <p className="mt-[0.25rem]">
+          Tôi xin chịu trách nhiệm về lời khai trên
+        </p>
       </label>
 
       <div className="flex items-center gap-3">

@@ -14,6 +14,7 @@ import DashboardPage from "./pages/dashboard";
 import RegistrationPage from "./pages/registration";
 import FormPage from "./pages/form";
 import FormDetailPage from "./pages/form-detail";
+import LookupPage from "./pages/lookup";
 import Loading from "./components/ui/Loading";
 
 function AppRoutes() {
@@ -84,6 +85,12 @@ function AppRoutes() {
           ) : (
             <Navigate to="/login" replace />
           )
+        }
+      />
+      <Route
+        path="/lookup"
+        element={
+          isAuthenticated ? <LookupPage /> : <Navigate to="/login" replace />
         }
       />
       <Route path="*" element={<Navigate to={homeRoute} replace />} />

@@ -62,9 +62,9 @@ export default function DatePicker({
     dt.getFullYear() === view.y;
 
   return (
-    <div className="w-[320px] rounded-2xl bg-white shadow-card border border-input-border p-3">
+    <div className="w-[20rem] rounded-2xl bg-white shadow-card border border-input-border p-3">
       <div className="flex items-center justify-between px-2 py-1">
-        <span className="text-para-s-semibold text-text-main">
+        <span className="text-para-m-semibold text-text-main">
           {MONTHS[view.m]} {view.y}
         </span>
         <div className="flex items-center gap-1">
@@ -88,7 +88,7 @@ export default function DatePicker({
       </div>
 
       {/* Hàng thứ */}
-      <div className="grid grid-cols-7 text-center text-para-s-medium text-text-placeholder mb-1">
+      <div className="grid grid-cols-7 text-center text-para-m-medium text-text-placeholder mb-1">
         {WEEKDAYS.map((w) => (
           <span key={w} className="py-1">
             {w}
@@ -109,7 +109,7 @@ export default function DatePicker({
                   onSelect(format(new Date(view.y, view.m, d)));
                   onClose();
                 }}
-                className={`w-9 h-9 rounded-full text-para-s-medium flex items-center justify-center transition-colors ${
+                className={`w-9 h-9 rounded-full text-para-m-medium flex items-center justify-center transition-colors ${
                   sameCell(d, selected)
                     ? "bg-primary text-white"
                     : sameCell(d, today)

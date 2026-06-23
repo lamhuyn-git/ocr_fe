@@ -60,7 +60,7 @@ export default function DocumentCenterPanel({
 
           <div className="flex items-center gap-1">
             <Icon name="tag" size={16} className="text-text-placeholder" />
-            <span className="text-para-s-medium text-text-placeholder">
+            <span className="text-para-m-medium text-text-placeholder">
               Trạng thái:
             </span>
             <Status status={detail.statusLabel} />
@@ -83,7 +83,7 @@ export default function DocumentCenterPanel({
             return (
               <div className="flex flex-col items-center justify-center gap-2 py-20 text-text-placeholder">
                 <Icon name="paperclip" size={32} />
-                <span className="text-para-s-regular">
+                <span className="text-para-m-regular">
                   {tab === "ct01"
                     ? "Chưa có ảnh tờ khai CT01"
                     : "Chưa có hồ sơ đính kèm"}
@@ -93,7 +93,9 @@ export default function DocumentCenterPanel({
           }
           // Box vị trí chỉ vẽ trên ảnh tờ khai CT01 (toạ độ khớp ảnh đã nắn).
           const box =
-            tab === "ct01" && highlight?.position && highlight.position.length >= 4
+            tab === "ct01" &&
+            highlight?.position &&
+            highlight.position.length >= 4
               ? { position: highlight.position, status: highlight.status }
               : null;
           return (

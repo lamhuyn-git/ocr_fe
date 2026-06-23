@@ -100,7 +100,7 @@ export default function ForgotPasswordModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[440px] rounded-2xl bg-white p-6 shadow-card flex flex-col gap-5"
+        className="w-full max-w-[27.5rem] rounded-2xl bg-white p-6 shadow-card flex flex-col gap-5"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4">

@@ -47,7 +47,7 @@ export default function IntroLoginShell({
     <div className="h-svh overflow-hidden w-full bg-[#e8eae9] font-be-vietnam">
       <div className="flex h-full gap-4 bg-white p-2 shadow-card">
         {/* Sidebar */}
-        <aside className="relative overflow-hidden flex w-[18%] shrink-0 flex-col rounded-[22px] bg-main px-6 py-7 text-white">
+        <aside className="relative overflow-hidden flex w-[18%] shrink-0 flex-col rounded-[1.375rem] bg-main px-6 py-7 text-white">
           <Logo size="Large" showText className="text-white mb-10" />
 
           <nav className="flex flex-col gap-2">
@@ -65,7 +65,7 @@ export default function IntroLoginShell({
                   <span className="text-para-m-semibold text-white">
                     {item.title}
                   </span>
-                  <span className="text-para-s-regular text-white/45">
+                  <span className="text-para-m-regular text-white/45">
                     {item.subtitle}
                   </span>
                 </button>
@@ -84,7 +84,7 @@ export default function IntroLoginShell({
         {/* Content */}
         <section
           id="auth-content"
-          className="relative flex flex-1 flex-col overflow-hidden rounded-[22px] py-4 pr-4"
+          className="relative flex flex-1 flex-col overflow-hidden rounded-[1.375rem] py-4 pr-4"
         >
           {/* Top bar: chấm bước + điều hướng */}
           <div className="relative z-10 flex items-center justify-between">
@@ -99,7 +99,7 @@ export default function IntroLoginShell({
               ))}
             </div>
 
-            <div className="flex items-center gap-4 text-para-s-medium text-text-secondary">
+            <div className="flex items-center gap-4 text-para-m-medium text-text-secondary">
               {onBack && (
                 <button
                   type="button"

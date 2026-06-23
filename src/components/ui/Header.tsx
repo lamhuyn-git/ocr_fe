@@ -1,13 +1,31 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import Icon from "../icons";
 import Button from "./Button";
 import Logo from "./Logo";
 import drum from "../../assets/drum.svg";
 import { useAuthContext } from "../../store/auth-store";
 
-const NAV_LINKS = ["Đăng ký tạm trú", "Tra cứu hồ sơ", "Hỗ trợ"];
+const NAV_LINKS: { label: string; to: string }[] = [
+  { label: "Đăng ký tạm trú", to: "/form" },
+  { label: "Tra cứu hồ sơ", to: "/lookup" },
+  { label: "Hỗ trợ", to: "#" },
+];
 
-export default function Header({ userName }: { userName: string }) {
+type HeaderProps = {
+  userName: string;
+  title?: string; // tiêu đề hero (mặc định: trang đăng ký tạm trú)
+  subtitle?: ReactNode; // mô tả hero
+  activeNav?: string; // nhãn nav đang active
+};
+
+export default function Header({
+  userName,
+  title = "Hồ sơ đăng ký tạm trú",
+  subtitle,
+  activeNav = "Đăng ký tạm trú",
+}: HeaderProps) {
+  const navigate = useNavigate();
   const today = new Date().toLocaleDateString("vi-VN", {
     day: "2-digit",
     month: "long",
@@ -46,18 +64,19 @@ export default function Header({ userName }: { userName: string }) {
         <div className="flex items-center gap-8">
           <Logo size="Medium" showText className="text-white" />
           <nav className="flex items-center gap-6">
-            {NAV_LINKS.map((link, i) => (
-              <a
-                key={link}
-                href="#"
-                className={`text-para-s-semibold mt-[4px] ${
-                  i === 0
+            {NAV_LINKS.map((link) => (
+              <button
+                key={link.label}
+                type="button"
+                onClick={() => link.to !== "#" && navigate(link.to)}
+                className={`text-para-m-semibold mt-[0.25rem] ${
+                  link.label === activeNav
                     ? "text-white"
                     : "text-grey-dark-hover hover:text-white "
                 }`}
               >
-                {link}
-              </a>
+                {link.label}
+              </button>
             ))}
           </nav>
         </div>
@@ -68,7 +87,9 @@ export default function Header({ userName }: { userName: string }) {
               size={20}
               className="[&_path]:stroke-grey-dark-hover"
             />
-            <span className="text-para-s-semibold mt-[2px]">Ngày {today}</span>
+            <span className="text-para-m-semibold mt-[0.125rem]">
+              Ngày {today}
+            </span>
           </div>
           <Button
             type="button"
@@ -87,7 +108,7 @@ export default function Header({ userName }: { userName: string }) {
               <div className="w-7 h-7 rounded-full bg-primary-light flex items-center justify-center">
                 <Icon name="account" size={16} className="text-primary" />
               </div>
-              <span className="text-para-s-semibold text-text-main">
+              <span className="text-para-m-semibold text-text-main">
                 {userName}
               </span>
             </button>
@@ -105,7 +126,7 @@ export default function Header({ userName }: { userName: string }) {
                     setMenuOpen(false);
                     void signOut().catch(() => {});
                   }}
-                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-s-medium text-grey-dark-active [&_path]:stroke-grey-dark-active hover:bg-grey transition-colors"
+                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-m-medium text-grey-dark-active [&_path]:stroke-grey-dark-active hover:bg-grey transition-colors"
                 />
                 <Button
                   type="button"
@@ -114,7 +135,7 @@ export default function Header({ userName }: { userName: string }) {
                   text="Cài đặt"
                   showIcon
                   icon="setting"
-                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-s-medium text-grey-dark-active [&_path]:stroke-grey-dark-active hover:bg-grey transition-colors"
+                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-m-medium text-grey-dark-active [&_path]:stroke-grey-dark-active hover:bg-grey transition-colors"
                 />
               </div>
             )}
@@ -129,21 +150,26 @@ export default function Header({ userName }: { userName: string }) {
           aria-hidden
           className="pointer-events-none select-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[80rem] opacity-15"
         />
-        <div className="relative z-10 px-10 pt-16 pb-12 max-w-[1400px] mx-auto w-full">
+        <div className="relative z-10 px-10 pt-16 pb-12 max-w-[87.5rem] mx-auto w-full">
           <h1 className="font-serif text-heading-serif uppercase text-[2rem]">
-            Hồ sơ đăng ký tạm trú
+            {title}
           </h1>
           <div className="mt-3 text-para-m-regular text-white/70 leading-relaxed ">
-            <p>
-              Khai và nộp hồ sơ đăng ký tạm trú trực tuyến. Vui lòng kiểm tra,
-              điền đầy đủ và chính xác các thông tin bên dưới trước khi nộp.
-            </p>
-            <p className="mt-1">
-              Thông tin cá nhân được tự động lấy từ Cơ sở dữ liệu quốc gia về
-              dân cư. Các trường có dấu{" "}
-              <span className="font-semibold text-white">(*)</span> là bắt buộc
-              phải điền.
-            </p>
+            {subtitle ?? (
+              <>
+                <p>
+                  Khai và nộp hồ sơ đăng ký tạm trú trực tuyến. Vui lòng kiểm
+                  tra, điền đầy đủ và chính xác các thông tin bên dưới trước khi
+                  nộp.
+                </p>
+                <p className="mt-1">
+                  Thông tin cá nhân được tự động lấy từ Cơ sở dữ liệu quốc gia
+                  về dân cư. Các trường có dấu{" "}
+                  <span className="font-semibold text-white">(*)</span> là bắt
+                  buộc phải điền.
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>

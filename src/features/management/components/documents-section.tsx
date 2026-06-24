@@ -79,7 +79,11 @@ export default function DocumentsSection({
               <DocumentCard
                 key={doc.id}
                 doc={doc}
-                onClick={() => navigate(`/form-detail?id=${doc.id}`)}
+                onClick={() =>
+                  navigate(`/form-detail?id=${doc.id}`, {
+                    state: { previousStatus: doc.status },
+                  })
+                }
               />
             ))}
           </div>

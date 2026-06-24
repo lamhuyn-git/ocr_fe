@@ -85,6 +85,7 @@ export type SaveChangeRequest = {
   form_id: string;
   confirmed_by: string | null;
   updated_fields: AdminSaveChangeFieldItem[] | null;
+  from_status: string | null; // trạng thái hồ sơ trước khi cán bộ vào xem
 };
 
 export async function saveFormChanges(req: SaveChangeRequest): Promise<void> {

@@ -50,12 +50,12 @@ export default function ExtractionFieldCard({
         selected ? "border-black" : "border-input-border"
       }`}
     >
-      {/* Label + badge trạng thái */}
+      {/* Label + badge trạng thái — đổi theo nút đã bấm nếu có */}
       <div className="flex items-center justify-between gap-2">
         <span className="text-para-m-regular text-text-placeholder">
           {field.label}
         </span>
-        <Badge status={field.status} />
+        <Badge status={markedStatus ?? field.status} />
       </div>
 
       {/* Giá trị trích xuất + 'Gần nhất' (BE đề xuất) */}

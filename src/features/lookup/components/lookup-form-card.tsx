@@ -10,7 +10,10 @@ export default function LookupFormCard({ form }: { form: LookupForm }) {
 
   const handleAction = () => {
     if (isDraft) navigate(`/form?draft=${form.id}`);
-    else navigate(`/form-detail?id=${form.id}`);
+    else
+      navigate(`/form-detail?id=${form.id}`, {
+        state: { previousStatus: form.status },
+      });
   };
 
   return (

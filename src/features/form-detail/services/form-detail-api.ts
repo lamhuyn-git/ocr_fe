@@ -47,6 +47,7 @@ export type ValidatedResult = {
   note: string | null; // kết quả kiểm tra
   status: string; // "valid" | "invalid" | "need_review"
   confirmed_by: string | null; // cán bộ đã xác nhận field này
+  confirmed_by_email: string | null; // email cán bộ đã chốt
   created_at: string;
 };
 

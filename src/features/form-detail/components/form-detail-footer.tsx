@@ -12,8 +12,6 @@ type FormDetailFooterProps = {
 export default function FormDetailFooter({
   checkedFields,
   totalFields,
-  onReextract,
-  reextracting,
 }: FormDetailFooterProps) {
   const progress = totalFields > 0 ? (checkedFields / totalFields) * 100 : 0;
 
@@ -37,12 +35,12 @@ export default function FormDetailFooter({
 
       {/* Nút hành động */}
       <div className="flex items-center gap-2">
-        <FooterButton
+        {/* <FooterButton
           icon="reload"
           label={reextracting ? "Đang trích xuất..." : "Trích xuất lại"}
           onClick={onReextract}
           disabled={reextracting}
-        />
+        /> */}
         <FooterButton icon="document" label="Lưu bản nháp" />
         <FooterButton icon="confirm" label="Trả kết quả" primary disabled />
       </div>

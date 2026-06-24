@@ -52,6 +52,8 @@ export type ExtractionField = {
   checkResult: string; // vd: "Khớp với CSDL"
   historyCount: number;
   position?: number[] | null; // bbox [x, y, width, height] trên ảnh CT01 (để vẽ box)
+  confirmedBy?: string | null; // id cán bộ đã chốt field (có -> ẩn nút hành động)
+  confirmedByEmail?: string | null; // email cán bộ đã chốt (để hiển thị)
 };
 
 // Nhóm extraction theo section (id khớp onlineSections) -> panel phải chỉ hiện

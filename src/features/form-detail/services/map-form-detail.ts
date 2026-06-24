@@ -92,6 +92,8 @@ const toField = (r: ValidatedResult): ExtractionField => {
     checkResult: r.note ?? "",
     historyCount: 1,
     position: r.position,
+    confirmedBy: r.confirmed_by,
+    confirmedByEmail: r.confirmed_by_email,
   };
 };
 

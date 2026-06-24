@@ -38,8 +38,6 @@ type Props = {
   errors?: Set<RequiredFieldKey>;
 };
 
-// THÔNG TIN NGƯỜI ĐỀ NGHỊ. self -> auto-fill từ userDetail (khoá);
-// proxy -> dùng state `applicant` (parent) cho người dùng tự nhập.
 export default function ApplicantInfoSection({
   userDetail,
   applicantType,
@@ -55,14 +53,12 @@ export default function ApplicantInfoSection({
   }, []);
 
   const isSelf = applicantType === "self";
-  // gender dân cư trả label ("Nam") -> map về value option ("nam").
   const selfGender =
     genders.find((g) => g.label === userDetail?.gender)?.value ?? "";
   const set = (patch: Partial<ApplicantForm>) =>
     onApplicantChange({ ...applicant, ...patch });
 
-  // Tự nộp: đồng bộ dữ liệu dân cư vào `applicant` để payload có nguồn duy nhất
-  // từ section này (gender lưu theo value, không phải label).
+  // Đồng bộ dữ liệu dân cư vào payload có nguồn duy nhất
   useEffect(() => {
     if (!isSelf || !userDetail) return;
     onApplicantChange({
@@ -73,7 +69,6 @@ export default function ApplicantInfoSection({
       phone: userDetail.phone ?? "",
       email: userDetail.email ?? "",
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSelf, userDetail, selfGender]);
 
   return (
@@ -89,7 +84,7 @@ export default function ApplicantInfoSection({
               name="applicantType"
               checked={applicantType === t.value}
               onChange={() => onApplicantTypeChange(t.value)}
-              className="accent-primary mt-1"
+              className="accent-primary"
             />
             {t.label}
           </label>

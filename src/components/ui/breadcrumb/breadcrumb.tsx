@@ -6,8 +6,6 @@ export type BreadcrumbEntry = {
 };
 
 type BreadcrumbProps = {
-  // Danh sách item (custom số lượng). Item đầu render type "home",
-  // các item sau render type "separator". Item cuối active.
   items: BreadcrumbEntry[];
   className?: string;
 };

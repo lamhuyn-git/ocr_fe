@@ -1,12 +1,11 @@
 import Icon from "../../icons";
 
-// 2 type: "home" (icon nhà) | "separator" (dấu "/" đứng trước nhãn).
 export type BreadcrumbItemType = "home" | "separator";
 
 type BreadcrumbItemProps = {
   label: string;
   type?: BreadcrumbItemType;
-  active?: boolean; // true: chữ đậm/đen ; false: xám (state mặc định)
+  active?: boolean;
   onClick?: () => void;
 };
 
@@ -23,7 +22,6 @@ export default function BreadcrumbItem({
   return (
     <button type="button" onClick={onClick} className="flex items-center gap-1">
       {type === "home" ? (
-        // home icon tô stroke cứng -> đổi màu qua [&_path]:stroke-*.
         <Icon
           name="home"
           size={16}

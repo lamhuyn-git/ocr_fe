@@ -3,7 +3,6 @@ import {
   type ExtractionStatus,
 } from "../../features/form-detail/types";
 
-// Badge pill (chấm tròn + nhãn) cho trạng thái kiểm tra trích xuất: 3 state.
 type BadgeProps = {
   status: ExtractionStatus;
   className?: string;

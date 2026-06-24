@@ -10,9 +10,6 @@ const ATTACHMENT_GROUPS = [
   "Đăng ký tạm trú tại chỗ ở hợp pháp do thuê, mượn, ở nhờ",
 ];
 
-// Khu vực đính kèm giấy tờ. Mỗi nhóm là 1 mục có thể mở/đóng;
-// khi mở sẽ hiện bảng giấy tờ cần đính kèm.
-// State `docs` đặt ở đây (không ở table) để file đã chọn không mất khi đóng group.
 export default function AttachmentsSection({
   onChange,
   error,
@@ -28,7 +25,6 @@ export default function AttachmentsSection({
   const update = (id: string, patch: Partial<AttachmentDoc>) =>
     setDocs((list) => list.map((d) => (d.id === id ? { ...d, ...patch } : d)));
 
-  // Gom phẳng file đã chọn kèm kind của từng dòng, báo lên parent mỗi khi docs đổi.
   useEffect(() => {
     onChange?.(
       docs.flatMap((d) => d.files.map((file) => ({ file, kind: d.kind }))),

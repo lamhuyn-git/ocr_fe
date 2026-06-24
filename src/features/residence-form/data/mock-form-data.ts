@@ -1,42 +1,5 @@
 import type { SelectOption } from "../types";
 
-// Mock danh mục dùng cho các dropdown. Thay bằng API thật sau.
-
-export const PROVINCES: SelectOption[] = [
-  { value: "hcm", label: "Thành phố Hồ Chí Minh" },
-  { value: "hn", label: "Thành phố Hà Nội" },
-  { value: "dn", label: "Thành phố Đà Nẵng" },
-  { value: "ct", label: "Thành phố Cần Thơ" },
-];
-
-// Phường theo từng tỉnh/thành.
-export const WARDS_BY_PROVINCE: Record<string, SelectOption[]> = {
-  hcm: [
-    { value: "tnpa", label: "Phường Tăng Nhơn Phú A" },
-    { value: "tnpb", label: "Phường Tăng Nhơn Phú B" },
-    { value: "lb", label: "Phường Long Bình" },
-    { value: "lt", label: "Phường Linh Trung" },
-  ],
-  hn: [
-    { value: "cg", label: "Phường Cầu Giấy" },
-    { value: "dd", label: "Phường Đống Đa" },
-  ],
-  dn: [{ value: "hc", label: "Phường Hải Châu" }],
-  ct: [{ value: "nk", label: "Phường Ninh Kiều" }],
-};
-
-// Cơ quan thực hiện suy ra theo phường.
-export const AGENCY_BY_WARD: Record<string, string> = {
-  tnpa: "Công An Phường Tăng Nhơn Phú",
-  tnpb: "Công An Phường Tăng Nhơn Phú B",
-  lb: "Công An Phường Long Bình",
-  lt: "Công An Phường Linh Trung",
-  cg: "Công An Phường Cầu Giấy",
-  dd: "Công An Phường Đống Đa",
-  hc: "Công An Phường Hải Châu",
-  nk: "Công An Phường Ninh Kiều",
-};
-
 export const PROCEDURES: SelectOption[] = [
   { value: "tam-tru", label: "Đăng Ký tạm trú" },
   { value: "thuong-tru", label: "Đăng Ký thường trú" },
@@ -121,13 +84,12 @@ export const RENTAL_ATTACHMENT_DOCS = [
   {
     id: "1",
     name: "Tờ khai thay đổi thông tin cư trú",
-    checked: false,
     format: "ban-goc",
     hasTemplate: true,
     hasCsdl: false,
     quantity: 0,
     note: "",
-    kind: "CT01", // tờ khai cần OCR → BE trích xuất ảnh có key chứa "CT01"
+    kind: "CT01",
   },
   {
     id: "2",
@@ -135,12 +97,11 @@ export const RENTAL_ATTACHMENT_DOCS = [
       "Giấy tờ, tài liệu chứng minh chỗ ở hợp pháp (1 trong các giấy tờ được " +
       "quy định tại khoản 3 Điều 5, Nghị định số 154/2024/NĐ-CP quy định chi " +
       "tiết một số điều và biện pháp thi hành luật cư trú ngày 26 tháng 11 năm 2024)",
-    checked: true,
     format: "ban-goc",
     hasTemplate: false,
     hasCsdl: true,
     quantity: 0,
     note: "",
-    kind: "RESIDENCE_PROOF", // giấy tờ chứng minh chỗ ở → KHÔNG OCR
+    kind: "RESIDENCE_PROOF",
   },
 ];

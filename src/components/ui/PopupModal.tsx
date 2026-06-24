@@ -1,5 +1,6 @@
 import { createPortal } from "react-dom";
 import Button from "./Button";
+import Icon from "../icons";
 
 type Props = {
   header: string;
@@ -8,7 +9,8 @@ type Props = {
   subText: string;
   mainAction: () => void;
   subAction: () => void;
-  children?: React.ReactNode; // slot cho illustration hoặc nội dung tuỳ chỉnh
+  closeAction: () => void;
+  children?: React.ReactNode;
 };
 
 export default function PopupModal({
@@ -18,6 +20,7 @@ export default function PopupModal({
   subText,
   mainAction,
   subAction,
+  closeAction,
   children,
 }: Props) {
   return createPortal(
@@ -59,6 +62,12 @@ export default function PopupModal({
           />
         </div>
       </div>
+      <Icon
+        name="cancel"
+        size={12}
+        className="position right-4 top-4"
+        onClick={closeAction}
+      />
     </div>,
     document.body,
   );

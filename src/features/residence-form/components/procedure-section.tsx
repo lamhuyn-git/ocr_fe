@@ -65,28 +65,32 @@ export default function ProcedureSection({
             }))}
             value={procedure}
             onChange={setProcedure}
-            placeholder="Chọn thủ tục hành chính"
+            placeholder={
+              procedures[0]?.label ?? "Chọn thủ tục hành chính tại đây"
+            }
             error={errors?.has("procedure") ? REQUIRED_FIELD_ERROR : undefined}
           />
         </div>
 
-        <div className="flex flex-col gap-3 pt-7">
-          {HOUSEHOLD_TYPES.map((t) => (
-            <label
-              key={t.value}
-              className="flex items-center gap-2 cursor-pointer text-para-m-medium text-text-main"
-            >
-              <input
-                type="radio"
-                name="householdType"
-                checked={householdType === t.value}
-                onChange={() => setHouseholdType(t.value)}
-                className="accent-primary"
-              />
-              {t.label}
-            </label>
-          ))}
-        </div>
+        {expanded && (
+          <div className="flex flex-col gap-3 pt-7">
+            {HOUSEHOLD_TYPES.map((t) => (
+              <label
+                key={t.value}
+                className="flex items-center gap-2 cursor-pointer text-para-m-medium text-text-main"
+              >
+                <input
+                  type="radio"
+                  name="householdType"
+                  checked={householdType === t.value}
+                  onChange={() => setHouseholdType(t.value)}
+                  className="accent-primary"
+                />
+                {t.label}
+              </label>
+            ))}
+          </div>
+        )}
 
         <div className="flex flex-col gap-2">
           <FieldLabel required>Trường hợp</FieldLabel>

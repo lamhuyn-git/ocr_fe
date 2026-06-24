@@ -12,4 +12,4 @@ export {
   type BoxShadowToken,
   type BorderRadiusToken,
 } from "./effects";
-export { GreenLinear as backgroundImage, type GradientToken } from "./gradients";
+export { GreenLinear as backgroundImage, type GradientToken } from "./colors";

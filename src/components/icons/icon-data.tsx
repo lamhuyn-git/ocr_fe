@@ -1,5 +1,3 @@
-// Không khai báo Record<string,...> — TypeScript tự suy ra literal keys
-// → IconName là union chính xác, bắt icon name sai lúc compile
 export const iconMap = {
   "chevron-left": () => (
     <svg

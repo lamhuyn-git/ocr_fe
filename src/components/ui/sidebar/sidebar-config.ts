@@ -1,4 +1,3 @@
-/** Types for sidebar navigation structure */
 export type NavChild = {
   label: string;
   active?: boolean;

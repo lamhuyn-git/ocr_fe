@@ -7,7 +7,6 @@ export default function Loading({ show = true }: LoadingProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/85">
-      {/* 3.75rem spinner — light-green track, dark-green arc rotating */}
       <div
         className="size-[3.75rem] animate-spin rounded-full bg-green-linear"
         style={{

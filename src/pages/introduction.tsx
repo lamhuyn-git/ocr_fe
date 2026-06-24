@@ -8,9 +8,9 @@ export default function IntroductionPage() {
 
   return (
     <IntroLoginShell dotIndex={0} onNext={() => navigate("/login")}>
-      <div className="mx-auto flex w-full max-w-[43%] flex-1 flex-col justify-center gap-6 py-10">
+      <div className="mx-auto flex w-full max-w-[40%] flex-1 flex-col justify-center gap-6 py-10">
         <div className="flex flex-col gap-2">
-          <h1 className="text-heading-serif text-[1.8rem] font-serif uppercase text-text-main">
+          <h1 className="text-heading-serif text-[1.7rem] font-serif uppercase text-text-main">
             Vextract — Bản demo mã nguồn mở
           </h1>
           <p className="text-para-m-regular leading-[1.6] text-text-secondary">
@@ -51,7 +51,7 @@ export default function IntroductionPage() {
         {/* Tinh thần dự án + ảnh */}
         <div className="flex items-start justify-between gap-8">
           <div className="w-[42%] flex flex-col gap-1">
-            <h2 className="text-subheading-serif font-serif text-[1.45rem] text-text-main">
+            <h2 className="font-serif text-[1.25rem] text-text-main">
               Tinh thần dự án
             </h2>
             <p className="text-para-m-regular leading-[1.6] text-text-secondary">

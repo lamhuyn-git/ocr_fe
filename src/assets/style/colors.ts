@@ -103,7 +103,6 @@ const blue = {
 } as const;
 
 export const colors = {
-  // Palette groups
   main,
   secondary,
   beige,
@@ -129,5 +128,12 @@ export const colors = {
   "input-border": grey.hover,
   divider: black["light-active"],
 } as const;
+
+export const GreenLinear = {
+  "green-linear":
+    "linear-gradient(120deg, #064600 0%, #29780d 25%, #b0e16c 50%, #29780d 75%, #064600 100%)",
+} as const;
+
+export type GradientToken = keyof typeof GreenLinear;
 
 export type ColorToken = keyof typeof colors;

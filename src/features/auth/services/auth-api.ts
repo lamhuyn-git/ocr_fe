@@ -1,7 +1,7 @@
 import { apiFetch } from "../../../lib/http-client";
 import type {
-  AccountCredentials,
-  VneidCredentials,
+  AccountLoginRequest,
+  VneidLoginRequest,
   AuthTokens,
   AuthUser,
 } from "../types";
@@ -32,7 +32,7 @@ async function fetchCurrentUser(accessToken: string): Promise<AuthUser> {
 }
 
 export async function loginWithVneid(
-  credentials: VneidCredentials,
+  credentials: VneidLoginRequest,
 ): Promise<LoginResponse> {
   const tokens = toTokens(
     await apiFetch<any>("/api/v1/auth/login/citizen", {
@@ -48,7 +48,7 @@ export async function loginWithVneid(
 }
 
 export async function loginWithAccount(
-  credentials: AccountCredentials,
+  credentials: AccountLoginRequest,
 ): Promise<LoginResponse> {
   const tokens = toTokens(
     await apiFetch<any>("/api/v1/auth/login/staff", {

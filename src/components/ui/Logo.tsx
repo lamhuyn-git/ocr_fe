@@ -14,7 +14,11 @@ const sizeConfig = {
     text: "text-base tracking-[0.02rem]",
     gap: "gap-1",
   },
-  Medium: { icon: "w-8 h-8", text: "text-xs tracking-[0.015rem]", gap: "gap-1" },
+  Medium: {
+    icon: "w-8 h-8",
+    text: "text-xs tracking-[0.015rem]",
+    gap: "gap-1",
+  },
   Small: {
     icon: "w-4 h-4",
     text: "text-[0.375rem] tracking-[0.0075rem]",
@@ -30,8 +34,9 @@ export default function Logo({
   const { icon, text, gap } = sizeConfig[size];
 
   return (
-    // Màu mặc định text-text-main; truyền className (vd text-white) để đổi màu chữ.
-    <div className={`flex items-center text-text-main ${gap} ${className ?? ""}`}>
+    <div
+      className={`flex items-center text-text-main ${gap} ${className ?? ""}`}
+    >
       <img
         src={vextractLogo}
         alt="VExtract logo"

@@ -2,8 +2,8 @@ import { useState } from "react";
 import Icon from "../icons";
 
 type DatePickerProps = {
-  value?: string; // dd/mm/yyyy
-  onSelect: (value: string) => void; // dd/mm/yyyy
+  value?: string;
+  onSelect: (value: string) => void;
   onClose: () => void;
 };
 
@@ -14,7 +14,6 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const format = (dt: Date) =>
   `${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}/${dt.getFullYear()}`;
 
-// dd/mm/yyyy -> Date (null nếu rỗng/không hợp lệ).
 function parse(v?: string): Date | null {
   if (!v) return null;
   const [d, m, y] = v.split("/").map(Number);
@@ -22,8 +21,6 @@ function parse(v?: string): Date | null {
   const dt = new Date(y, m - 1, d);
   return Number.isNaN(dt.getTime()) ? null : dt;
 }
-
-// Lịch chọn ngày — phong cách Material 3 (docked).
 export default function DatePicker({
   value,
   onSelect,
@@ -38,7 +35,6 @@ export default function DatePicker({
   });
 
   const daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
-  // getDay(): 0=CN..6=T7 -> đổi sang tuần bắt đầu Thứ 2.
   const leading = (new Date(view.y, view.m, 1).getDay() + 6) % 7;
 
   const cells: (number | null)[] = [

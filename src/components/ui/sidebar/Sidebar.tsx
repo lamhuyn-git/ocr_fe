@@ -194,8 +194,6 @@ export default function Sidebar({
         }`}
       >
         {collapsed ? (
-          // Thu gọn: không còn nút collapse. Hover vào logo -> hiện icon expanse
-          // thế chỗ logo; click để mở rộng sidebar.
           <button
             type="button"
             onClick={handleResizeSidebar}

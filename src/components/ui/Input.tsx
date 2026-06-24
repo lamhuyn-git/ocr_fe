@@ -17,12 +17,12 @@ type InputProps = Omit<
 > & {
   inputType?: InputType;
   showSubIcon?: boolean;
-  icon?: IconName; // icon trái
-  rightIcon?: IconName; // icon phải (calendar -> mở DatePicker, khác -> trang trí)
-  multiline?: boolean; // render <textarea>
+  icon?: IconName;
+  rightIcon?: IconName;
+  multiline?: boolean;
   placeholder?: string;
-  error?: string; // viền đỏ + message dưới
-  hasError?: boolean; // viền đỏ, không message
+  error?: string;
+  hasError?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 };
 
@@ -61,12 +61,10 @@ export default function Input({
     return () => document.removeEventListener("mousedown", onDocClick);
   }, [pickerOpen]);
 
-  // DatePicker trả dd/mm/yyyy -> đẩy qua onChange (giả lập event).
   const handleSelectDate = (v: string) => {
     onChange?.({ target: { value: v } } as ChangeEvent<HTMLInputElement>);
   };
 
-  // Viền/nền theo state. Ưu tiên: disabled > error > (default/hover/focus).
   const stateClasses = disabled
     ? "bg-grey-hover text-grey-darker border-input-border cursor-not-allowed opacity-70"
     : hasError
@@ -85,7 +83,7 @@ export default function Input({
             multiline ? "py-3 items-start" : "py-4 items-center"
           } ${stateClasses}`}
         >
-          {/* Left icon (không dùng cho textarea) */}
+          {/* Left icon */}
           {!multiline && icon && (
             <Icon name={icon} size={16} className="shrink-0" />
           )}
@@ -156,7 +154,7 @@ export default function Input({
         )}
       </div>
 
-      {/* Error message — italic đỏ */}
+      {/* Error message */}
       {error && (
         <p className="text-para-m-regular italic text-red leading-[1.45]">
           {error}

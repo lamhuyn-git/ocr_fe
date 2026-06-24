@@ -10,9 +10,9 @@ type SelectProps = {
   disabled?: boolean;
   loading?: boolean;
   className?: string;
-  triggerClassName?: string; // ghi đè style của nút trigger (vd: padding)
-  hasError?: boolean; // viền đỏ, không message
-  error?: string; // viền đỏ + message dưới
+  triggerClassName?: string;
+  hasError?: boolean;
+  error?: string;
 };
 
 export default function Select({
@@ -29,7 +29,7 @@ export default function Select({
 }: SelectProps) {
   const hasError = !!error || hasErrorProp;
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState(""); // từ khoá autofill/search
+  const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
 
   const close = () => {
@@ -48,7 +48,7 @@ export default function Select({
   const selected = options.find((o) => o.value === value);
   const isDisabled = disabled || loading;
 
-  // Chuẩn hoá: bỏ dấu tiếng Việt + thường hoá -> search không dấu.
+  // Chuẩn hoá search string
   const noAccent = (s: string) =>
     s
       .normalize("NFD")
@@ -62,8 +62,6 @@ export default function Select({
     ? options.filter((o) => noAccent(o.label).includes(q))
     : options;
 
-  // Khi đang search: làm nổi bật kết quả khớp đầu tiên (gần nhất).
-  // Khi chưa search: giữ nổi bật value đang chọn.
   const highlightValue = q ? filtered[0]?.value : value;
 
   return (
@@ -99,7 +97,7 @@ export default function Select({
 
         {open && !isDisabled && (
           <div className="absolute z-20 mt-1 w-full rounded-lg border border-input-border bg-white shadow-card overflow-hidden">
-            {/* Ô search (autofill) */}
+            {/* Ô search*/}
             <div className="flex items-center gap-2 px-3 py-2 border-b border-input-border">
               <Icon
                 name="search"
@@ -145,7 +143,6 @@ export default function Select({
         )}
       </div>
 
-      {/* Error message — italic đỏ */}
       {error && (
         <p className="text-para-m-regular italic text-red leading-[1.45]">
           {error}

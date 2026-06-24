@@ -1,4 +1,4 @@
-// Trạng thái workflow của hồ sơ (khớp "Workflow status" trong Figma).
+// Trạng thái workflow của hồ sơ
 export type FormStatusKey =
   | "draft"
   | "submitted"
@@ -13,8 +13,6 @@ export type FormStatusKey =
 
 type FormStatusStyle = { label: string; className: string };
 
-// Nhãn tiếng Việt + màu pill cho từng trạng thái backend.
-// purple chưa có trong theme -> dùng hex arbitrary cho "Đã xem".
 export const FORM_STATUS_CONFIG: Record<FormStatusKey, FormStatusStyle> = {
   draft: {
     label: "Bản nháp",
@@ -64,7 +62,6 @@ type FormStatusProps = {
 };
 
 export default function Status({ status, className }: FormStatusProps) {
-  // Status lạ -> pill xám + hiển thị nguyên giá trị (tránh vỡ UI).
   const { label, className: colorClass } = FORM_STATUS_CONFIG[
     status as FormStatusKey
   ] ?? {

@@ -4,10 +4,9 @@ type NotificationProps = {
   time?: string;
   title: string;
   message: string;
-  icon?: ReactNode; // tuỳ chọn — chỉ hiển thị khi truyền vào
+  icon?: ReactNode;
 };
 
-// Card thông báo kiểu push notification.
 export default function Notification({
   time,
   title,

@@ -1,23 +1,27 @@
 import Input from "../../../components/ui/Input";
 import Select from "../../../components/ui/Select";
 import Icon from "../../../components/icons";
-import { DOC_FORMATS } from "../data/mock-form-data";
-import type { AttachmentDoc } from "../types";
+import type { AttachmentDoc, SelectOption } from "../types";
 
-// Bề rộng cột theo tỷ lệ % — dùng CHUNG cho header và row để luôn thẳng hàng.
-// 8 cột, tổng = 100%. box-border nên padding nằm trong width.
+// Tỷ lệ % cho header và row để luôn thẳng hàng.
 const COL = {
   stt: "w-[4%]",
-  name: "w-[24%]",
+  name: "w-[35%]",
   format: "w-[13%]",
   template: "w-[8%]",
-  csdl: "w-[17%]",
   attach: "w-[13%]",
   qty: "w-[7%]",
-  note: "w-[14%]",
+  note: "w-[20%]",
 } as const;
 
-// Giới hạn file đính kèm: chỉ ảnh, ≤ 10MB/file.
+// Hình thức giấy tờ (cột "Hình thức giấy tờ").
+export const DOC_FORMATS: SelectOption[] = [
+  { value: "ban-goc", label: "Bản gốc" },
+  { value: "ban-sao", label: "Bản sao" },
+  { value: "ban-sao-cong-chung", label: "Bản sao công chứng" },
+];
+
+// Giới hạn file đính kèm, chỉ cho phép ảnh có kích thước ≤ 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 type Props = {
@@ -25,10 +29,7 @@ type Props = {
   onUpdate: (id: string, patch: Partial<AttachmentDoc>) => void;
 };
 
-// Bảng giấy tờ cần đính kèm cho 1 nhóm thủ tục (controlled — state ở section cha).
-// Style table giống bảng thành viên hộ gia đình (header vàng nhạt, bo góc).
 export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
-  // Chọn file: lọc lấy ảnh hợp lệ, gộp vào danh sách hiện có của dòng.
   const handleFiles = (doc: AttachmentDoc, fileList: FileList | null) => {
     if (!fileList) return;
     const valid = Array.from(fileList).filter(
@@ -52,9 +53,6 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
           Hình thức giấy tờ<span className="text-[#E5392E]">*</span>
         </span>
         <span className={`${COL.template} pr-3 text-center`}>Tải file mẫu</span>
-        <span className={`${COL.csdl} pr-3 text-center leading-tight`}>
-          Khai thác CSDL chuyên ngành/Biểu mẫu điện tử
-        </span>
         <span className={`${COL.attach} pr-3 text-center`}>Đính kèm</span>
         <span className={`${COL.qty} pr-3`}>Số lượng</span>
         <span className={COL.note}>Ghi chú</span>
@@ -79,8 +77,8 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
           >
             <input
               type="checkbox"
-              checked={d.checked}
-              onChange={(e) => onUpdate(d.id, { checked: e.target.checked })}
+              checked={d.files.length > 0}
+              readOnly
               className="h-4 w-4 shrink-0 accent-primary cursor-pointer"
             />
             <span className="text-para-m-medium text-text-main leading-snug">
@@ -111,29 +109,6 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
             )}
           </div>
 
-          {/* Khai thác CSDL chuyên ngành/Biểu mẫu điện tử */}
-          <div className={`${COL.csdl} pr-3 flex justify-center`}>
-            {d.hasCsdl && (
-              <div className="flex items-center gap-2 rounded-md bg-grey px-2 py-1.5">
-                <button
-                  type="button"
-                  aria-label="Khai thác CSDL chuyên ngành"
-                  className="text-text-secondary hover:text-text-main transition-colors"
-                >
-                  <Icon name="code" size={18} />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Biểu mẫu điện tử"
-                  className="text-text-secondary hover:text-text-main transition-colors"
-                >
-                  <Icon name="document" size={18} />
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Đính kèm — chọn ảnh + danh sách file đã chọn */}
           <div
             className={`${COL.attach} pr-3 flex flex-col items-center gap-2`}
           >
@@ -146,7 +121,7 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
                 className="hidden"
                 onChange={(e) => {
                   handleFiles(d, e.target.files);
-                  e.target.value = ""; // reset để chọn lại cùng file vẫn fire
+                  e.target.value = "";
                 }}
               />
             </label>

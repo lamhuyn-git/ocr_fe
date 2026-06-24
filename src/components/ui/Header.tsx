@@ -14,9 +14,9 @@ const NAV_LINKS: { label: string; to: string }[] = [
 
 type HeaderProps = {
   userName: string;
-  title?: string; // tiêu đề hero (mặc định: trang đăng ký tạm trú)
-  subtitle?: ReactNode; // mô tả hero
-  activeNav?: string; // nhãn nav đang active
+  title?: string;
+  subtitle?: ReactNode;
+  activeNav?: string;
 };
 
 export default function Header({
@@ -32,7 +32,7 @@ export default function Header({
     year: "numeric",
   });
 
-  // Nav trong suốt khi ở đầu trang (đè lên hero xanh), có nền khi cuộn xuống.
+  // Nav trong suốt khi ở đầu trang (đè lên hero xanh), chỉ có nền khi cuộn xuống.
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -41,7 +41,6 @@ export default function Header({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Menu account (đăng xuất)
   const { signOut } = useAuthContext();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

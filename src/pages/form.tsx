@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../store/auth-store";
 import Loading from "../components/ui/Loading";
 import Header from "../components/ui/Header";
@@ -42,6 +42,7 @@ import Footer from "../components/ui/Footer";
 
 export default function FormPage() {
   const { isAuthenticated, isInitializing, user } = useAuthContext();
+  const navigate = useNavigate();
 
   const [provinces, setProvinces] = useState<SelectOption[]>([]);
   const [province, setProvince] = useState("");
@@ -182,7 +183,7 @@ export default function FormPage() {
     console.log("Save form as draft");
   }
 
-  // Reset toàn bộ form về trạng thái ban đầu sau khi nộp thành công.
+  // Reset toàn bộ form về trạng thái ban đầu sau khi nộp thành công
   function resetForm() {
     setProvince("");
     setWard("");
@@ -204,7 +205,7 @@ export default function FormPage() {
     setMembers([]);
     setAttachmentFiles([]);
     setErrorFields([]);
-    setResetKey((k) => k + 1); // remount -> reset state nội bộ các section
+    setResetKey((k) => k + 1);
   }
 
   async function handleSubmit(agreed: boolean) {
@@ -244,18 +245,19 @@ export default function FormPage() {
     setToast(null);
     setSubmitting(true);
     try {
-      // Upload ảnh đính kèm lên S3 và nhận path_url cho từng file.
+      // Upload ảnh đính kèm lên S3 và nhận lại path_url cho từng file
       const paths = await uploadImages(attachmentFiles);
       const evidences = paths.map((path_url) => ({ path_url }));
 
-      // Gom payload (FormCreate) kèm evidences rồi nộp hồ sơ.
+      // Gom payload (FormCreate) kèm evidences rồi nộp hồ sơ
       const payload = buildSubmitPayload({ ...input, evidences });
+
       // Log payload trước khi gọi API để dễ kiểm tra dữ liệu gửi lên.
       console.log("Submit /api/v1/form payload:", payload);
       await submitResidenceForm(payload);
-
       setToast({ title: "Thành công", message: "Nộp hồ sơ thành công." });
       resetForm();
+      navigate("/lookup"); // chuyển sang trang Tra cứu hồ sơ sau khi nộp thành công
     } catch (e) {
       const msg =
         (e as { message?: string })?.message ??
@@ -271,7 +273,7 @@ export default function FormPage() {
     provinces.find((p) => p.value === province)?.label ?? "";
   const wardLabel = wards.find((w) => w.value === ward)?.label ?? "";
 
-  // Chủ hộ tạm trú = người đề nghị: self -> userDetail, proxy -> applicant nhập.
+  // self là auto fill, proxy là applicant nhập.
   const isSelf = applicantType === "self";
   const ownerName = isSelf
     ? (userDetail?.fullName?.toUpperCase() ?? "")
@@ -284,7 +286,6 @@ export default function FormPage() {
 
   return (
     <div className="min-h-screen bg-grey flex flex-col">
-      {/* Overlay loading khi đang upload ảnh / nộp hồ sơ */}
       <Loading show={submitting} />
       {toast && (
         <div className="fixed top-6 right-6 z-[100] w-full max-w-md">

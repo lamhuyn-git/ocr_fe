@@ -8,8 +8,8 @@ import {
   type LoginResponse,
 } from "../services/auth-api";
 import type {
-  AccountCredentials,
-  VneidCredentials,
+  AccountLoginRequest,
+  VneidLoginRequest,
   AccountType,
   ApiError,
 } from "../types";
@@ -36,7 +36,7 @@ export function useAuth() {
   );
 
   const signInWithAccount = useCallback(
-    async (credentials: AccountCredentials): Promise<string | null> => {
+    async (credentials: AccountLoginRequest): Promise<string | null> => {
       dispatch({ type: "LOGIN_START" });
       try {
         onSuccess(await loginWithAccount(credentials), "staff");
@@ -52,7 +52,7 @@ export function useAuth() {
   );
 
   const signInWithVneid = useCallback(
-    async (credentials: VneidCredentials): Promise<string | null> => {
+    async (credentials: VneidLoginRequest): Promise<string | null> => {
       dispatch({ type: "LOGIN_START" });
       try {
         onSuccess(await loginWithVneid(credentials), "citizen");

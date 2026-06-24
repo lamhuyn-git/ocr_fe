@@ -24,7 +24,6 @@ export const EXTRACTION_STATUS_CONFIG: Record<
   },
 };
 
-// Thông tin thủ tục hành chính (hiển thị ở cả 2 panel trái/phải).
 export type ProcedureInfo = {
   hinhThuc: string;
   truongHop: string;

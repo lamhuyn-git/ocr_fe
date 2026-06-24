@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-// Khung 1 section. active -> khung xanh + header trắng; còn lại -> xám nhạt.
 export default function Card({
   title,
   active = false,
@@ -25,7 +24,6 @@ export default function Card({
           {title}
         </span>
       </div>
-      {/* Body trắng bo tròn, tụt lên để màu khung lộ ở các góc */}
       <div className="-mt-2 rounded-2xl bg-white px-6 py-6">{children}</div>
     </section>
   );

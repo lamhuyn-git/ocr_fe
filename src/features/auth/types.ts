@@ -4,12 +4,14 @@ export type LoginStep = 1 | 2;
 // Loại tài khoản suy ra từ endpoint login đã dùng (không phụ thuộc role của BE).
 export type AccountType = "citizen" | "staff";
 
-export type AccountCredentials = {
+// Request gửi lên /api/v1/auth/login/staff
+export type AccountLoginRequest = {
   email: string;
   password: string;
 };
 
-export type VneidCredentials = {
+// Request gửi lên /api/v1/auth/login/citizen
+export type VneidLoginRequest = {
   nationalId: string;
   password: string;
 };

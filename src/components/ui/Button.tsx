@@ -59,7 +59,6 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const { wrapper, icon: iconSize } = sizeStyles[size];
-  // primary: icon ăn theo màu chữ (currentColor) thay vì màu stroke cứng của icon.
   const iconColor = variant === "primary" ? "[&_path]:stroke-current" : "";
 
   return (

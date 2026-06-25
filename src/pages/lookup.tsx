@@ -4,7 +4,6 @@ import Loading from "../components/ui/Loading";
 import Header from "../components/ui/Header";
 import Footer from "../components/ui/Footer";
 import LookupFormList from "../features/lookup/components/lookup-form-list";
-import { MOCK_LOOKUP_FORMS } from "../features/lookup/data/mock-lookup-forms";
 
 // Trang "Tra cứu hồ sơ" phía công dân: danh sách hồ sơ đã nộp + bản nháp đã lưu.
 export default function LookupPage() {
@@ -26,8 +25,8 @@ export default function LookupPage() {
         }
       />
 
-      <main className="w-full max-w-[87.5rem] mx-auto px-10 py-10 pb-12 flex-1">
-        <LookupFormList forms={MOCK_LOOKUP_FORMS} />
+      <main className="w-full max-w-[87.5rem] mx-auto px-10 py-6 flex-1">
+        <LookupFormList userId={user.id} />
       </main>
 
       <Footer />

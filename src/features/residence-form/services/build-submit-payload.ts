@@ -28,12 +28,12 @@ export type FormSpecPayload = {
 };
 
 export type ResidenceSubmitPayload = {
-  org_id: string;
-  form_type_id: string;
+  org_id: string | null;
+  form_type_id: string | null;
   submit_by: string;
-  notification_on: string;
+  notification_on: string | null;
   evidences: EvidencePayload[];
-  form_spec: FormSpecPayload;
+  form_spec: FormSpecPayload | null;
 };
 
 export type SubmitInput = {
@@ -119,14 +119,16 @@ export function validateSubmit(input: SubmitInput): RequiredFieldKey[] {
   return missing;
 }
 
-// Gom toàn bộ state form thành payload
+// Gom toàn bộ state form thành payload. Dùng chung cho nộp & lưu nháp:
+// org_id/form_type_id/notification_on null hoá khi trống (nháp khai dở); khi nộp đã
+// được validateSubmit() đảm bảo có giá trị nên || null trả lại đúng string.
 export function buildSubmitPayload(input: SubmitInput): ResidenceSubmitPayload {
   const person = input.applicant;
   return {
-    org_id: input.orgId,
-    form_type_id: input.formTypeId,
+    org_id: input.orgId || null,
+    form_type_id: input.formTypeId || null,
     submit_by: input.submitBy,
-    notification_on: input.notifyMethod,
+    notification_on: input.notifyMethod || null,
     evidences: (input.evidences ?? []).map((e) => ({ path_url: e.path_url })),
     form_spec: {
       case: input.caseValue || null,

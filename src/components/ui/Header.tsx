@@ -125,7 +125,7 @@ export default function Header({
                     setMenuOpen(false);
                     void signOut().catch(() => {});
                   }}
-                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-m-medium text-grey-dark-active [&_path]:stroke-grey-dark-active hover:bg-grey transition-colors"
+                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-m-medium text-primary [&_path]:stroke-primary hover:bg-grey transition-colors"
                 />
                 <Button
                   type="button"
@@ -134,7 +134,7 @@ export default function Header({
                   text="Cài đặt"
                   showIcon
                   icon="setting"
-                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-m-medium text-grey-dark-active [&_path]:stroke-grey-dark-active hover:bg-grey transition-colors"
+                  className="w-full flex items-center !justify-start gap-2 w-full px-4 py-2 text-para-m-medium text-primary [&_path]:stroke-primary hover:bg-grey transition-colors"
                 />
               </div>
             )}

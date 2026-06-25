@@ -6,6 +6,7 @@ export type FormStatusKey =
   | "extracted"
   | "under_review"
   | "reviewed"
+  | "returned"
   | "approved"
   | "rejected"
   | "failed"
@@ -37,6 +38,10 @@ export const FORM_STATUS_CONFIG: Record<FormStatusKey, FormStatusStyle> = {
   reviewed: {
     label: "Đã xem",
     className: "bg-[#f1ecfc] text-[#6d5bd0]",
+  },
+  returned: {
+    label: "Đã trả kết quả",
+    className: "bg-secondary text-white",
   },
   approved: {
     label: "Hợp lệ",

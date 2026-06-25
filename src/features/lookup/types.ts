@@ -8,4 +8,7 @@ export type LookupForm = {
   location: string; // địa chỉ đăng ký
   date: string; // ngày nộp / cập nhật (dd/MM/yyyy)
   status: FormStatusKey; // draft | submitted | extracted | approved | ...
+  completedDate?: string; // ngày hoàn thành (dd/MM/yyyy) — khi đã trả kết quả
+  rejectReason?: string; // lý do từ chối/trả lại — hiện khi rejected/returned
+  notifyMethod?: string; // kênh nhận thông báo (portal | email | sms)
 };

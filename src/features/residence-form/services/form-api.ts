@@ -38,6 +38,16 @@ export async function submitResidenceForm(
   });
 }
 
+export async function saveDraftForm(
+  payload: ResidenceSubmitPayload,
+): Promise<unknown> {
+  return apiFetch("/api/v1/form/draft", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function fetchProcedures(): Promise<SelectOption[]> {
   const data = await apiFetch<any[]>("/api/v1/form-types", {
     auth: true,

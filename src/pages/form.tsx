@@ -17,6 +17,7 @@ import {
   fetchAgency,
   fetchCitizenDetail,
   submitResidenceForm,
+  saveDraftForm,
 } from "../features/residence-form/services/form-api";
 import {
   uploadImages,
@@ -37,8 +38,8 @@ import {
   type SubmitInput,
   type RequiredFieldKey,
 } from "../features/residence-form/services/build-submit-payload";
-import Notification from "../components/ui/Notification";
 import Footer from "../components/ui/Footer";
+import { useToast } from "../store/toast-store";
 
 export default function FormPage() {
   const { isAuthenticated, isInitializing, user } = useAuthContext();
@@ -80,9 +81,7 @@ export default function FormPage() {
 
   //  toast lỗi cho các trường bắt buộc còn thiếu
   const [errorFields, setErrorFields] = useState<RequiredFieldKey[]>([]);
-  const [toast, setToast] = useState<{ title: string; message: string } | null>(
-    null,
-  );
+  const { showToast } = useToast();
 
   // Đổi sang "khai hộ" -> xoá dữ liệu đã đồng bộ từ tài khoản để nhập mới.
   const handleApplicantTypeChange = useCallback((t: ApplicantType) => {
@@ -111,13 +110,6 @@ export default function FormPage() {
   useEffect(() => {
     fetchProvinces().then(setProvinces);
   }, []);
-
-  // Toast lỗi tắt sau 10s.
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 10000);
-    return () => clearTimeout(t);
-  }, [toast]);
 
   const buildInput = (): SubmitInput => ({
     submitBy: user?.id ?? "",
@@ -179,8 +171,29 @@ export default function FormPage() {
     fetchAgency(ward_id).then(setAgency);
   }
 
-  function handleSaveDraft() {
-    console.log("Save form as draft");
+  async function handleSaveDraft() {
+    if (submitting) return;
+    setErrorFields([]);
+    setSubmitting(true);
+    try {
+      const input = buildInput();
+      const paths = attachmentFiles.length
+        ? await uploadImages(attachmentFiles)
+        : [];
+      const evidences = paths.map((path_url) => ({ path_url }));
+      const payload = buildSubmitPayload({ ...input, evidences });
+      await saveDraftForm(payload);
+      showToast("Đã lưu", "Lưu bản nháp thành công.");
+      resetForm();
+      navigate("/lookup");
+    } catch (e) {
+      const msg =
+        (e as { message?: string })?.message ??
+        "Lưu bản nháp thất bại, vui lòng thử lại.";
+      showToast("Lưu bản nháp thất bại", msg);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   // Reset toàn bộ form về trạng thái ban đầu sau khi nộp thành công
@@ -212,11 +225,10 @@ export default function FormPage() {
     if (submitting) return;
 
     if (!agreed) {
-      setToast({
-        title: "Thiếu thông tin bắt buộc",
-        message:
-          "Vui lòng xác nhận chịu trách nhiệm về lời khai trước khi nộp.",
-      });
+      showToast(
+        "Thiếu thông tin bắt buộc",
+        "Vui lòng xác nhận chịu trách nhiệm về lời khai trước khi nộp.",
+      );
       return;
     }
 
@@ -225,13 +237,12 @@ export default function FormPage() {
 
     if (missing.length > 0) {
       setErrorFields(missing);
-      setToast({
-        title: "Thiếu thông tin bắt buộc",
-        message:
-          missing.length > 1
-            ? "Vui lòng điền đầy đủ các trường bắt buộc còn thiếu."
-            : `Vui lòng nhập "${REQUIRED_FIELD_LABELS[missing[0]]}".`,
-      });
+      showToast(
+        "Thiếu thông tin bắt buộc",
+        missing.length > 1
+          ? "Vui lòng điền đầy đủ các trường bắt buộc còn thiếu."
+          : `Vui lòng nhập "${REQUIRED_FIELD_LABELS[missing[0]]}".`,
+      );
       // Scroll tới field lỗi đầu tiên (đợi render xong).
       requestAnimationFrame(() => {
         document
@@ -242,7 +253,6 @@ export default function FormPage() {
     }
 
     setErrorFields([]);
-    setToast(null);
     setSubmitting(true);
     try {
       // Upload ảnh đính kèm lên S3 và nhận lại path_url cho từng file
@@ -255,14 +265,14 @@ export default function FormPage() {
       // Log payload trước khi gọi API để dễ kiểm tra dữ liệu gửi lên.
       console.log("Submit /api/v1/form payload:", payload);
       await submitResidenceForm(payload);
-      setToast({ title: "Thành công", message: "Nộp hồ sơ thành công." });
+      showToast("Thành công", "Nộp hồ sơ thành công.");
       resetForm();
       navigate("/lookup"); // chuyển sang trang Tra cứu hồ sơ sau khi nộp thành công
     } catch (e) {
       const msg =
         (e as { message?: string })?.message ??
         "Nộp hồ sơ thất bại, vui lòng thử lại.";
-      setToast({ title: "Nộp hồ sơ thất bại", message: msg });
+      showToast("Nộp hồ sơ thất bại", msg);
     } finally {
       setSubmitting(false);
     }
@@ -287,11 +297,6 @@ export default function FormPage() {
   return (
     <div className="min-h-screen bg-grey flex flex-col">
       <Loading show={submitting} />
-      {toast && (
-        <div className="fixed top-6 right-6 z-[100] w-full max-w-md">
-          <Notification title={toast.title} message={toast.message} />
-        </div>
-      )}
       <Header userName={user.name} />
 
       <main

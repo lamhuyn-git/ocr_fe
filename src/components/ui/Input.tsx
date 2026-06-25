@@ -23,6 +23,7 @@ type InputProps = Omit<
   placeholder?: string;
   error?: string;
   hasError?: boolean;
+  boxClassName?: string; // class cho khung ngoài (vd chỉnh padding)
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 };
 
@@ -36,6 +37,7 @@ export default function Input({
   value,
   onChange,
   className,
+  boxClassName,
   error,
   hasError: hasErrorProp = false,
   disabled,
@@ -81,7 +83,7 @@ export default function Input({
         <div
           className={`w-full border rounded-lg px-4 flex gap-3 transition-[border-color,box-shadow] duration-150 ${
             multiline ? "py-3 items-start" : "py-4 items-center"
-          } ${stateClasses}`}
+          } ${stateClasses} ${boxClassName ?? ""}`}
         >
           {/* Left icon */}
           {!multiline && icon && (

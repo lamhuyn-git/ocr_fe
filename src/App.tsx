@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { AuthProvider } from "./store/auth-store";
 import { useAuthContext } from "./store/auth-store";
+import { ToastProvider } from "./store/toast-store";
 import LoginPage from "./pages/login";
 import AuthCallbackPage from "./pages/auth-callback";
 import IntroductionPage from "./pages/introduction";
@@ -103,7 +104,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   );

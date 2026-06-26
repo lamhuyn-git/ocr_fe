@@ -37,18 +37,36 @@ export type FormEvidences = {
   residence_proof?: string | null; // ảnh giấy tờ chứng minh chỗ ở
 };
 
+// Người chốt 1 mốc history (BE trả UserResponse).
+export type HistoryUser = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+};
+
+// 1 mốc trong lịch sử 1 field: bản gốc (system) hoặc 1 lần cán bộ chốt (confirm).
+export type ResultHistoryItem = {
+  source: "system" | "confirm";
+  status: string; // "valid" | "invalid" | "need_review"
+  value: string | null;
+  confirmed_by: HistoryUser | null;
+  created_at: string; // ISO datetime
+};
+
 export type ValidatedResult = {
   id: string;
   position: number[] | null; // bbox [x, y, width, height] trên ảnh đã nắn
   label: string; // mã field BE (vd "gioi_tinh", "kinh_gui")
   raw_value: string | null; // giá trị OCR trích xuất
   suggested_value: string | null; // giá trị BE đề xuất (đối chiếu CSDL)
+  db_value: string | null; // giá trị thật trong CSDL để tham chiếu (kể cả field mềm)
   final_value: string | null; // giá trị cán bộ chốt (null nếu chưa soát)
   note: string | null; // kết quả kiểm tra
   status: string; // "valid" | "invalid" | "need_review"
   confirmed_by: string | null; // cán bộ đã xác nhận field này
   confirmed_by_email: string | null; // email cán bộ đã chốt
   created_at: string;
+  result_history: ResultHistoryItem[]; // bản gốc + tất cả lần confirm (asc theo thời gian)
 };
 
 export type FormDetailResponse = {
@@ -59,6 +77,7 @@ export type FormDetailResponse = {
   status: string;
   notification_on: string;
   review_note: string | null;
+  is_gate_rejected: boolean; // hồ sơ đang bị chặn ở cổng → popup gate-reject
   created_at: string;
   updated_at: string;
   ogr_detailliated: OrgDetail;
@@ -68,10 +87,19 @@ export type FormDetailResponse = {
   validated_results: ValidatedResult[];
 };
 
+// Khi form ở submitted/processing/under_review thì không build detail
+export type FormStatusOnlyResponse = { form_id_db: string; status: string };
+
+export function isFullDetail(
+  res: FormDetailResponse | FormStatusOnlyResponse,
+): res is FormDetailResponse {
+  return "validated_results" in res;
+}
+
 export async function fetchFormDetail(
   formId: string,
-): Promise<FormDetailResponse> {
-  return apiFetch<FormDetailResponse>(
+): Promise<FormDetailResponse | FormStatusOnlyResponse> {
+  return apiFetch<FormDetailResponse | FormStatusOnlyResponse>(
     `/api/v1/form/detail?form_id=${encodeURIComponent(formId)}`,
     { auth: true },
   );
@@ -86,11 +114,12 @@ export type SaveChangeRequest = {
   form_id: string;
   confirmed_by: string | null;
   updated_fields: AdminSaveChangeFieldItem[] | null;
-  from_status: string | null; // trạng thái hồ sơ trước khi cán bộ vào xem
+  from_status: string | null;
 };
 
 export async function saveFormChanges(req: SaveChangeRequest): Promise<void> {
-  await apiFetch("/api/v1/form/admin/save_change", {
+  console.log(req);
+  await apiFetch("/api/v1/form/save_change", {
     method: "POST",
     auth: true,
     body: JSON.stringify(req),

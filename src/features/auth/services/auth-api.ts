@@ -28,6 +28,14 @@ async function fetchCurrentUser(accessToken: string): Promise<AuthUser> {
     role: data.role,
     name: data.full_name,
     email: data.email,
+    ward: data.ward
+      ? {
+          orgId: data.ward.org_id,
+          wardName: data.ward.ward_name,
+          provinceId: data.ward.province_id,
+          provinceName: data.ward.province_name,
+        }
+      : undefined,
   };
 }
 

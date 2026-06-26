@@ -111,6 +111,21 @@ export default function FormPage() {
     fetchProvinces().then(setProvinces);
   }, []);
 
+  // Cán bộ phường: prefill Tỉnh/Phường theo địa bàn phụ trách, field sẽ bị khoá.
+  useEffect(() => {
+    const w = user?.ward;
+    if (!w?.provinceId) return;
+    setProvince(w.provinceId);
+    setWardsLoading(true);
+    fetchWards(w.provinceId)
+      .then((opts) => {
+        setWards(opts);
+        setWard(w.orgId);
+        fetchAgency(w.wardName).then(setAgency);
+      })
+      .finally(() => setWardsLoading(false));
+  }, [user?.ward?.orgId]);
+
   const buildInput = (): SubmitInput => ({
     submitBy: user?.id ?? "",
     notifyMethod,
@@ -312,6 +327,7 @@ export default function FormPage() {
           ward={ward}
           onWardChange={handleWardChange}
           agency={agency}
+          locked={!!user?.ward}
           errors={errorSet}
         />
 

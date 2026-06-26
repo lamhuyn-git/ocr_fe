@@ -44,15 +44,15 @@ const FIELD_STATUS: Record<string, ExtractionStatus> = {
 };
 
 // Mã field BE -> section + nhãn hiển thị (panel phải gom theo section).
+// THỨ TỰ khai báo = thứ tự các mục trên tờ khai CT01 -> dùng để sắp xếp card.
 const FIELD_CONFIG: Record<string, { section: string; label: string }> = {
   kinh_gui: { section: "agency", label: "Cơ quan thực hiện" },
-  so_dinh_dan_ca_nhan: { section: "applicant", label: "Số định danh cá nhân" },
   ho_chu_dem_va_ten: { section: "applicant", label: "Họ và tên" },
-  gioi_tinh: { section: "applicant", label: "Giới tính" },
   ngay_thang_nam_sinh: { section: "applicant", label: "Ngày tháng năm sinh" },
+  gioi_tinh: { section: "applicant", label: "Giới tính" },
+  so_dinh_dan_ca_nhan: { section: "applicant", label: "Số định danh cá nhân" },
   so_dien_thoai_lien_he: { section: "applicant", label: "Số điện thoại" },
   email: { section: "applicant", label: "Email" },
-  noi_dung_de_nghi: { section: "request", label: "Nội dung đề nghị" },
   ho_chu_dem_va_ten_chu_ho: {
     section: "request",
     label: "Họ tên chủ hộ tạm trú",
@@ -62,10 +62,18 @@ const FIELD_CONFIG: Record<string, { section: string; label: string }> = {
     section: "request",
     label: "Số ĐDCN chủ hộ tạm trú",
   },
+  noi_dung_de_nghi: { section: "request", label: "Nội dung đề nghị" },
   thanh_vien_cung_thay_doi: {
     section: "members",
     label: "Thành viên cùng thay đổi",
   },
+};
+
+// Thứ tự field theo tờ khai CT01 (suy ra từ thứ tự khai báo FIELD_CONFIG).
+const FIELD_ORDER = Object.keys(FIELD_CONFIG);
+const fieldOrderIndex = (label: string): number => {
+  const i = FIELD_ORDER.indexOf(label);
+  return i === -1 ? Number.MAX_SAFE_INTEGER : i; // field lạ -> dồn xuống cuối
 };
 
 const SECTION_TITLES: Record<string, string> = {
@@ -88,27 +96,38 @@ const toField = (r: ValidatedResult): ExtractionField => {
     value,
     // Chỉ hiện "Gần nhất" khi gợi ý khác giá trị trích xuất.
     suggestValue: suggest && suggest !== value ? suggest : undefined,
+    // Giá trị CSDL thật để tham chiếu (hiện khi có và khác giá trị trích xuất).
+    csdlValue:
+      r.db_value && r.db_value !== value ? r.db_value : undefined,
     status: FIELD_STATUS[r.status] ?? "review",
     checkResult: r.note ?? "",
-    historyCount: 1,
+    // Số mốc lịch sử: 1 = chỉ bản gốc (system); >1 = đã có cán bộ chốt.
+    historyCount: r.result_history?.length ?? 1,
     position: r.position,
     confirmedBy: r.confirmed_by,
     confirmedByEmail: r.confirmed_by_email,
   };
 };
 
-// Ưu tiên sắp xếp field theo trạng thái: invalid > cần xem > hợp lệ.
-const STATUS_PRIORITY: Record<ExtractionStatus, number> = {
-  invalid: 0,
-  review: 1,
-  valid: 2,
+// Field "thành viên cùng thay đổi" rỗng (chỉ là note cho cán bộ tự soát) ->
+// không phải field trích xuất cần duyệt nên loại khỏi danh sách/đếm.
+const EMPTY_MEMBER_MARKERS = new Set(["", "[]", "{}", "0", "null", "none"]);
+const isEmptyMembersNote = (r: ValidatedResult): boolean => {
+  if (r.label !== "thanh_vien_cung_thay_doi") return false;
+  const v = (r.final_value ?? r.raw_value ?? "").trim().toLowerCase();
+  return EMPTY_MEMBER_MARKERS.has(v);
 };
 
 const buildExtractionSections = (
   results: ValidatedResult[],
 ): ExtractionSection[] => {
+  // Sắp xếp theo thứ tự tờ khai CT01 trước khi gom nhóm -> field trong mỗi
+  // section giữ đúng trình tự như trên tờ khai (Map giữ nguyên thứ tự push).
+  const ordered = [...results].sort(
+    (a, b) => fieldOrderIndex(a.label) - fieldOrderIndex(b.label),
+  );
   const bySection = new Map<string, ExtractionField[]>();
-  for (const r of results) {
+  for (const r of ordered) {
     const sectionId = FIELD_CONFIG[r.label]?.section ?? "applicant";
     const list = bySection.get(sectionId) ?? [];
     list.push(toField(r));
@@ -117,9 +136,7 @@ const buildExtractionSections = (
   return SECTION_ORDER.map((id) => ({
     id,
     title: SECTION_TITLES[id],
-    fields: (bySection.get(id) ?? []).sort(
-      (a, b) => STATUS_PRIORITY[a.status] - STATUS_PRIORITY[b.status],
-    ),
+    fields: bySection.get(id) ?? [],
   }));
 };
 
@@ -190,15 +207,10 @@ export function mapFormDetail(res: FormDetailResponse): FormDetail {
     nguoiKhai: SUBMIT_TYPE_LABELS[c.submit_type] ?? c.submit_type,
   };
 
-  // Bỏ field "thành viên cùng thay đổi" khi không có thành viên nào
-  // (chỉ là note cho cán bộ) -> panel phải hiển thị thông báo trống.
+  // Bỏ field "thành viên cùng thay đổi" khi không có thành viên nào (chỉ là note
+  // cho cán bộ) -> không tính vào tổng field, panel phải hiện thông báo trống.
   const results = (res.validated_results ?? []).filter(
-    (r) =>
-      !(
-        r.label === "thanh_vien_cung_thay_doi" &&
-        !r.raw_value &&
-        !r.final_value
-      ),
+    (r) => !isEmptyMembersNote(r),
   );
   return {
     // Mã hồ sơ hiển thị = 6 ký tự đầu của id form.
@@ -214,6 +226,7 @@ export function mapFormDetail(res: FormDetailResponse): FormDetail {
     extractionSections: buildExtractionSections(results),
     declaration: buildDeclaration(c, agencyName),
     reviewNote: res.review_note ?? null,
+    isGateRejected: res.is_gate_rejected ?? false,
     // warped_img -> tab tờ khai CT01; residence_proof -> tab đính kèm.
     evidences: [
       res.evidences?.warped_img && {

@@ -1,4 +1,4 @@
-// Trạng thái workflow của hồ sơ
+// Trạng thái workflow của hồ sơ — khớp với FormStatus của BE (app/models/form.py)
 export type FormStatusKey =
   | "draft"
   | "submitted"
@@ -7,10 +7,9 @@ export type FormStatusKey =
   | "under_review"
   | "reviewed"
   | "returned"
-  | "approved"
-  | "rejected"
   | "failed"
-  | "overdue";
+  | "overdue"
+  | "gate_rejected";
 
 type FormStatusStyle = { label: string; className: string };
 
@@ -43,14 +42,6 @@ export const FORM_STATUS_CONFIG: Record<FormStatusKey, FormStatusStyle> = {
     label: "Đã trả kết quả",
     className: "bg-secondary text-white",
   },
-  approved: {
-    label: "Hợp lệ",
-    className: "bg-secondary text-white",
-  },
-  rejected: {
-    label: "Không hợp lệ",
-    className: "bg-red text-white",
-  },
   failed: {
     label: "Lỗi",
     className: "bg-red-light text-red",
@@ -58,6 +49,10 @@ export const FORM_STATUS_CONFIG: Record<FormStatusKey, FormStatusStyle> = {
   overdue: {
     label: "Quá hạn",
     className: "bg-grey-hover text-text-placeholder",
+  },
+  gate_rejected: {
+    label: "Chặn ở cổng kiểm tra",
+    className: "bg-red text-white",
   },
 };
 

@@ -29,8 +29,17 @@ const EMPTY_COUNTS: LookupCounts = {
   invalid: 0,
 };
 
-const VALID: FormStatusKey[] = ["approved", "returned"];
-const INVALID: FormStatusKey[] = ["rejected", "failed"];
+// BE 3-bucket chưa tách verdict đạt/phải sửa (cần pipeline temporary_residences).
+// Tạm: returned → coi hợp lệ; failed/gate_rejected → cần điều chỉnh.
+const VALID: FormStatusKey[] = ["returned"];
+const INVALID: FormStatusKey[] = ["failed", "gate_rejected"];
+
+// Nhãn kênh nhận thông báo.
+const NOTIFY_LABELS: Record<string, string> = {
+  portal: "Cổng thông tin",
+  email: "Email",
+  sms: "SMS",
+};
 
 function resultBadge(status: FormStatusKey) {
   if (VALID.includes(status))
@@ -128,18 +137,18 @@ export default function LookupFormList({ userId }: { userId: string }) {
       </div>
 
       <Card title="Hồ sơ tạm trú">
-        <div className="flex">
-          <p className="mb-3 text-para-m-medium text-text-secondary">
-            <span className="text-secondary font-semibold">
-              {counts.processing}
-            </span>{" "}
-            đang xử lý ·{" "}
-            <span className="text-secondary font-semibold">{counts.valid}</span>{" "}
-            hợp lệ ·{" "}
-            <span className="text-red font-semibold">{counts.invalid}</span>{" "}
-            không hợp lệ
-          </p>
-        </div>
+        <p className="flex flex-row gap-2 mb-3 text-para-m-medium text-text-secondary">
+          <span className="text-secondary font-semibold">
+            {counts.processing}
+          </span>
+          đang xử lý
+          <span>·</span>
+          <span className="text-secondary font-semibold">{counts.valid}</span>
+          hợp lệ
+          <span>·</span>
+          <span className="text-red font-semibold">{counts.invalid}</span> không
+          hợp lệ
+        </p>
 
         {loading ? (
           <div className="py-16 text-center text-para-m-regular text-text-placeholder">
@@ -155,6 +164,7 @@ export default function LookupFormList({ userId }: { userId: string }) {
                 <Th>Địa chỉ đăng ký</Th>
                 <Th>Ngày nộp</Th>
                 <Th>Ngày duyệt</Th>
+                <Th>Kênh thông báo</Th>
                 <Th> </Th>
               </tr>
             </thead>
@@ -170,7 +180,7 @@ export default function LookupFormList({ userId }: { userId: string }) {
                     }`}
                   >
                     <Td className="text-para-m-semibold text-text-main">
-                      {f.code}
+                      {f.code.slice(0, 8)}
                     </Td>
                     <Td>
                       <Status status={f.status} />
@@ -194,6 +204,11 @@ export default function LookupFormList({ userId }: { userId: string }) {
                     </Td>
                     <Td className="text-para-m-regular text-text-placeholder">
                       {f.completedDate ?? "-"}
+                    </Td>
+                    <Td className="text-para-m-regular text-text-secondary">
+                      {f.notifyMethod
+                        ? (NOTIFY_LABELS[f.notifyMethod] ?? f.notifyMethod)
+                        : "-"}
                     </Td>
                     <Td>
                       <Button

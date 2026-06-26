@@ -493,9 +493,8 @@ export const iconMap = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <circle cx="12" cy="12" r="9.25" stroke="#242424" stroke-width="1.5" />
       <path
-        d="M9 15L15 9M9 9L15 15"
+        d="M20 4L12 12M12 12L4 4M12 12L20 20M12 12L4 20"
         stroke="#242424"
         stroke-width="1.5"
         stroke-linecap="round"

@@ -1,5 +1,6 @@
 import ExtractionFieldCard from "./extraction-field-card";
 import Badge from "../../../components/ui/Badge";
+import { splitNotes } from "../split-notes";
 import {
   EXTRACTION_STATUS_CONFIG,
   type ExtractionField,
@@ -47,15 +48,41 @@ export default function ExtractionPanel({
         </div>
       </div>
 
-      {/* Chưa có kết quả trích xuất -> hiển thị ghi chú duyệt. */}
+      {/* Chưa có kết quả trích xuất -> hiển thị ghi chú duyệt (tách theo ";"). */}
       {!hasAnyField ? (
-        <div className="mx-4 rounded-xl border border-input-border bg-white p-3">
-          <p className="text-para-m-regular text-text-placeholder mb-1">
-            Ghi chú:
-          </p>
-          <p className="text-para-m-medium text-text-main">
-            {reviewNote || "Chưa có kết quả trích xuất cho hồ sơ này."}
-          </p>
+        <div className="mx-4 flex flex-col gap-2 rounded-xl border border-input-border bg-white p-3">
+          <p className="text-para-m-regular text-text-placeholder">Ghi chú:</p>
+          {splitNotes(reviewNote).length > 0 ? (
+            splitNotes(reviewNote).map((note, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-2 rounded-lg bg-red-light px-3 py-2"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="mt-0.5 shrink-0"
+                >
+                  <rect width="16" height="16" rx="8" fill="#DC0000" />
+                  <path
+                    d="M11 5L8 8M8 8L5 5M8 8L11 11M8 8L5 11"
+                    stroke="white"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <p className="text-para-m-medium text-text-main">{note}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-para-m-medium text-text-main">
+              Chưa có kết quả trích xuất cho hồ sơ này.
+            </p>
+          )}
         </div>
       ) : activeFields.length > 0 ? (
         activeFields.map((field) => (

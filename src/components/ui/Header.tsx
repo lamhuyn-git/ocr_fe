@@ -68,7 +68,7 @@ export default function Header({
                 key={link.label}
                 type="button"
                 onClick={() => link.to !== "#" && navigate(link.to)}
-                className={`text-para-m-semibold mt-[0.25rem] ${
+                className={`text-para-m-semibold mt-[0.15rem] ${
                   link.label === activeNav
                     ? "text-white"
                     : "text-grey-dark-hover hover:text-white "

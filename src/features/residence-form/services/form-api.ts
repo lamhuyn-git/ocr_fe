@@ -75,6 +75,18 @@ export async function fetchCitizenDetail(
   };
 }
 
+export async function getTemplateDownloadUrl(
+  formName: string,
+): Promise<{ download_url: string }> {
+  return apiFetch(
+    `/api/v1/form-templates/download?form_name=${encodeURIComponent(formName)}`,
+    {
+      method: "GET",
+      auth: true,
+    },
+  );
+}
+
 export async function fetchGenders(): Promise<SelectOption[]> {
   await delay();
   return GENDERS;

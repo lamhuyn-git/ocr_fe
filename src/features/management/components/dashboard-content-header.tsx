@@ -6,9 +6,9 @@ import {
   fetchWards,
 } from "../../residence-form/services/form-api";
 
-// Mặc định chọn sẵn địa bàn khi mở dashboard (khớp theo tên không dấu).
+// Mặc định chọn sẵn tỉnh khi mở dashboard (khớp theo tên không dấu) cho user
+// không bị khoá địa bàn. Officer bị khoá sẽ dùng đúng tỉnh/phường phụ trách.
 const DEFAULT_PROVINCE_MATCH = "ho chi minh";
-const DEFAULT_WARD_MATCH = "sai gon";
 
 // Bỏ dấu tiếng Việt + thường hoá để so khớp tên không phụ thuộc dấu/hoa-thường.
 const noAccent = (s: string) =>
@@ -25,6 +25,8 @@ type DashboardContentHeaderProps = {
   onProvinceChange: (value: string) => void;
   onWardChange: (value: string) => void;
   locationLocked?: boolean; // khoá bộ lọc tỉnh/phường (vd: cán bộ cấp phường)
+  lockedProvinceId?: string | null; // tỉnh phụ trách của officer (khi khoá)
+  lockedWardId?: string | null; // phường phụ trách của officer (khi khoá)
 };
 
 export default function DashboardContentHeader({
@@ -33,6 +35,8 @@ export default function DashboardContentHeader({
   onProvinceChange,
   onWardChange,
   locationLocked = false,
+  lockedProvinceId = null,
+  lockedWardId = null,
 }: DashboardContentHeaderProps) {
   const [provinces, setProvinces] = useState<SelectOption[]>([]);
   const [wards, setWards] = useState<SelectOption[]>([]);
@@ -46,33 +50,29 @@ export default function DashboardContentHeader({
     fetchProvinces().then(setProvinces);
   }, []);
 
-  // Auto-chọn tỉnh mặc định (HCM) 1 lần khi danh sách tỉnh đã tải và chưa chọn.
+  // Auto-chọn tỉnh mặc định 1 lần khi danh sách tỉnh đã tải và chưa chọn.
+  // Officer bị khoá → tỉnh phụ trách; còn lại → mặc định HCM.
   useEffect(() => {
     if (province || provinces.length === 0 || defaultProvinceId.current) return;
-    const match = provinces.find((p) =>
-      noAccent(p.label).includes(DEFAULT_PROVINCE_MATCH),
-    );
-    if (match) {
-      defaultProvinceId.current = match.value;
-      onProvinceChange(match.value);
+    const targetId =
+      locationLocked && lockedProvinceId
+        ? lockedProvinceId
+        : provinces.find((p) => noAccent(p.label).includes(DEFAULT_PROVINCE_MATCH))
+            ?.value;
+    if (targetId) {
+      defaultProvinceId.current = targetId;
+      onProvinceChange(targetId);
     }
-  }, [provinces, province, onProvinceChange]);
+  }, [provinces, province, locationLocked, lockedProvinceId, onProvinceChange]);
 
-  // Auto-chọn phường mặc định (Sài Gòn) chỉ khi bị khoá địa bàn (ward_admin).
+  // Officer bị khoá: auto-chọn đúng phường phụ trách 1 lần.
   // super_admin tự chọn → hiện placeholder "Chọn phường tại đây".
   useEffect(() => {
-    if (!locationLocked) return;
-    if (wardDefaultApplied.current || ward || wards.length === 0) return;
-    if (!defaultProvinceId.current || province !== defaultProvinceId.current)
-      return;
-    const match = wards.find((w) =>
-      noAccent(w.label).includes(DEFAULT_WARD_MATCH),
-    );
-    if (match) {
-      wardDefaultApplied.current = true;
-      onWardChange(match.value);
-    }
-  }, [locationLocked, wards, ward, province, onWardChange]);
+    if (!locationLocked || !lockedWardId) return;
+    if (wardDefaultApplied.current || ward) return;
+    wardDefaultApplied.current = true;
+    onWardChange(lockedWardId);
+  }, [locationLocked, lockedWardId, ward, onWardChange]);
 
   // Tải danh sách phường mỗi khi tỉnh đổi. Cờ `stale` huỷ kết quả cũ nếu
   // người dùng đổi tỉnh nhanh (tránh race: response tỉnh cũ về sau).

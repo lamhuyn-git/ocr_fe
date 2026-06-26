@@ -21,12 +21,22 @@ export type AuthTokens = {
   refreshToken: string;
 };
 
+// Phường officer phụ trách — chỉ có khi tài khoản là cán bộ phường (ward_officer).
+export type WardAssignment = {
+  orgId: string;
+  wardName: string;
+  provinceId: string | null;
+  provinceName: string | null;
+};
+
 export type AuthUser = {
   id: string;
   name: string;
   email: string;
   // ward_admin: cán bộ cấp phường/xã — bị khoá bộ lọc địa bàn (tỉnh/phường).
   role: "user" | "admin" | "ward_admin";
+  // Set khi user là cán bộ phường; dùng để prefill + khoá field địa bàn trên form.
+  ward?: WardAssignment;
 };
 
 export type AuthState = {

@@ -8,9 +8,11 @@ import ExtractionPanel from "../features/form-detail/components/extraction-panel
 import FormDetailFooter from "../features/form-detail/components/form-detail-footer";
 import {
   fetchFormDetail,
+  isFullDetail,
   reextractForm,
   saveFormChanges,
 } from "../features/form-detail/services/form-detail-api";
+import FormStatePlaceholder from "../features/form-detail/components/form-state-placeholder";
 import { mapFormDetail } from "../features/form-detail/services/map-form-detail";
 import type {
   ExtractionField,
@@ -19,6 +21,9 @@ import type {
 } from "../features/form-detail/types";
 import Loading from "../components/ui/Loading";
 import SaveSessionModal from "../features/form-detail/components/save-session-modal";
+import ReturnResultModal, {
+  type ReturnResultVariant,
+} from "../features/form-detail/components/return-result-modal";
 import { useAuthContext } from "../store/auth-store";
 
 export default function FormDetailPage() {
@@ -34,6 +39,8 @@ export default function FormDetailPage() {
     null;
 
   const [detail, setDetail] = useState<FormDetail>();
+  // Status khi BE chỉ trả status (submitted/processing/under_review) → hiện màn chờ, không build detail.
+  const [lockStatus, setLockStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reextracting, setReextracting] = useState(false);
   // Section đang chọn — dùng chung cho panel trái (điều hướng) & phải (kết quả).
@@ -45,6 +52,8 @@ export default function FormDetailPage() {
   // Danh sách field đã được đánh dấu (valid/invalid); mỗi field chỉ đếm 1 lần.
   const [savedChanges, setSavedChanges] = useState<SaveChangeFieldItem[]>([]);
   const [showExitModal, setShowExitModal] = useState(false);
+  // Popup xác nhận kết quả trả về (mở khi bấm "Trả kết quả").
+  const [showReturnModal, setShowReturnModal] = useState(false);
   // Đích điều hướng đang chờ xác nhận (khi user bấm link thoát khỏi trang).
   // "__back__" = thoát bằng nút Back của trình duyệt.
   const pendingNav = useRef<string | null>(null);
@@ -200,6 +209,13 @@ export default function FormDetailPage() {
     // Ghi nhận trạng thái lúc vào trang (chỉ lần đầu) để làm from_status.
     if (previousStatusRef.current === null)
       previousStatusRef.current = res.status;
+    // submitted/processing/under_review: BE chỉ trả status → hiện màn chờ.
+    if (!isFullDetail(res)) {
+      setLockStatus(res.status);
+      setDetail(undefined);
+      return;
+    }
+    setLockStatus(null);
     const mapped = mapFormDetail(res);
     setDetail(mapped);
     setActiveSectionId((prev) => prev || (mapped.onlineSections[0]?.id ?? ""));
@@ -225,12 +241,75 @@ export default function FormDetailPage() {
 
   if (loading) return <Loading show />;
 
+  // submitted/processing/under_review: hiện shell trang detail nhưng phần giữa chỉ là
+  // illustration + thông báo (không có nội dung trích xuất).
+  if (lockStatus)
+    return (
+      <div className="flex h-screen w-full overflow-hidden bg-grey">
+        <DashboardSidebar user={user} defaultCollapsed activeChild="Tạm trú" />
+        <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+          <DashboardTopMenu
+            breadcrumb={[
+              { label: "Cư trú", onClick: () => navigate("/dashboard") },
+              { label: "Tạm trú" },
+              { label: "Chi tiết hồ sơ" },
+            ]}
+            dateVariant="long"
+          />
+          <div className="flex flex-1 min-h-0 overflow-hidden p-2">
+            <div className="flex flex-1 flex-col rounded-xl bg-white">
+              <FormStatePlaceholder status={lockStatus} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
   if (!detail)
     return (
       <div className="flex h-screen w-full items-center justify-center bg-grey text-text-placeholder">
         Không tìm thấy hồ sơ.
       </div>
     );
+
+  // Phân loại popup: gate_rejected → case cổng; còn lại theo số field officer
+  // đánh dấu invalid (0 → valid-all, ≥1 → invalid-some).
+  const invalidCount = savedChanges.filter(
+    (c) => c.status === "invalid",
+  ).length;
+  const validCount = savedChanges.filter((c) => c.status === "valid").length;
+  const returnVariant: ReturnResultVariant =
+    detail.isGateRejected
+      ? "gate_rejected"
+      : invalidCount === 0
+        ? "valid"
+        : "invalid";
+
+  // Map field.id → {label, lý do} để dựng danh sách "Các lỗi hiện có".
+  const fieldById = new Map(
+    detail.extractionSections.flatMap((s) =>
+      s.fields.map((f) => [f.id, { label: f.label, reason: f.checkResult }]),
+    ),
+  );
+  const returnErrors = savedChanges
+    .filter((c) => c.status === "invalid")
+    .map((c) => fieldById.get(c.id) ?? { label: "Trường dữ liệu", reason: "" });
+
+  const returnSavedInfo = {
+    cccd: detail.declaration.nationalId,
+    name: detail.declaration.fullName,
+    address: detail.declaration.requestContent,
+  };
+
+  // UI-only: chưa nối API trả kết quả (return_form/temporary_residences chưa build).
+  const handleReturnSubmit = () => {
+    console.log("[return-result] submit (UI-only)", { returnVariant });
+    setShowReturnModal(false);
+  };
+  const handleReturnSaveDraft = () => {
+    console.log("[return-result] save draft (UI-only)");
+    setShowReturnModal(false);
+  };
 
   return (
     <>
@@ -239,6 +318,19 @@ export default function FormDetailPage() {
           onExit={handleModalExit}
           onSave={handleModalSave}
           onClose={() => setShowExitModal(false)}
+        />
+      )}
+      {showReturnModal && (
+        <ReturnResultModal
+          variant={returnVariant}
+          savedInfo={returnSavedInfo}
+          validCount={validCount}
+          invalidCount={invalidCount}
+          errors={returnErrors}
+          gateMessage={detail.reviewNote ?? ""}
+          onSaveDraft={handleReturnSaveDraft}
+          onSubmit={handleReturnSubmit}
+          onClose={() => setShowReturnModal(false)}
         />
       )}
       <div className="flex h-screen w-full overflow-hidden bg-grey">
@@ -255,7 +347,6 @@ export default function FormDetailPage() {
             dateVariant="long"
           />
 
-          {/* 3 panel: thông tin online | tờ khai | kết quả trích xuất */}
           <div className="flex flex-1 min-h-0 overflow-hidden p-2 gap-2">
             <OnlineInfoPanel
               procedure={detail.procedure}
@@ -280,6 +371,8 @@ export default function FormDetailPage() {
             totalFields={detail.totalFields}
             onReextract={handleReextract}
             reextracting={reextracting}
+            onReturnResult={() => setShowReturnModal(true)}
+            onSaveDraft={handleReturnSaveDraft}
           />
         </div>
       </div>

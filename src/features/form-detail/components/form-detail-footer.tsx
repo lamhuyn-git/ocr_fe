@@ -6,14 +6,22 @@ type FormDetailFooterProps = {
   totalFields: number;
   onReextract?: () => void;
   reextracting?: boolean;
+  onReturnResult?: () => void;
+  onSaveDraft?: () => void;
 };
 
-// Thanh hành động dưới cùng trang chi tiết: tiến độ kiểm tra + các nút xử lý hồ sơ.
 export default function FormDetailFooter({
   checkedFields,
   totalFields,
+  onReextract,
+  reextracting,
+  onReturnResult,
+  onSaveDraft,
 }: FormDetailFooterProps) {
   const progress = totalFields > 0 ? (checkedFields / totalFields) * 100 : 0;
+  // Đủ điều kiện trả kết quả khi đã duyệt hết field.
+  // (0/0 — vd gate_rejected không có field — cũng tính là "đủ" → active.)
+  const canSubmit = checkedFields >= totalFields;
 
   return (
     <footer className="shrink-0 flex items-center justify-between gap-6 border-t border-dashed border-black-light-active bg-white px-6 py-3">
@@ -35,14 +43,24 @@ export default function FormDetailFooter({
 
       {/* Nút hành động */}
       <div className="flex items-center gap-2">
-        {/* <FooterButton
+        <FooterButton
           icon="reload"
           label={reextracting ? "Đang trích xuất..." : "Trích xuất lại"}
           onClick={onReextract}
           disabled={reextracting}
-        /> */}
-        <FooterButton icon="document" label="Lưu bản nháp" />
-        <FooterButton icon="confirm" label="Trả kết quả" primary disabled />
+        />
+        <FooterButton
+          icon="document"
+          label="Lưu bản nháp"
+          onClick={onSaveDraft}
+        />
+        <FooterButton
+          icon="confirm"
+          label="Trả kết quả"
+          primary
+          disabled={!canSubmit}
+          onClick={onReturnResult}
+        />
       </div>
     </footer>
   );

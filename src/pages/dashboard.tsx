@@ -16,8 +16,9 @@ export default function DashboardPage() {
   const [province, setProvince] = useState(_province);
   const [ward, setWard] = useState(_ward);
 
-  // Cán bộ cấp phường bị khoá địa bàn — không cho đổi tỉnh/phường.
-  const isWardAdmin = user?.role === "ward_admin";
+  // Cán bộ phường có `ward` (địa bàn phụ trách) → khoá bộ lọc tỉnh/phường.
+  const wardAssignment = user?.ward;
+  const locationLocked = !!wardAssignment;
 
   const handleProvinceChange = useCallback((value: string) => {
     _province = value;
@@ -43,7 +44,9 @@ export default function DashboardPage() {
               ward={ward}
               onProvinceChange={handleProvinceChange}
               onWardChange={handleWardChange}
-              locationLocked={isWardAdmin}
+              locationLocked={locationLocked}
+              lockedProvinceId={wardAssignment?.provinceId ?? null}
+              lockedWardId={wardAssignment?.orgId ?? null}
             />
           </div>
           <div className="snap-start shrink-0">

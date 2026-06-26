@@ -1,3 +1,4 @@
+import Icon from "../../../components/icons";
 import Status from "../../../components/ui/Status";
 import type { DocumentRecord } from "../types";
 
@@ -16,35 +17,15 @@ export default function DocumentCard({ doc, onClick }: DocumentCardProps) {
       <div className="flex items-center justify-between px-3 py-3 border-b border-[#f0f0f0]">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-sm bg-primary-light flex items-center justify-center shrink-0">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <rect
-                x="1"
-                y="1"
-                width="8"
-                height="8"
-                rx="1"
-                stroke="#133524"
-                strokeWidth="1.2"
-              />
-              <line
-                x1="3"
-                y1="4"
-                x2="7"
-                y2="4"
-                stroke="#133524"
-                strokeWidth="1"
-              />
-              <line
-                x1="3"
-                y1="6"
-                x2="7"
-                y2="6"
-                stroke="#133524"
-                strokeWidth="1"
-              />
-            </svg>
+            <Icon
+              name="document"
+              size={20}
+              className="[&_path]:stroke-grey-dark-hover"
+            />
           </div>
-          <span className="text-para-m-semibold text-text-main">{doc.id}</span>
+          <span className="text-para-m-semibold text-text-main mt-[0.15rem]">
+            {doc.id.slice(0, 8).toUpperCase()}
+          </span>
         </div>
         <Status status={doc.status} />
       </div>

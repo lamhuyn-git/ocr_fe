@@ -18,6 +18,8 @@ type Props = {
   ward: string;
   onWardChange: (v: string) => void;
   agency: string;
+  // Khoá Tỉnh/Phường khi user là cán bộ phường (đã prefill theo địa bàn phụ trách).
+  locked?: boolean;
   errors?: Set<RequiredFieldKey>;
 };
 
@@ -30,6 +32,7 @@ export default function AgencySection({
   ward,
   onWardChange,
   agency,
+  locked,
   errors,
 }: Props) {
   return (
@@ -41,6 +44,7 @@ export default function AgencySection({
             options={provinces}
             value={province}
             onChange={onProvinceChange}
+            disabled={locked}
             placeholder="Chọn Tỉnh/Thành phố"
             className="border-grey-hover"
             error={errors?.has("province") ? REQUIRED_FIELD_ERROR : undefined}
@@ -54,7 +58,7 @@ export default function AgencySection({
             value={ward}
             onChange={onWardChange}
             loading={wardsLoading}
-            disabled={!province}
+            disabled={!province || locked}
             placeholder="Chọn Xã/Phường/Đặc khu"
             error={errors?.has("ward") ? REQUIRED_FIELD_ERROR : undefined}
           />

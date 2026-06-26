@@ -47,6 +47,8 @@ export type ExtractionField = {
   label: string;
   value: string; // giá trị hệ thống trích xuất (hiển thị chính)
   suggestValue?: string; // "Gần nhất" - BE đề xuất (hiện khi có)
+  csdlValue?: string; // giá trị thật trong CSDL (db_value) — tham chiếu khi lệch
+
   status: ExtractionStatus;
   checkResult: string; // vd: "Khớp với CSDL"
   historyCount: number;
@@ -115,4 +117,5 @@ export type FormDetail = {
   declaration: FormDeclaration;
   evidences: EvidenceImage[];
   reviewNote: string | null; // ghi chú duyệt (hiện khi chưa có kết quả trích xuất)
+  isGateRejected: boolean; // hồ sơ bị chặn ở cổng → popup trả kết quả dạng gate-reject
 };

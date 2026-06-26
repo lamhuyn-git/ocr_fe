@@ -32,7 +32,7 @@ export default function BreadcrumbItem({
       ) : (
         <span className={`px-1 ${textClass}`}>/</span>
       )}
-      <span className={textClass}>{label}</span>
+      <span className={`mt-[0.25rem] ${textClass}`}>{label}</span>
     </button>
   );
 }

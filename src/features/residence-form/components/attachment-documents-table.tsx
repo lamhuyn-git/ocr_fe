@@ -2,6 +2,7 @@ import Input from "../../../components/ui/Input";
 import Select from "../../../components/ui/Select";
 import Icon from "../../../components/icons";
 import type { AttachmentDoc, SelectOption } from "../types";
+import { getTemplateDownloadUrl } from "../services/form-api";
 
 // Tỷ lệ % cho header và row để luôn thẳng hàng.
 const COL = {
@@ -36,6 +37,17 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
       (f) => f.type.startsWith("image/") && f.size <= MAX_FILE_SIZE,
     );
     onUpdate(doc.id, { files: [...doc.files, ...valid] });
+  };
+
+  const handleDownloadTemplate = async () => {
+    const formName = "Đăng ký tạm trú";
+    const { download_url } = await getTemplateDownloadUrl(formName);
+    const link = document.createElement("a");
+    link.href = download_url;
+    link.download = "Mau_CT01.docx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const removeFile = (doc: AttachmentDoc, index: number) =>
@@ -102,6 +114,7 @@ export default function AttachmentDocumentsTable({ docs, onUpdate }: Props) {
               <button
                 type="button"
                 aria-label="Tải file mẫu"
+                onClick={handleDownloadTemplate}
                 className="text-text-placeholder hover:text-text-main transition-colors"
               >
                 <Icon name="paperclip" size={18} />

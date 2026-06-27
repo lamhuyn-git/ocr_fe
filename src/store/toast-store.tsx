@@ -33,7 +33,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ showToast }}>
       {children}
       {toast && (
-        <div className="fixed top-6 right-6 z-[100] w-full max-w-md">
+        <div className="fixed top-20 right-6 z-[100] w-full max-w-md">
           <Notification title={toast.title} message={toast.message} />
         </div>
       )}

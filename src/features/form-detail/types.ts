@@ -30,48 +30,39 @@ export type ProcedureInfo = {
   nguoiKhai?: string;
 };
 
-// Cặp nhãn - giá trị dùng chung.
 export type LabelValue = { label: string; value: string };
 
-// Mục accordion ở panel trái ("Thông tin điền online").
 export type OnlineInfoSection = {
   id: string;
   title: string;
   rows: LabelValue[];
 };
 
-// 1 field trong panel phải ("Kết quả trích xuất"): giá trị hệ thống trích xuất
-// + giá trị BE đề xuất (suggest) + kết quả kiểm tra. Ứng 1-1 với field online.
 export type ExtractionField = {
   id: string;
   label: string;
-  value: string; // giá trị hệ thống trích xuất (hiển thị chính)
-  suggestValue?: string; // "Gần nhất" - BE đề xuất (hiện khi có)
-  csdlValue?: string; // giá trị thật trong CSDL (db_value) — tham chiếu khi lệch
-
+  value: string;
+  suggestValue?: string;
+  csdlValue?: string;
   status: ExtractionStatus;
-  checkResult: string; // vd: "Khớp với CSDL"
+  checkResult: string;
   historyCount: number;
-  position?: number[] | null; // bbox [x, y, width, height] trên ảnh CT01 (để vẽ box)
-  confirmedBy?: string | null; // id cán bộ đã chốt field (có -> ẩn nút hành động)
-  confirmedByEmail?: string | null; // email cán bộ đã chốt (để hiển thị)
+  position?: number[] | null;
+  confirmedBy?: string | null;
+  confirmedByEmail?: string | null;
 };
 
-// Nhóm extraction theo section (id khớp onlineSections) -> panel phải chỉ hiện
-// field của section đang chọn bên trái.
 export type ExtractionSection = {
   id: string;
   title: string;
   fields: ExtractionField[];
 };
 
-// Kết quả đánh dấu 1 field (valid / invalid) — lưu trước khi submit.
 export type SaveChangeFieldItem = {
-  id: string; // field.id (UUID)
+  id: string;
   status: "valid" | "invalid";
 };
 
-// Thành viên trong hộ cùng thay đổi (mục 11 của tờ khai).
 export type HouseholdMember = {
   order: number;
   fullName: string;
@@ -81,7 +72,6 @@ export type HouseholdMember = {
   relationship: string;
 };
 
-// Dữ liệu tờ khai CT01 hiển thị ở giữa.
 export type FormDeclaration = {
   recipient: string;
   fullName: string;
@@ -97,14 +87,12 @@ export type FormDeclaration = {
   members: HouseholdMember[];
 };
 
-// Ảnh minh chứng đã nộp (tờ khai CT01 + giấy tờ đính kèm).
 export type EvidenceImage = {
   id: string;
   url: string;
-  isCt01: boolean; // true: ảnh tờ khai CT01; false: giấy tờ đính kèm khác
+  isCt01: boolean;
 };
 
-// Tổng hợp dữ liệu của trang chi tiết hồ sơ.
 export type FormDetail = {
   code: string;
   submittedDate: string;
@@ -116,6 +104,97 @@ export type FormDetail = {
   totalFields: number;
   declaration: FormDeclaration;
   evidences: EvidenceImage[];
-  reviewNote: string | null; // ghi chú duyệt (hiện khi chưa có kết quả trích xuất)
-  isGateRejected: boolean; // hồ sơ bị chặn ở cổng → popup trả kết quả dạng gate-reject
+  reviewNote: string | null;
+  isGateRejected: boolean;
+};
+
+export type OrgResponse = {
+  id: string;
+  name: string;
+  slug: string;
+  org_type: string;
+};
+
+export type FormTypeResponse = {
+  id: string;
+  type_name: string;
+  created_at: string;
+};
+
+export type SubmittedContentResponse = {
+  id: string;
+  case: string;
+  type: string;
+  submit_type: string;
+  location_register: string | null;
+  registered_user_cccd: string | null;
+  registered_user_name: string | null;
+  registered_user_birth: string | null;
+  registered_user_gender: string | null;
+  registered_user_phone: string | null;
+  registered_user_mail: string | null;
+  register_content: string | null;
+  residence_until: string | null;
+};
+
+export type EvidencesResponse = {
+  warped_img?: string | null;
+  residence_proof?: string | null;
+};
+
+export type HistoryUserResponse = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+};
+
+export type ResultHistoryResponse = {
+  source: "system" | "confirm";
+  status: string;
+  value: string | null;
+  confirmed_by: HistoryUserResponse | null;
+  created_at: string;
+};
+
+export type ValidatedResultResponse = {
+  id: string;
+  position: number[] | null;
+  label: string;
+  raw_value: string | null;
+  suggested_value: string | null;
+  db_value: string | null;
+  final_value: string | null;
+  note: string | null;
+  status: string;
+  confirmed_by: string | null;
+  confirmed_by_email: string | null;
+  created_at: string;
+  result_history: ResultHistoryResponse[];
+};
+
+export type FormDetailResponse = {
+  id: string;
+  form_type_id: string;
+  org_id: string;
+  submit_by: string;
+  status: string;
+  notification_on: string;
+  review_note: string | null;
+  is_gate_rejected: boolean;
+  created_at: string;
+  updated_at: string;
+  ogr_detailliated: OrgResponse;
+  form_type_detail: FormTypeResponse;
+  sumited_content: SubmittedContentResponse;
+  evidences: EvidencesResponse;
+  validated_results: ValidatedResultResponse[];
+};
+
+export type FormStatusResponse = { form_id_db: string; status: string };
+
+export type SaveChangeRequest = {
+  form_id: string;
+  confirmed_by: string | null;
+  updated_fields: SaveChangeFieldItem[] | null;
+  from_status: string | null;
 };

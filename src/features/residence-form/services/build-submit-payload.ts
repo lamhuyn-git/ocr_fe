@@ -25,6 +25,7 @@ export type FormSpecPayload = {
   registered_user_phone: string | null;
   registered_user_mail: string | null;
   register_content: string | null;
+  residence_until: string | null; // thời hạn tạm trú đề nghị (đến ngày), dd/mm/yyyy
 };
 
 export type ResidenceSubmitPayload = {
@@ -142,6 +143,7 @@ export function buildSubmitPayload(input: SubmitInput): ResidenceSubmitPayload {
       registered_user_phone: person?.phone || null,
       registered_user_mail: person?.email || null,
       register_content: input.content || null,
+      residence_until: input.dueTime || null,
     },
   };
 }

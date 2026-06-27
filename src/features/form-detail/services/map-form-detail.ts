@@ -10,11 +10,11 @@ import type {
 } from "../types";
 import type {
   FormDetailResponse,
-  SubmittedContent,
-  ValidatedResult,
-} from "./form-detail-api";
+  SubmittedContentResponse,
+  ValidatedResultResponse,
+} from "../types";
 
-// ISO -> dd/MM/yyyy (giữ nguyên nếu đã đúng định dạng / parse lỗi).
+// Định dạng ngày về dd/MM/yyyy
 const formatDate = (iso?: string | null): string => {
   if (!iso) return "";
   const d = new Date(iso);
@@ -24,7 +24,6 @@ const formatDate = (iso?: string | null): string => {
   return `${dd}/${mm}/${d.getFullYear()}`;
 };
 
-// case / type / submit_type -> nhãn thủ tục (panel trái + phải).
 const CASE_LABELS: Record<string, string> = {
   residence_registration: "Đăng ký tạm trú (nhân khẩu, hộ)",
 };
@@ -36,15 +35,12 @@ const SUBMIT_TYPE_LABELS: Record<string, string> = {
   proxy: "Khai hộ",
 };
 
-// status field trích xuất (BE) -> enum FE.
 const FIELD_STATUS: Record<string, ExtractionStatus> = {
   valid: "valid",
   invalid: "invalid",
   need_review: "review",
 };
 
-// Mã field BE -> section + nhãn hiển thị (panel phải gom theo section).
-// THỨ TỰ khai báo = thứ tự các mục trên tờ khai CT01 -> dùng để sắp xếp card.
 const FIELD_CONFIG: Record<string, { section: string; label: string }> = {
   kinh_gui: { section: "agency", label: "Cơ quan thực hiện" },
   ho_chu_dem_va_ten: { section: "applicant", label: "Họ và tên" },
@@ -69,11 +65,13 @@ const FIELD_CONFIG: Record<string, { section: string; label: string }> = {
   },
 };
 
-// Thứ tự field theo tờ khai CT01 (suy ra từ thứ tự khai báo FIELD_CONFIG).
+// Thứ tự field theo tờ khai CT01
 const FIELD_ORDER = Object.keys(FIELD_CONFIG);
 const fieldOrderIndex = (label: string): number => {
+  // CCCD người khai là định danh quan trọng nhất (dùng xác thực đúng người) nên luôn đẩy lên đầu danh sách field, trước cả thứ tự tờ khai CT01.
+  if (label === "so_dinh_dan_ca_nhan") return -1;
   const i = FIELD_ORDER.indexOf(label);
-  return i === -1 ? Number.MAX_SAFE_INTEGER : i; // field lạ -> dồn xuống cuối
+  return i === -1 ? Number.MAX_SAFE_INTEGER : i;
 };
 
 const SECTION_TITLES: Record<string, string> = {
@@ -84,10 +82,8 @@ const SECTION_TITLES: Record<string, string> = {
 };
 const SECTION_ORDER = ["agency", "applicant", "request", "members"];
 
-// 1 validated_result -> 1 field hiển thị ở panel phải.
-const toField = (r: ValidatedResult): ExtractionField => {
+const toField = (r: ValidatedResultResponse): ExtractionField => {
   const cfg = FIELD_CONFIG[r.label];
-  // OCR đọc rỗng ("") -> fallback sang giá trị gợi ý để vẫn hiển thị.
   const value = r.final_value || r.raw_value || r.suggested_value || "";
   const suggest = r.suggested_value ?? "";
   return {
@@ -97,8 +93,7 @@ const toField = (r: ValidatedResult): ExtractionField => {
     // Chỉ hiện "Gần nhất" khi gợi ý khác giá trị trích xuất.
     suggestValue: suggest && suggest !== value ? suggest : undefined,
     // Giá trị CSDL thật để tham chiếu (hiện khi có và khác giá trị trích xuất).
-    csdlValue:
-      r.db_value && r.db_value !== value ? r.db_value : undefined,
+    csdlValue: r.db_value && r.db_value !== value ? r.db_value : undefined,
     status: FIELD_STATUS[r.status] ?? "review",
     checkResult: r.note ?? "",
     // Số mốc lịch sử: 1 = chỉ bản gốc (system); >1 = đã có cán bộ chốt.
@@ -109,20 +104,17 @@ const toField = (r: ValidatedResult): ExtractionField => {
   };
 };
 
-// Field "thành viên cùng thay đổi" rỗng (chỉ là note cho cán bộ tự soát) ->
-// không phải field trích xuất cần duyệt nên loại khỏi danh sách/đếm.
+// Field "thành viên cùng thay đổi" rỗng (chỉ là note cho cán bộ tự soát)
 const EMPTY_MEMBER_MARKERS = new Set(["", "[]", "{}", "0", "null", "none"]);
-const isEmptyMembersNote = (r: ValidatedResult): boolean => {
+const isEmptyMembersNote = (r: ValidatedResultResponse): boolean => {
   if (r.label !== "thanh_vien_cung_thay_doi") return false;
   const v = (r.final_value ?? r.raw_value ?? "").trim().toLowerCase();
   return EMPTY_MEMBER_MARKERS.has(v);
 };
 
 const buildExtractionSections = (
-  results: ValidatedResult[],
+  results: ValidatedResultResponse[],
 ): ExtractionSection[] => {
-  // Sắp xếp theo thứ tự tờ khai CT01 trước khi gom nhóm -> field trong mỗi
-  // section giữ đúng trình tự như trên tờ khai (Map giữ nguyên thứ tự push).
   const ordered = [...results].sort(
     (a, b) => fieldOrderIndex(a.label) - fieldOrderIndex(b.label),
   );
@@ -140,9 +132,8 @@ const buildExtractionSections = (
   }));
 };
 
-// Panel trái ("Thông tin điền online") dựng từ nội dung người dân đã nộp.
 const buildOnlineSections = (
-  c: SubmittedContent,
+  c: SubmittedContentResponse,
   agencyName: string,
 ): OnlineInfoSection[] => [
   {
@@ -177,9 +168,8 @@ const buildOnlineSections = (
   },
 ];
 
-// Tờ khai CT01 ở giữa: chủ hộ tạm trú = người đề nghị (luồng tự nộp).
 const buildDeclaration = (
-  c: SubmittedContent,
+  c: SubmittedContentResponse,
   agencyName: string,
 ): FormDeclaration => ({
   recipient: agencyName,
@@ -196,7 +186,6 @@ const buildDeclaration = (
   members: [],
 });
 
-// Map toàn bộ response BE -> FormDetail dùng cho UI hiện tại.
 export function mapFormDetail(res: FormDetailResponse): FormDetail {
   const c = res.sumited_content;
   const agencyName = `Công an ${res.ogr_detailliated?.name ?? ""}`.trim();
@@ -207,8 +196,6 @@ export function mapFormDetail(res: FormDetailResponse): FormDetail {
     nguoiKhai: SUBMIT_TYPE_LABELS[c.submit_type] ?? c.submit_type,
   };
 
-  // Bỏ field "thành viên cùng thay đổi" khi không có thành viên nào (chỉ là note
-  // cho cán bộ) -> không tính vào tổng field, panel phải hiện thông báo trống.
   const results = (res.validated_results ?? []).filter(
     (r) => !isEmptyMembersNote(r),
   );
@@ -216,9 +203,7 @@ export function mapFormDetail(res: FormDetailResponse): FormDetail {
     // Mã hồ sơ hiển thị = 6 ký tự đầu của id form.
     code: res.id.slice(0, 6).toUpperCase(),
     submittedDate: formatDate(res.created_at),
-    // Truyền raw status key; component Status tự map nhãn + màu.
     statusLabel: res.status,
-    // Số field cán bộ đã kiểm tra / tổng field trích xuất.
     checkedFields: 0,
     totalFields: results.length,
     procedure,
@@ -227,7 +212,6 @@ export function mapFormDetail(res: FormDetailResponse): FormDetail {
     declaration: buildDeclaration(c, agencyName),
     reviewNote: res.review_note ?? null,
     isGateRejected: res.is_gate_rejected ?? false,
-    // warped_img -> tab tờ khai CT01; residence_proof -> tab đính kèm.
     evidences: [
       res.evidences?.warped_img && {
         id: "warped_img",

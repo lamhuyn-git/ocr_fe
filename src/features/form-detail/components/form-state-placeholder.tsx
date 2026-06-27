@@ -1,7 +1,6 @@
-import { FolderClockIllustration } from "../../../components/illustration/draft-document";
+import ExtractingAnimation from "../../../components/illustration/extracting-animation";
 import { LockDocumentIllustration } from "../../../components/illustration/lock-document";
 
-// Nội dung màn chờ theo status (submitted/processing: hệ thống xử lý; under_review: cán bộ khác đang xử lý).
 const CONFIG: Record<
   string,
   { title: string; lines: string[]; locked?: boolean }
@@ -32,8 +31,8 @@ const CONFIG: Record<
 export default function FormStatePlaceholder({ status }: { status: string }) {
   const cfg = CONFIG[status] ?? CONFIG.processing;
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 text-center">
-      {cfg.locked ? <LockDocumentIllustration /> : <FolderClockIllustration />}
+    <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+      {cfg.locked ? <LockDocumentIllustration /> : <ExtractingAnimation />}
       <div className="flex flex-col gap-2">
         <h3 className="text-h3 text-text-main uppercase text-center">
           {cfg.title}

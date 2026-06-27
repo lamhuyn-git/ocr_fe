@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Icon from "../icons";
 import Button from "./Button";
 import Logo from "./Logo";
+import NotificationBell from "../../features/notifications/components/notification-bell";
 import drum from "../../assets/drum.svg";
 import { useAuthContext } from "../../store/auth-store";
 
@@ -32,7 +33,6 @@ export default function Header({
     year: "numeric",
   });
 
-  // Nav trong suốt khi ở đầu trang (đè lên hero xanh), chỉ có nền khi cuộn xuống.
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -90,13 +90,9 @@ export default function Header({
               Ngày {today}
             </span>
           </div>
-          <Button
-            type="button"
-            variant="tertiary"
-            size="14px"
-            className="gap-0 !p-2 [&_path]:stroke-grey-dark-hover"
-            showIcon
-            icon="notification"
+          <NotificationBell
+            iconSize={20}
+            iconClassName="[&_path]:stroke-grey-dark-hover"
           />
           <div ref={menuRef} className="relative">
             <button

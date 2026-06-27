@@ -7,8 +7,10 @@ import Input from "../../../components/ui/Input";
 import Pagination from "../../../components/ui/Pagination";
 import type { FormStatusKey } from "../../../components/ui/Status";
 import Status from "../../../components/ui/Status";
-import { fetchUserForms, type LookupCounts } from "../services/lookup-api";
-import type { LookupForm } from "../types";
+import { NOTIFY_LABELS } from "../constants";
+import { fetchUserForms } from "../services/lookup-api";
+import type { LookupCounts, LookupForm } from "../types";
+import LookupFormDetailModal from "./lookup-form-detail-modal";
 
 const PAGE_SIZE = 10; // số hồ sơ mỗi trang
 
@@ -34,13 +36,6 @@ const EMPTY_COUNTS: LookupCounts = {
 const VALID: FormStatusKey[] = ["returned"];
 const INVALID: FormStatusKey[] = ["failed", "gate_rejected"];
 
-// Nhãn kênh nhận thông báo.
-const NOTIFY_LABELS: Record<string, string> = {
-  portal: "Cổng thông tin",
-  email: "Email",
-  sms: "SMS",
-};
-
 function resultBadge(status: FormStatusKey) {
   if (VALID.includes(status))
     return { label: "Hợp lệ", className: "bg-[#f1ecfc] text-[#6d5bd0]" };
@@ -60,6 +55,7 @@ export default function LookupFormList({ userId }: { userId: string }) {
   const [total, setTotal] = useState(0);
   const [counts, setCounts] = useState<LookupCounts>(EMPTY_COUNTS);
   const [loading, setLoading] = useState(true);
+  const [detailId, setDetailId] = useState<string | null>(null); // form đang xem chi tiết
 
   useEffect(() => {
     const t = setTimeout(() => setSearch(query), 400);
@@ -218,13 +214,13 @@ export default function LookupFormList({ userId }: { userId: string }) {
                           isDraft ? "Tiếp tục chỉnh sửa" : "Xem chi tiết hồ sơ"
                         }
                         className="whitespace-nowrap"
-                        onClick={() =>
-                          console.log(
-                            isDraft
-                              ? "Tiếp tục chỉnh sửa"
-                              : "Xem chi tiết hồ sơ",
-                          )
-                        }
+                        onClick={() => {
+                          if (isDraft) {
+                            console.log("Tiếp tục chỉnh sửa");
+                            return;
+                          }
+                          setDetailId(f.id);
+                        }}
                       />
                     </Td>
                   </tr>
@@ -249,6 +245,13 @@ export default function LookupFormList({ userId }: { userId: string }) {
           totalPages={totalPages}
           onPageChange={setPage}
           className="justify-center"
+        />
+      )}
+
+      {detailId && (
+        <LookupFormDetailModal
+          formId={detailId}
+          onClose={() => setDetailId(null)}
         />
       )}
     </section>

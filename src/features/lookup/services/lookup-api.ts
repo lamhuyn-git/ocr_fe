@@ -1,47 +1,12 @@
 import { apiFetch } from "../../../lib/http-client";
-import type { FormStatusKey } from "../../../components/ui/Status";
-import type { LookupForm } from "../types";
-
-// Item trả về từ BE GET /api/v1/form/user-list.
-type UserFormListItem = {
-  id: string;
-  code: string;
-  status: FormStatusKey;
-  form_type_name: string | null;
-  location: string | null;
-  created_at: string; // ISO datetime
-  completed_at?: string | null;
-  reject_reason?: string | null;
-  notify_method?: string | null;
-};
-
-export type LookupCounts = {
-  all: number;
-  submitted: number;
-  draft: number;
-  processing: number;
-  valid: number;
-  invalid: number;
-};
-
-type UserFormListResponse = {
-  items: UserFormListItem[];
-  total: number;
-  counts: LookupCounts;
-};
-
-export type LookupPage = {
-  items: LookupForm[];
-  total: number;
-  counts: LookupCounts;
-};
-
-export type LookupQuery = {
-  page?: number;
-  pageSize?: number;
-  group?: "all" | "submitted" | "draft";
-  q?: string;
-};
+import type {
+  LookupForm,
+  LookupPage,
+  LookupQuery,
+  UserFormDetail,
+  UserFormListItem,
+  UserFormListResponse,
+} from "../types";
 
 // ISO -> dd/MM/yyyy.
 function formatDate(iso?: string | null): string | undefined {
@@ -98,4 +63,13 @@ export async function fetchUserForms(
     total: res.total,
     counts: res.counts,
   };
+}
+
+export async function fetchUserFormDetail(
+  formId: string,
+): Promise<UserFormDetail> {
+  return apiFetch<UserFormDetail>(
+    `/api/v1/form/user/detail?form_id=${encodeURIComponent(formId)}`,
+    { auth: true },
+  );
 }

@@ -44,7 +44,7 @@ export default function LoginMethodSelect({
     <div className="mx-auto w-full max-w-[37%] flex flex-col gap-8 pb-4 border-b border-input-border">
       {/* Header */}
       <div className="flex flex-col gap-3 w-full">
-        <h1 className="text-heading-serif text-[1.7rem] font-serif uppercase text-text-main">
+        <h1 className="text-heading-serif text-[1.65rem] font-serif uppercase text-text-main">
           Đăng nhập — Xác minh thông tin
         </h1>
         <p className="text-para-m-regular font-normal text-text-secondary leading-[1.6]">

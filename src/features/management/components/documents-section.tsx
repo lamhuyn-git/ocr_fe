@@ -4,6 +4,7 @@ import Icon from "../../../components/icons";
 import DocumentCard from "./document-card";
 import type { DocumentRecord } from "../types";
 import { getListForm } from "../services/form-list-api";
+import { useNotifications } from "../../notifications/notification-store";
 
 type DocumentsSectionProps = {
   // organization_id (= phường/xã đã chọn ở header) để lọc danh sách.
@@ -14,10 +15,11 @@ export default function DocumentsSection({
   organizationId,
 }: DocumentsSectionProps) {
   const navigate = useNavigate();
+  const { eventSeq } = useNotifications();
   const [documents, setDocuments] = useState<DocumentRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Tải lại danh sách mỗi khi bộ lọc organization đổi.
+  // Tải lại danh sách khi đổi bộ lọc organization, hoặc khi có thông báo mới (eventSeq).
   useEffect(() => {
     let stale = false;
     setLoading(true);
@@ -31,7 +33,7 @@ export default function DocumentsSection({
     return () => {
       stale = true;
     };
-  }, [organizationId]);
+  }, [organizationId, eventSeq]);
 
   return (
     <div className="flex flex-col bg-white rounded-2xl overflow-hidden">

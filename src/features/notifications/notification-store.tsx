@@ -10,11 +10,18 @@ import {
 import { useAuthContext } from "../../store/auth-store";
 import { useToast } from "../../store/toast-store";
 import { tokenManager } from "../../lib/token-manager";
-import type { NotificationItem } from "./types";
+import type { NotificationItem, NotificationType } from "./types";
 import {
   fetchNotifications,
   markNotificationsRead,
 } from "./services/notifications-api";
+
+type LocalNotification = {
+  type: NotificationType;
+  title: string;
+  body?: string | null;
+  form_id?: string | null;
+};
 
 type NotificationContextValue = {
   items: NotificationItem[];
@@ -23,6 +30,7 @@ type NotificationContextValue = {
   markAllRead: () => Promise<void>;
   markOneRead: (id: string) => Promise<void>;
   refresh: () => Promise<void>;
+  pushLocal: (n: LocalNotification) => void;
 };
 
 const NotificationContext = createContext<NotificationContextValue | null>(null);
@@ -74,6 +82,27 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       /* bỏ qua */
     }
   }, []);
+
+  const pushLocal = useCallback(
+    (n: LocalNotification) => {
+      const item: NotificationItem = {
+        id: crypto.randomUUID(),
+        type: n.type,
+        title: n.title,
+        body: n.body ?? null,
+        form_id: n.form_id ?? null,
+        form_type: null,
+        is_read: false,
+        channel: "website",
+        created_at: new Date().toISOString(),
+      };
+      setItems((prev) => [item, ...prev]);
+      setUnread((u) => u + 1);
+      setEventSeq((s) => s + 1);
+      showToast(item.title, item.body ?? "");
+    },
+    [showToast],
+  );
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -133,7 +162,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   return (
     <NotificationContext.Provider
-      value={{ items, unread, eventSeq, markAllRead, markOneRead, refresh }}
+      value={{ items, unread, eventSeq, markAllRead, markOneRead, refresh, pushLocal }}
     >
       {children}
     </NotificationContext.Provider>

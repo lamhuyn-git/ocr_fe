@@ -9,17 +9,18 @@ export default function ExtractionFieldCard({
   onSelect,
   onMark,
   onUnmark,
+  readOnly = false,
 }: {
   field: ExtractionField;
   selected?: boolean;
   onSelect?: (field: ExtractionField) => void;
   onMark?: (item: SaveChangeFieldItem) => void;
   onUnmark?: (id: string) => void;
+  readOnly?: boolean;
 }) {
   const [markedStatus, setMarkedStatus] = useState<"valid" | "invalid" | null>(
     null,
   );
-  // Field đã chốt (>1 mốc) bấm "Hoàn tác" → mở lại để cán bộ sửa quyết định.
   const [reopened, setReopened] = useState(false);
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -38,11 +39,8 @@ export default function ExtractionFieldCard({
     onUnmark?.(field.id);
   };
 
-  // Số lần lịch sử = số mốc result_history (BE trả), không cộng mark tạm thời chưa lưu.
   const displayHistory = field.historyCount;
-  // >1 mốc lịch sử = đã có cán bộ chốt → hiện "Xác nhận bởi", ẩn "Kết quả kiểm tra".
   const hasConfirm = field.historyCount > 1;
-  // Hiện block "đã chốt" khi có confirm và chưa bấm Hoàn tác để sửa lại.
   const showConfirmed = hasConfirm && !reopened;
 
   return (
@@ -98,14 +96,16 @@ export default function ExtractionFieldCard({
               {field.confirmedByEmail ?? field.confirmedBy}
             </span>
           </div>
-          <Button
-            type="button"
-            variant="secondary"
-            size="12px"
-            text="Hoàn tác"
-            className="w-full"
-            onClick={() => setReopened(true)}
-          />
+          {!readOnly && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="12px"
+              text="Hoàn tác"
+              className="w-full"
+              onClick={() => setReopened(true)}
+            />
+          )}
         </>
       ) : (
         <>
@@ -117,37 +117,39 @@ export default function ExtractionFieldCard({
           )}
 
           {/* Hành động: toggle giữa 2 nút đánh dấu ↔ nút Hoàn tác */}
-          <div className="flex items-center gap-2">
-            {markedStatus !== null ? (
-              <Button
-                type="button"
-                variant="secondary"
-                size="12px"
-                text="Hoàn tác"
-                className="w-full"
-                onClick={handleUnmark}
-              />
-            ) : (
-              <>
+          {!readOnly && (
+            <div className="flex items-center gap-2">
+              {markedStatus !== null ? (
                 <Button
                   type="button"
                   variant="secondary"
                   size="12px"
-                  text="Trường không hợp lệ"
+                  text="Hoàn tác"
                   className="w-full"
-                  onClick={() => handleMark("invalid")}
+                  onClick={handleUnmark}
                 />
-                <Button
-                  type="button"
-                  variant="primary"
-                  size="12px"
-                  text="Trường hợp lệ"
-                  className="w-full !bg-primary"
-                  onClick={() => handleMark("valid")}
-                />
-              </>
-            )}
-          </div>
+              ) : (
+                <>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="12px"
+                    text="Trường không hợp lệ"
+                    className="w-full"
+                    onClick={() => handleMark("invalid")}
+                  />
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="12px"
+                    text="Trường hợp lệ"
+                    className="w-full !bg-primary"
+                    onClick={() => handleMark("valid")}
+                  />
+                </>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>

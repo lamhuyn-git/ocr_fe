@@ -6,10 +6,13 @@ import type {
   SubmittedContentResponse,
 } from "../form-detail/types";
 
+export type FormOutcome = "valid" | "require_adjust";
+
 export type UserFormListItem = {
   id: string;
   code: string;
   status: FormStatusKey;
+  outcome?: FormOutcome | null;
   form_type_name: string | null;
   location: string | null;
   created_at: string; // ISO datetime
@@ -53,6 +56,7 @@ export type LookupForm = {
   location: string; // địa chỉ đăng ký
   date: string; // ngày nộp / cập nhật (dd/MM/yyyy)
   status: FormStatusKey; // draft | submitted | extracted | approved | ...
+  outcome?: FormOutcome | null; // verdict khi đã trả: valid | require_adjust
   completedDate?: string; // ngày hoàn thành (dd/MM/yyyy) — khi đã trả kết quả
   rejectReason?: string; // lý do từ chối/trả lại — hiện khi rejected/returned
   notifyMethod?: string; // kênh nhận thông báo (portal | email | sms)
@@ -70,4 +74,7 @@ export type UserFormDetail = {
   form_type_detail: FormTypeResponse | null;
   sumited_content: SubmittedContentResponse | null;
   evidences: EvidencesResponse;
+  outcome?: FormOutcome | null;
+  result_note?: string | null;
+  returned_at?: string | null;
 };

@@ -163,4 +163,8 @@ export const MOCK_FORM_DETAIL: FormDetail = {
   evidences: [],
   reviewNote: null,
   isGateRejected: false,
+  outcome: null,
+  returnedAt: null,
+  returnedByName: null,
+  returnedByEmail: null,
 };

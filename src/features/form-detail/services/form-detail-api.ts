@@ -36,3 +36,22 @@ export async function reextractForm(
     { method: "POST", auth: true },
   );
 }
+
+export type ReturnResultRequest = {
+  form_id: string;
+  outcome: "valid" | "require_adjust";
+  note?: string | null;
+  dia_chi?: string | null;
+  tu_ngay?: string | null;
+  den_ngay?: string | null;
+};
+
+export async function returnFormResult(
+  req: ReturnResultRequest,
+): Promise<{ form_id_db: string; status: string }> {
+  return apiFetch("/api/v1/form/return", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify(req),
+  });
+}

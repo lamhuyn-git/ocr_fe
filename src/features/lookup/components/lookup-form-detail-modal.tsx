@@ -4,9 +4,13 @@ import Icon from "../../../components/icons";
 import DocFile from "../../../components/illustration/docx-file";
 import ImgFile from "../../../components/illustration/img-file";
 import Status from "../../../components/ui/Status";
+import { splitNotes } from "../../form-detail/split-notes";
 import { NOTIFY_LABELS } from "../constants";
 import { fetchUserFormDetail } from "../services/lookup-api";
-import type { UserFormDetail } from "../types";
+import type { FormOutcome, UserFormDetail } from "../types";
+
+const VALID_RESULT_MESSAGE =
+  "Thông tin đăng ký tạm trú hợp lệ. Người dân vui lòng đến cơ quan đã đăng ký để nhận giấy xác nhận.";
 
 // Nhãn thủ tục.
 const TYPE_LABELS: Record<string, string> = {
@@ -142,20 +146,30 @@ export default function LookupFormDetailModal({
                 </div>
               </Section>
 
+              {detail.status === "returned" && (
+                <ResultSection
+                  outcome={detail.outcome}
+                  note={detail.result_note}
+                  returnedAt={detail.returned_at}
+                />
+              )}
+
               {/* Cơ quan thực hiện */}
               <Section title="Cơ quan thực hiện">
-                <ValueField
-                  label="Công an"
-                  value={
-                    detail.ogr_detailliated?.name
-                      ? `Công an ${detail.ogr_detailliated.name}`
-                      : "—"
-                  }
-                />
-                <ValueField
-                  label="Kênh nhận thông báo"
-                  value={label(NOTIFY_LABELS, detail.notification_on)}
-                />
+                <div className="flex flex-col gap-2">
+                  <ValueField
+                    label="Công an"
+                    value={
+                      detail.ogr_detailliated?.name
+                        ? `Công an ${detail.ogr_detailliated.name}`
+                        : "—"
+                    }
+                  />
+                  <ValueField
+                    label="Kênh nhận thông báo"
+                    value={label(NOTIFY_LABELS, detail.notification_on)}
+                  />
+                </div>
               </Section>
 
               {/* Thông tin người đề nghị */}
@@ -225,6 +239,63 @@ export default function LookupFormDetailModal({
       </div>
     </div>,
     document.body,
+  );
+}
+
+// Kết quả trả về cho người dân (hiện khi status = returned).
+function ResultSection({
+  outcome,
+  note,
+  returnedAt,
+}: {
+  outcome?: FormOutcome | null;
+  note?: string | null;
+  returnedAt?: string | null;
+}) {
+  const isValid = outcome === "valid";
+  const reasons = isValid
+    ? [note?.trim() || VALID_RESULT_MESSAGE]
+    : splitNotes(note).length > 0
+      ? splitNotes(note)
+      : ["Hồ sơ cần chỉnh sửa, vui lòng kiểm tra và nộp lại."];
+
+  const boxClass = isValid ? "bg-main-light" : "bg-red-light";
+
+  return (
+    <Section title="Kết quả trả về">
+      <div className="flex flex-col gap-2">
+        {reasons.map((reason, i) => (
+          <div
+            key={i}
+            className={`flex items-start gap-2 rounded-lg bg-red-light px-3 py-2 ${boxClass}`}
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="mt-0.5 shrink-0"
+            >
+              <rect width="16" height="16" rx="8" fill="#DC0000" />
+              <path
+                d="M11 5L8 8M8 8L5 5M8 8L11 11M8 8L5 11"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <p className="text-para-m-regular text-text-secondary mt-0.5">
+              {reason}
+            </p>
+          </div>
+        ))}
+        {returnedAt && (
+          <ValueField label="Ngày trả kết quả" value={formatDate(returnedAt)} />
+        )}
+      </div>
+    </Section>
   );
 }
 

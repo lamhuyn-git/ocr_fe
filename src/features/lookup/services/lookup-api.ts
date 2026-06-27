@@ -35,6 +35,7 @@ function toLookupForm(item: UserFormListItem): LookupForm {
     location: item.location ?? "",
     date: formatDateTime(item.created_at),
     status: item.status,
+    outcome: item.outcome ?? undefined,
     completedDate: formatDate(item.completed_at),
     rejectReason: item.reject_reason ?? undefined,
     notifyMethod: item.notify_method ?? undefined,

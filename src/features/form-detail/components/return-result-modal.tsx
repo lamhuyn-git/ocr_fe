@@ -18,7 +18,7 @@ type Props = {
   errors: ReturnFieldError[];
   gateMessage: string; // thông báo cho case gate_rejected (review_note)
   onSaveDraft: () => void;
-  onSubmit: () => void;
+  onSubmit: (data: { desc: string; fromDate: string; toDate: string }) => void;
   onClose: () => void;
 };
 
@@ -235,7 +235,7 @@ export default function ReturnResultModal({
             size="12px"
             text=" Trả kết quả"
             className="w-max"
-            onClick={onSubmit}
+            onClick={() => onSubmit({ desc, fromDate, toDate })}
           />
         </div>
       </div>

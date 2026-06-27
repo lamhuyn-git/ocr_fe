@@ -5,11 +5,10 @@ import Button from "../../../components/ui/Button";
 import Card from "../../../components/ui/Card";
 import Input from "../../../components/ui/Input";
 import Pagination from "../../../components/ui/Pagination";
-import type { FormStatusKey } from "../../../components/ui/Status";
 import Status from "../../../components/ui/Status";
 import { NOTIFY_LABELS } from "../constants";
 import { fetchUserForms } from "../services/lookup-api";
-import type { LookupCounts, LookupForm } from "../types";
+import type { FormOutcome, LookupCounts, LookupForm } from "../types";
 import LookupFormDetailModal from "./lookup-form-detail-modal";
 
 const PAGE_SIZE = 10; // số hồ sơ mỗi trang
@@ -31,16 +30,11 @@ const EMPTY_COUNTS: LookupCounts = {
   invalid: 0,
 };
 
-// BE 3-bucket chưa tách verdict đạt/phải sửa (cần pipeline temporary_residences).
-// Tạm: returned → coi hợp lệ; failed/gate_rejected → cần điều chỉnh.
-const VALID: FormStatusKey[] = ["returned"];
-const INVALID: FormStatusKey[] = ["failed", "gate_rejected"];
-
-function resultBadge(status: FormStatusKey) {
-  if (VALID.includes(status))
+function resultBadge(outcome?: FormOutcome | null) {
+  if (outcome === "valid")
     return { label: "Hợp lệ", className: "bg-[#f1ecfc] text-[#6d5bd0]" };
-  if (INVALID.includes(status))
-    return { label: "Cần điều chỉnh", className: "bg-red-light text-red" };
+  if (outcome === "require_adjust")
+    return { label: "Không hợp lệ", className: "bg-red-light text-red" };
   return null;
 }
 
@@ -167,7 +161,7 @@ export default function LookupFormList({ userId }: { userId: string }) {
             <tbody>
               {items.map((f, i) => {
                 const isDraft = f.status === "draft";
-                const result = resultBadge(f.status);
+                const result = resultBadge(f.outcome);
                 return (
                   <tr
                     key={f.id}

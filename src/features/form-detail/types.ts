@@ -106,6 +106,10 @@ export type FormDetail = {
   evidences: EvidenceImage[];
   reviewNote: string | null;
   isGateRejected: boolean;
+  outcome: "valid" | "require_adjust" | null;
+  returnedAt: string | null;
+  returnedByName: string | null;
+  returnedByEmail: string | null;
 };
 
 export type OrgResponse = {
@@ -183,6 +187,10 @@ export type FormDetailResponse = {
   is_gate_rejected: boolean;
   created_at: string;
   updated_at: string;
+  outcome?: "valid" | "require_adjust" | null;
+  returned_at?: string | null;
+  returned_by_name?: string | null;
+  returned_by_email?: string | null;
   ogr_detailliated: OrgResponse;
   form_type_detail: FormTypeResponse;
   sumited_content: SubmittedContentResponse;

@@ -10,8 +10,10 @@ import {
   fetchFormDetail,
   isFullDetail,
   reextractForm,
+  returnFormResult,
   saveFormChanges,
 } from "../features/form-detail/services/form-detail-api";
+import { useNotifications } from "../features/notifications/notification-store";
 import FormStatePlaceholder from "../features/form-detail/components/form-state-placeholder";
 import { mapFormDetail } from "../features/form-detail/services/map-form-detail";
 import type {
@@ -28,6 +30,7 @@ import { useAuthContext } from "../store/auth-store";
 
 export default function FormDetailPage() {
   const { user } = useAuthContext();
+  const { pushLocal } = useNotifications();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -54,6 +57,7 @@ export default function FormDetailPage() {
   const [showExitModal, setShowExitModal] = useState(false);
   // Popup xác nhận kết quả trả về (mở khi bấm "Trả kết quả").
   const [showReturnModal, setShowReturnModal] = useState(false);
+  const [returning, setReturning] = useState(false);
   // Đích điều hướng đang chờ xác nhận (khi user bấm link thoát khỏi trang).
   // "__back__" = thoát bằng nút Back của trình duyệt.
   const pendingNav = useRef<string | null>(null);
@@ -285,6 +289,9 @@ export default function FormDetailPage() {
         ? "valid"
         : "invalid";
 
+  // Hồ sơ đã trả kết quả → xem chỉ đọc: ẩn nút thao tác field + footer.
+  const isReturned = detail.statusLabel === "returned";
+
   // Map field.id → {label, lý do} để dựng danh sách "Các lỗi hiện có".
   const fieldById = new Map(
     detail.extractionSections.flatMap((s) =>
@@ -301,10 +308,51 @@ export default function FormDetailPage() {
     address: detail.declaration.requestContent,
   };
 
-  // UI-only: chưa nối API trả kết quả (return_form/temporary_residences chưa build).
-  const handleReturnSubmit = () => {
-    console.log("[return-result] submit (UI-only)", { returnVariant });
-    setShowReturnModal(false);
+  const handleReturnSubmit = async (data: {
+    desc: string;
+    fromDate: string;
+    toDate: string;
+  }) => {
+    if (returning) return;
+    setReturning(true);
+    const outcome = returnVariant === "valid" ? "valid" : "require_adjust";
+    const note =
+      data.desc.trim() ||
+      (returnVariant === "invalid"
+        ? returnErrors
+            .map((e) => `${e.label}: ${e.reason || "Không hợp lệ"}`)
+            .join("; ")
+        : returnVariant === "gate_rejected"
+          ? (detail.reviewNote ?? "")
+          : "");
+    try {
+      await returnFormResult({
+        form_id: formId,
+        outcome,
+        note: note || null,
+        dia_chi: outcome === "valid" ? returnSavedInfo.address : null,
+        tu_ngay: outcome === "valid" ? data.fromDate : null,
+        den_ngay: outcome === "valid" ? data.toDate : null,
+      });
+      setShowReturnModal(false);
+      pushLocal({
+        type: "form_returned",
+        title: "Trả kết quả thành công",
+        body: `Hồ sơ ${formId} đã được trả kết quả cho người dân.`,
+        form_id: formId,
+      });
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("return result failed", err);
+      pushLocal({
+        type: "form_returned",
+        title: "Trả kết quả thất bại",
+        body: "Không thể trả kết quả hồ sơ. Vui lòng thử lại.",
+        form_id: formId,
+      });
+    } finally {
+      setReturning(false);
+    }
   };
   const handleReturnSaveDraft = () => {
     console.log("[return-result] save draft (UI-only)");
@@ -363,17 +411,30 @@ export default function FormDetailPage() {
               onMark={handleMark}
               onUnmark={handleUnmark}
               reviewNote={detail.reviewNote}
+              readOnly={isReturned}
+              returnInfo={
+                isReturned
+                  ? {
+                      outcome: detail.outcome,
+                      byName: detail.returnedByName,
+                      byEmail: detail.returnedByEmail,
+                      at: detail.returnedAt,
+                    }
+                  : null
+              }
             />
           </div>
 
-          <FormDetailFooter
-            checkedFields={savedChanges.length}
-            totalFields={detail.totalFields}
-            onReextract={handleReextract}
-            reextracting={reextracting}
-            onReturnResult={() => setShowReturnModal(true)}
-            onSaveDraft={handleReturnSaveDraft}
-          />
+          {!isReturned && (
+            <FormDetailFooter
+              checkedFields={savedChanges.length}
+              totalFields={detail.totalFields}
+              onReextract={handleReextract}
+              reextracting={reextracting}
+              onReturnResult={() => setShowReturnModal(true)}
+              onSaveDraft={handleReturnSaveDraft}
+            />
+          )}
         </div>
       </div>
     </>

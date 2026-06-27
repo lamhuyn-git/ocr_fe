@@ -11,15 +11,71 @@ import {
 
 type ExtractionPanelProps = {
   sections: ExtractionSection[];
-  activeId: string; // section đang chọn (đồng bộ panel trái)
-  selectedFieldId?: string; // field đang chọn (để vẽ box trên ảnh)
+  activeId: string; // section đang chọn
+  selectedFieldId?: string; // field đang chọn
   onSelectField?: (field: ExtractionField) => void;
   onMark?: (item: SaveChangeFieldItem) => void;
   onUnmark?: (id: string) => void;
   reviewNote?: string | null; // hiện khi chưa có kết quả trích xuất
+  readOnly?: boolean; // hồ sơ đã trả kết quả → ẩn nút thao tác
+  returnInfo?: ReturnConfirmInfo | null; // thông tin xác nhận trả kết quả
 };
 
-// Panel phải: kết quả trích xuất theo từng field của section đang chọn bên trái.
+type ReturnConfirmInfo = {
+  outcome: "valid" | "require_adjust" | null;
+  byName: string | null;
+  byEmail: string | null;
+  at: string | null;
+};
+
+// ISO -> "HH:mm:ss dd-MM-yyyy".
+function formatConfirmDate(iso?: string | null): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())} ${p(d.getDate())}-${p(d.getMonth() + 1)}-${d.getFullYear()}`;
+}
+
+function ReturnConfirmCard({ info }: { info: ReturnConfirmInfo }) {
+  const isValid = info.outcome === "valid";
+  return (
+    <div className="mx-4 mb-4 flex flex-col gap-3 rounded-xl border border-input-border bg-white p-4">
+      <span className="text-para-m-semibold text-text-main">
+        Thông tin xác nhận hồ sơ
+      </span>
+      <div className="flex items-center gap-3">
+        <span className="w-40 shrink-0 text-para-m-regular text-text-placeholder">
+          Trạng thái hồ sơ trả về
+        </span>
+        <span
+          className={`inline-flex items-center rounded-full px-3 py-1.5 text-para-s-semibold ${
+            isValid ? "bg-main-light text-secondary" : "bg-red-light text-red"
+          }`}
+        >
+          {isValid ? "Hồ sơ hợp lệ" : "Hồ sơ không hợp lệ"}
+        </span>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="w-40 shrink-0 text-para-m-regular text-text-placeholder">
+          Người xác nhận:
+        </span>
+        <span className="flex-1 rounded-lg bg-grey px-3 py-2 text-para-m-medium text-text-main">
+          {info.byName ?? info.byEmail ?? "—"}
+        </span>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="w-40 shrink-0 text-para-m-regular text-text-placeholder">
+          Ngày xác nhận:
+        </span>
+        <span className="flex-1 rounded-lg bg-grey px-3 py-2 text-para-m-medium text-text-main">
+          {formatConfirmDate(info.at)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function ExtractionPanel({
   sections,
   activeId,
@@ -28,9 +84,10 @@ export default function ExtractionPanel({
   onMark,
   onUnmark,
   reviewNote,
+  readOnly = false,
+  returnInfo = null,
 }: ExtractionPanelProps) {
   const activeFields = sections.find((s) => s.id === activeId)?.fields ?? [];
-  // Chưa có field trích xuất nào trên toàn hồ sơ -> hiển thị ghi chú duyệt.
   const hasAnyField = sections.some((s) => s.fields.length > 0);
 
   return (
@@ -48,7 +105,6 @@ export default function ExtractionPanel({
         </div>
       </div>
 
-      {/* Chưa có kết quả trích xuất -> hiển thị ghi chú duyệt (tách theo ";"). */}
       {!hasAnyField ? (
         <div className="mx-4 flex flex-col gap-2 rounded-xl border border-input-border bg-white p-3">
           <p className="text-para-m-regular text-text-placeholder">Ghi chú:</p>
@@ -93,6 +149,7 @@ export default function ExtractionPanel({
               onSelect={onSelectField}
               onMark={onMark}
               onUnmark={onUnmark}
+              readOnly={readOnly}
             />
           </div>
         ))
@@ -103,6 +160,8 @@ export default function ExtractionPanel({
             : "Không có trường trích xuất cho mục này."}
         </p>
       )}
+
+      {returnInfo && <ReturnConfirmCard info={returnInfo} />}
     </aside>
   );
 }

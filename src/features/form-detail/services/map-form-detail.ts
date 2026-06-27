@@ -212,6 +212,10 @@ export function mapFormDetail(res: FormDetailResponse): FormDetail {
     declaration: buildDeclaration(c, agencyName),
     reviewNote: res.review_note ?? null,
     isGateRejected: res.is_gate_rejected ?? false,
+    outcome: res.outcome ?? null,
+    returnedAt: res.returned_at ?? null,
+    returnedByName: res.returned_by_name ?? null,
+    returnedByEmail: res.returned_by_email ?? null,
     evidences: [
       res.evidences?.warped_img && {
         id: "warped_img",

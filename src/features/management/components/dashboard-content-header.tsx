@@ -67,12 +67,16 @@ export default function DashboardContentHeader({
 
   // Officer bị khoá: auto-chọn đúng phường phụ trách 1 lần.
   // super_admin tự chọn → hiện placeholder "Chọn phường tại đây".
+  // Chờ tỉnh đã khớp tỉnh phụ trách rồi mới chọn phường: auto-chọn tỉnh sẽ
+  // reset ward về "" (handleProvinceChange), nên phải chạy SAU bước đó —
+  // tránh cờ wardDefaultApplied bị "đốt" trước khi tỉnh được thiết lập.
   useEffect(() => {
     if (!locationLocked || !lockedWardId) return;
     if (wardDefaultApplied.current || ward) return;
+    if (province !== lockedProvinceId) return;
     wardDefaultApplied.current = true;
     onWardChange(lockedWardId);
-  }, [locationLocked, lockedWardId, ward, onWardChange]);
+  }, [locationLocked, lockedWardId, ward, onWardChange, province, lockedProvinceId]);
 
   // Tải danh sách phường mỗi khi tỉnh đổi. Cờ `stale` huỷ kết quả cũ nếu
   // người dùng đổi tỉnh nhanh (tránh race: response tỉnh cũ về sau).

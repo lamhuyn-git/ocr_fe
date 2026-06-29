@@ -66,7 +66,7 @@ function ReturnConfirmCard({ info }: { info: ReturnConfirmInfo }) {
       </div>
       <div className="flex items-center gap-3">
         <span className="w-40 shrink-0 text-para-m-regular text-text-placeholder">
-          Ngày xác nhận:
+          Thời gian xác nhận:
         </span>
         <span className="flex-1 rounded-lg bg-grey px-3 py-2 text-para-m-medium text-text-main">
           {formatConfirmDate(info.at)}

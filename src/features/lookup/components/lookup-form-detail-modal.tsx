@@ -267,7 +267,7 @@ function ResultSection({
         {reasons.map((reason, i) => (
           <div
             key={i}
-            className={`flex items-start gap-2 rounded-lg bg-red-light px-3 py-2 ${boxClass}`}
+            className={`flex items-start gap-2 rounded-lg px-3 py-2 ${boxClass}`}
           >
             <svg
               width="12"
@@ -277,14 +277,24 @@ function ResultSection({
               xmlns="http://www.w3.org/2000/svg"
               className="mt-0.5 shrink-0"
             >
-              <rect width="16" height="16" rx="8" fill="#DC0000" />
-              <path
-                d="M11 5L8 8M8 8L5 5M8 8L11 11M8 8L5 11"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <rect width="16" height="16" rx="8" fill={isValid ? "#396F24" : "#DC0000"} />
+              {isValid ? (
+                <path
+                  d="M4.5 8.5L7 11L11.5 5.5"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              ) : (
+                <path
+                  d="M11 5L8 8M8 8L5 5M8 8L11 11M8 8L5 11"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
             </svg>
             <p className="text-para-m-regular text-text-secondary mt-0.5">
               {reason}

@@ -9,12 +9,12 @@ import {
 import Notification from "../components/ui/Notification";
 
 type ToastData = { title: string; message: string };
-type ToastContextValue = { showToast: (title: string, message: string) => void };
+type ToastContextValue = {
+  showToast: (title: string, message: string) => void;
+};
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-// Toast cấp app: render trên <Routes> nên tồn tại xuyên điều hướng
-// (navigate không unmount toast). Mọi trang gọi useToast().showToast(...).
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<ToastData | null>(null);
 
@@ -22,10 +22,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToast({ title, message });
   }, []);
 
-  // Tự tắt sau 10s mỗi khi có toast mới.
+  // Tự tắt sau 5s mỗi khi có toast mới.
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(() => setToast(null), 10000);
+    const t = setTimeout(() => setToast(null), 5000);
     return () => clearTimeout(t);
   }, [toast]);
 
@@ -33,7 +33,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ showToast }}>
       {children}
       {toast && (
-        <div className="fixed top-20 right-6 z-[100] w-full max-w-md">
+        <div className="fixed top-5 right-6 z-[100] w-full max-w-md">
           <Notification title={toast.title} message={toast.message} />
         </div>
       )}

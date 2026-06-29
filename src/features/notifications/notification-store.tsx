@@ -26,14 +26,16 @@ type LocalNotification = {
 type NotificationContextValue = {
   items: NotificationItem[];
   unread: number;
-  eventSeq: number; // tăng mỗi khi nhận 1 thông báo mới qua WS — để nơi khác refetch
+  eventSeq: number;
   markAllRead: () => Promise<void>;
   markOneRead: (id: string) => Promise<void>;
   refresh: () => Promise<void>;
   pushLocal: (n: LocalNotification) => void;
 };
 
-const NotificationContext = createContext<NotificationContextValue | null>(null);
+const NotificationContext = createContext<NotificationContextValue | null>(
+  null,
+);
 
 function buildWsUrl(): string {
   const base = import.meta.env.VITE_API_BASE_URL ?? "";
@@ -56,9 +58,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       const res = await fetchNotifications(1, 20);
       setItems(res.items);
       setUnread(res.unread);
-    } catch {
-      /* bỏ qua lỗi tải */
-    }
+    } catch {}
   }, []);
 
   const markAllRead = useCallback(async () => {
@@ -66,9 +66,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       await markNotificationsRead({ all: true });
       setItems((prev) => prev.map((n) => ({ ...n, is_read: true })));
       setUnread(0);
-    } catch {
-      /* bỏ qua */
-    }
+    } catch {}
   }, []);
 
   const markOneRead = useCallback(async (id: string) => {
@@ -136,9 +134,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
             setEventSeq((s) => s + 1);
             showToast(n.title, n.body ?? "");
           }
-        } catch {
-          /* tin không phải JSON hợp lệ */
-        }
+        } catch {}
       };
 
       ws.onclose = () => {
@@ -162,7 +158,15 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   return (
     <NotificationContext.Provider
-      value={{ items, unread, eventSeq, markAllRead, markOneRead, refresh, pushLocal }}
+      value={{
+        items,
+        unread,
+        eventSeq,
+        markAllRead,
+        markOneRead,
+        refresh,
+        pushLocal,
+      }}
     >
       {children}
     </NotificationContext.Provider>
@@ -172,6 +176,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 export function useNotifications(): NotificationContextValue {
   const ctx = useContext(NotificationContext);
   if (!ctx)
-    throw new Error("useNotifications must be used within NotificationProvider");
+    throw new Error(
+      "useNotifications must be used within NotificationProvider",
+    );
   return ctx;
 }

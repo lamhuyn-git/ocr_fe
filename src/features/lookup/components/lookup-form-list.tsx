@@ -6,6 +6,7 @@ import Card from "../../../components/ui/Card";
 import Input from "../../../components/ui/Input";
 import Pagination from "../../../components/ui/Pagination";
 import Status from "../../../components/ui/Status";
+import { useNotifications } from "../../notifications/notification-store";
 import { NOTIFY_LABELS } from "../constants";
 import { fetchUserForms } from "../services/lookup-api";
 import type { FormOutcome, LookupCounts, LookupForm } from "../types";
@@ -50,6 +51,7 @@ export default function LookupFormList({ userId }: { userId: string }) {
   const [counts, setCounts] = useState<LookupCounts>(EMPTY_COUNTS);
   const [loading, setLoading] = useState(true);
   const [detailId, setDetailId] = useState<string | null>(null); // form đang xem chi tiết
+  const { eventSeq } = useNotifications(); // tăng khi có thông báo mới qua WS → refetch list
 
   useEffect(() => {
     const t = setTimeout(() => setSearch(query), 400);
@@ -79,7 +81,7 @@ export default function LookupFormList({ userId }: { userId: string }) {
     return () => {
       stale = true;
     };
-  }, [userId, tab, search, page]);
+  }, [userId, tab, search, page, eventSeq]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 

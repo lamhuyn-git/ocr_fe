@@ -35,8 +35,12 @@ export const SIDEBAR_SECTIONS: NavSection[] = [
           },
         ],
       },
-      { icon: "document", label: "Đơn vị hành chính", path: "/administrative-units" },
-      { icon: "group", label: "Quản lý người dùng" },
+      {
+        icon: "document",
+        label: "Đơn vị hành chính",
+        path: "/administrative-units",
+      },
+      { icon: "group", label: "Quản lý người dùng", path: "/users" },
     ],
   },
   {

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import Select from "../../../components/ui/Select";
 import type { SelectOption } from "../../residence-form/types";
 import {
@@ -27,6 +28,7 @@ type DashboardContentHeaderProps = {
   title?: string;
   subtitle?: string;
   showFilters?: boolean;
+  rightContent?: ReactNode;
 };
 
 export default function DashboardContentHeader({
@@ -40,6 +42,7 @@ export default function DashboardContentHeader({
   title = "HỆ THỐNG QUẢN LÝ",
   subtitle = "Hệ thống trích xuất hỗ trợ phân tích, cán bộ kiểm duyệt và quyết định cuối cùng",
   showFilters = true,
+  rightContent,
 }: DashboardContentHeaderProps) {
   const [provinces, setProvinces] = useState<SelectOption[]>([]);
   const [wards, setWards] = useState<SelectOption[]>([]);
@@ -122,40 +125,48 @@ export default function DashboardContentHeader({
         <p className="text-para-m-regular text-text-placeholder">{subtitle}</p>
       </div>
 
-      {showFilters && (
+      {(showFilters || rightContent) && (
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
-              Tỉnh/Thành phố
-            </span>
-            <div className="w-[11.25rem]">
-              <Select
-                value={province}
-                options={provinces}
-                placeholder="Chọn tỉnh/thành phố"
-                onChange={onProvinceChange}
-                disabled={locationLocked}
-                triggerClassName="!p-2"
-              />
-            </div>
-          </div>
+          {showFilters && (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
+                  Tỉnh/Thành phố
+                </span>
+                <div className="w-[11.25rem]">
+                  <Select
+                    value={province}
+                    options={provinces}
+                    placeholder="Chọn tỉnh/thành phố"
+                    onChange={onProvinceChange}
+                    disabled={locationLocked}
+                    triggerClassName="!p-2"
+                  />
+                </div>
+              </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
-              Phường/Xã
-            </span>
-            <div className="w-[11.25rem]">
-              <Select
-                value={ward}
-                options={wards}
-                placeholder="Chọn phường tại đây"
-                onChange={onWardChange}
-                disabled={locationLocked || !province}
-                loading={wardsLoading}
-                triggerClassName="!p-2"
-              />
-            </div>
-          </div>
+              <div className="flex items-center gap-2">
+                <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
+                  Phường/Xã
+                </span>
+                <div className="w-[11.25rem]">
+                  <Select
+                    value={ward}
+                    options={wards}
+                    placeholder="Chọn phường tại đây"
+                    onChange={onWardChange}
+                    disabled={locationLocked || !province}
+                    loading={wardsLoading}
+                    triggerClassName="!p-2"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {rightContent && (
+            <div className="flex items-center gap-2">{rightContent}</div>
+          )}
         </div>
       )}
     </div>

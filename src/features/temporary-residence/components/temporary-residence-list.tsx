@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../../../components/icons";
 import Button from "../../../components/ui/Button";
@@ -12,9 +12,13 @@ const PAGE_SIZE = 10; // số bản ghi mỗi trang
 type Props = {
   // org_id (phường/xã đã chọn ở header) để lọc danh sách. Rỗng = mọi phường (super admin).
   orgId?: string;
+  searchQuery?: string;
 };
 
-export default function TemporaryResidenceList({ orgId }: Props) {
+export default function TemporaryResidenceList({
+  orgId,
+  searchQuery = "",
+}: Props) {
   const navigate = useNavigate();
   const { eventSeq } = useNotifications(); // refetch khi có thông báo mới qua WS
   const [page, setPage] = useState(1);
@@ -22,12 +26,14 @@ export default function TemporaryResidenceList({ orgId }: Props) {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => setPage(1), [orgId]);
-
   useEffect(() => {
+    void Promise.resolve().then(() => setPage(1));
+  }, [orgId, searchQuery]);
+
+  const reloadItems = useCallback(() => {
     let stale = false;
     setLoading(true);
-    fetchTemporaryResidences({ orgId, page })
+    fetchTemporaryResidences({ orgId, page, q: searchQuery })
       .then((res) => {
         if (stale) return;
         setItems(res.items);
@@ -44,7 +50,17 @@ export default function TemporaryResidenceList({ orgId }: Props) {
     return () => {
       stale = true;
     };
-  }, [orgId, page, eventSeq]);
+  }, [orgId, page, searchQuery]);
+
+  useEffect(() => {
+    let cleanup: void | (() => void);
+    void Promise.resolve()
+      .then(reloadItems)
+      .then((nextCleanup) => {
+        cleanup = nextCleanup;
+      });
+    return () => cleanup?.();
+  }, [reloadItems, eventSeq]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 

@@ -19,6 +19,7 @@ import FormDetailPage from "./pages/form-detail";
 import LookupPage from "./pages/lookup";
 import TemporaryResidencePage from "./pages/temporary-residence";
 import AdministrativeUnitsPage from "./pages/administrative-units";
+import UsersPage from "./pages/users";
 import Loading from "./components/ui/Loading";
 
 function AppRoutes() {
@@ -115,6 +116,16 @@ function AppRoutes() {
           element={
             isAuthenticated ? (
               <AdministrativeUnitsPage />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            isAuthenticated ? (
+              <UsersPage />
             ) : (
               <Navigate to="/login" replace />
             )

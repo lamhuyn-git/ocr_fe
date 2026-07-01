@@ -1,6 +1,7 @@
 export type NavChild = {
   label: string;
   active?: boolean;
+  path?: string;
 };
 
 export type NavItem = {
@@ -8,6 +9,7 @@ export type NavItem = {
   label: string;
   active?: boolean;
   expanded?: boolean;
+  path?: string;
   children?: NavChild[];
   handleClick?: () => void;
 };
@@ -21,15 +23,15 @@ export const SIDEBAR_SECTIONS: NavSection[] = [
   {
     title: "Quản lý",
     items: [
-      { icon: "home", label: "Trang chủ" },
+      { icon: "home", label: "Trang chủ", path: "/dashboard" },
       {
         icon: "locate",
         label: "Quản lý cư trú",
-        active: true,
         expanded: true,
         children: [
           {
             label: "Tạm trú",
+            path: "/temporary-residence",
           },
         ],
       },

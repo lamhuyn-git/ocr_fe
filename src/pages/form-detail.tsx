@@ -28,9 +28,11 @@ import ReturnResultModal, {
 } from "../features/form-detail/components/return-result-modal";
 import { useAuthContext } from "../store/auth-store";
 
+const PROCESSING_STATUSES = new Set(["submitted", "processing"]);
+
 export default function FormDetailPage() {
   const { user } = useAuthContext();
-  const { pushLocal } = useNotifications();
+  const { pushLocal, eventSeq } = useNotifications();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -78,6 +80,7 @@ export default function FormDetailPage() {
   // Trạng thái hồ sơ ngay khi cán bộ vào trang detail (gửi làm from_status).
   // Ưu tiên status truyền từ danh sách; fallback res.status nếu mở bằng URL.
   const previousStatusRef = useRef<string | null>(navPreviousStatus);
+  const detailRefreshKeyRef = useRef<number | undefined>(undefined);
 
   // Cán bộ rời trang mà không sửa field nào -> vẫn gọi API cập nhật trạng thái
   // (updated_fields = null). Fire-and-forget, không chặn điều hướng.
@@ -207,9 +210,21 @@ export default function FormDetailPage() {
     setSelectedField(null);
   };
 
-  const loadDetail = useCallback(async () => {
+  const versionEvidenceUrls = (data: FormDetail): FormDetail => {
+    const refreshKey = detailRefreshKeyRef.current;
+    if (refreshKey == null) return data;
+    return {
+      ...data,
+      evidences: data.evidences.map((e) => ({
+        ...e,
+        url: `${e.url}${e.url.includes("?") ? "&" : "?"}v=${refreshKey}`,
+      })),
+    };
+  };
+
+  const loadDetail = useCallback(async (resetView = false) => {
     if (!formId) return;
-    const res = await fetchFormDetail(formId);
+    const res = await fetchFormDetail(formId, detailRefreshKeyRef.current);
     // Ghi nhận trạng thái lúc vào trang (chỉ lần đầu) để làm from_status.
     if (previousStatusRef.current === null)
       previousStatusRef.current = res.status;
@@ -220,9 +235,13 @@ export default function FormDetailPage() {
       return;
     }
     setLockStatus(null);
-    const mapped = mapFormDetail(res);
+    const mapped = versionEvidenceUrls(mapFormDetail(res));
     setDetail(mapped);
-    setActiveSectionId((prev) => prev || (mapped.onlineSections[0]?.id ?? ""));
+    setActiveSectionId((prev) =>
+      resetView
+        ? (mapped.onlineSections[0]?.id ?? "")
+        : prev || (mapped.onlineSections[0]?.id ?? ""),
+    );
   }, [formId]);
 
   useEffect(() => {
@@ -230,14 +249,33 @@ export default function FormDetailPage() {
     loadDetail().finally(() => setLoading(false));
   }, [loadDetail]);
 
+  // Khi BE xử lý OCR nền xong, detail endpoint mới trả full data. Refetch theo
+  // notification và polling dự phòng để trang không kẹt ở màn hình processing.
+  useEffect(() => {
+    if (!lockStatus || !PROCESSING_STATUSES.has(lockStatus)) return;
+    detailRefreshKeyRef.current = Date.now();
+    void loadDetail(true);
+  }, [eventSeq, lockStatus, loadDetail]);
+
+  useEffect(() => {
+    if (!lockStatus || !PROCESSING_STATUSES.has(lockStatus)) return;
+    const timer = window.setInterval(() => {
+      detailRefreshKeyRef.current = Date.now();
+      void loadDetail(true);
+    }, 2000);
+    return () => window.clearInterval(timer);
+  }, [lockStatus, loadDetail]);
+
   // Trích xuất lại OCR: gọi API rồi tải lại chi tiết để cập nhật kết quả.
   const handleReextract = async () => {
     if (!formId || reextracting) return;
     setReextracting(true);
     try {
       await reextractForm(formId);
+      detailRefreshKeyRef.current = Date.now();
       setSelectedField(null);
-      await loadDetail();
+      setSavedChanges([]);
+      await loadDetail(true);
     } finally {
       setReextracting(false);
     }
@@ -402,16 +440,9 @@ export default function FormDetailPage() {
               activeId={activeSectionId}
               onActiveChange={handleSectionChange}
             />
-            <DocumentCenterPanel detail={detail} highlight={selectedField} />
-            <ExtractionPanel
-              sections={detail.extractionSections}
-              activeId={activeSectionId}
-              selectedFieldId={selectedField?.id}
-              onSelectField={setSelectedField}
-              onMark={handleMark}
-              onUnmark={handleUnmark}
-              reviewNote={detail.reviewNote}
-              readOnly={isReturned}
+            <DocumentCenterPanel
+              detail={detail}
+              highlight={selectedField}
               returnInfo={
                 isReturned
                   ? {
@@ -422,6 +453,16 @@ export default function FormDetailPage() {
                     }
                   : null
               }
+            />
+            <ExtractionPanel
+              sections={detail.extractionSections}
+              activeId={activeSectionId}
+              selectedFieldId={selectedField?.id}
+              onSelectField={setSelectedField}
+              onMark={handleMark}
+              onUnmark={handleUnmark}
+              reviewNote={detail.reviewNote}
+              readOnly={isReturned}
             />
           </div>
 

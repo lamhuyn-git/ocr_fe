@@ -1,7 +1,9 @@
 import { useState } from "react";
-import Icon from "../../icons";
+import { useLocation, useNavigate } from "react-router-dom";
+import Icon, { type IconName } from "../../icons";
 import {
   SIDEBAR_SECTIONS,
+  type NavChild,
   type NavItem,
   type NavSection,
 } from "./sidebar-config";
@@ -41,36 +43,58 @@ function NavItemRow({
   item,
   collapsed,
   activeChild,
+  pathname,
+  onNavigate,
 }: {
   item: NavItem;
   collapsed: boolean;
   activeChild?: string;
+  pathname: string;
+  onNavigate: (path: string) => void;
 }) {
+  // Active theo route: item có path → khớp pathname; item có children →
+  // active khi 1 child khớp pathname. Fallback: cờ active/activeChild tĩnh.
+  const childActive = (child: NavChild) =>
+    (!!child.path && child.path === pathname) || child.label === activeChild;
+  const isActive =
+    (item.path ? item.path === pathname : false) ||
+    (item.children?.some(childActive) ?? false) ||
+    !!item.active;
+
+  // Mặc định mở rộng nếu config expanded; cho phép toggle cục bộ.
+  const [expanded, setExpanded] = useState(item.expanded ?? false);
+
+  const handleItemClick = () => {
+    if (item.handleClick) return item.handleClick();
+    if (item.children) return setExpanded((e) => !e);
+    if (item.path) return onNavigate(item.path);
+  };
+
   return (
     <div className="flex flex-col gap-1">
       <button
         type="button"
-        onClick={item.handleClick}
+        onClick={handleItemClick}
         title={collapsed ? item.label : undefined}
         className={`flex items-center w-full py-2 rounded-lg text-left transition-colors ${
           collapsed ? "justify-center px-0" : "gap-[0.35rem] px-2"
         } ${
-          item.active
+          isActive
             ? "bg-white shadow-[0_0_4px_rgba(182,192,187,0.25)] text-text-main"
             : "text-text-placeholder hover:bg-grey-hover"
         }`}
       >
         <Icon
-          name={item.icon as any}
+          name={item.icon as IconName}
           size={18}
           className={
-            item.active ? "[&_path]:stroke-black" : "[&_path]:stroke-[#707071]"
+            isActive ? "[&_path]:stroke-black" : "[&_path]:stroke-[#707071]"
           }
         />
         {!collapsed && (
           <span
             className={`flex-1  ${
-              item.active
+              isActive
                 ? "text-para-m-semibold color-black text-para-m-semibold"
                 : "text-para-m-medium color-grey-dark-active leading-none mt-[0.1875rem]"
             }`}
@@ -83,32 +107,37 @@ function NavItemRow({
             name="chevron-down"
             size={16}
             className={`text-text-placeholder transition-transform duration-200 ${
-              item.expanded ? "rotate-180" : ""
+              expanded ? "rotate-180" : ""
             }`}
           />
         )}
       </button>
       {/* Sub-items (ẩn khi thu gọn) */}
-      {!collapsed && item.children && item.expanded && (
+      {!collapsed && item.children && expanded && (
         <div className="flex flex-col gap-2">
           {item.children.map((child) => {
-            const isActive = child.active || child.label === activeChild;
+            const isChildActive =
+              child.active ||
+              child.label === activeChild ||
+              (!!child.path && child.path === pathname);
             return (
               <button
                 key={child.label}
+                type="button"
+                onClick={() => child.path && onNavigate(child.path)}
                 className={`flex items-center gap-2 w-full p-2 rounded-lg text-left transition-colors ${
-                  isActive
+                  isChildActive
                     ? "bg-white shadow-[0_0_4px_rgba(182,192,187,0.25)]"
                     : "hover:bg-grey-hover"
                 }`}
               >
                 <BranchIcon
-                  active={isActive}
+                  active={isChildActive}
                   className="shrink-0 ml-[0.5rem]"
                 />
                 <span
                   className={`text-para-m-medium mt-[0.25rem] ${
-                    isActive
+                    isChildActive
                       ? "text-para-m-semibold color-black text-para-m-semibold"
                       : "text-para-m-medium color-grey-dark-active leading-none"
                   }`}
@@ -128,10 +157,14 @@ function NavSectionBlock({
   section,
   collapsed,
   activeChild,
+  pathname,
+  onNavigate,
 }: {
   section: NavSection;
   collapsed: boolean;
   activeChild?: string;
+  pathname: string;
+  onNavigate: (path: string) => void;
 }) {
   return (
     <div className="flex flex-col gap-2 px-4">
@@ -147,6 +180,8 @@ function NavSectionBlock({
             item={item}
             collapsed={collapsed}
             activeChild={activeChild}
+            pathname={pathname}
+            onNavigate={onNavigate}
           />
         ))}
       </div>
@@ -165,6 +200,8 @@ export default function Sidebar({
   activeChild?: string;
 }) {
   const { signOut } = useAuthContext();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const topSections = SIDEBAR_SECTIONS.slice(0, -1);
 
@@ -237,13 +274,20 @@ export default function Sidebar({
               section={section}
               collapsed={collapsed}
               activeChild={activeChild}
+              pathname={pathname}
+              onNavigate={navigate}
             />
           ))}
         </div>
 
         {/* Bottom section + profile card */}
         <div className="flex flex-col gap-2">
-          <NavSectionBlock section={bottomSection} collapsed={collapsed} />
+          <NavSectionBlock
+            section={bottomSection}
+            collapsed={collapsed}
+            pathname={pathname}
+            onNavigate={navigate}
+          />
 
           {/* Profile card (thu gọn: chỉ avatar) */}
           <div

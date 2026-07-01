@@ -55,7 +55,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetchNotifications(1, 20);
+      const res = await fetchNotifications(1);
       setItems(res.items);
       setUnread(res.unread);
     } catch {}

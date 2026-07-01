@@ -54,14 +54,14 @@ export default function DocumentsSection({
             <span className="text-para-m-medium text-text-main">Lọc hồ sơ</span>
           </button>
 
-          <div className="flex items-center border border-input-border rounded-lg overflow-hidden">
+          {/* <div className="flex items-center border border-input-border rounded-lg overflow-hidden">
             <button className="p-2 bg-primary-light hover:bg-grey transition-colors">
               <Icon name="services" size={16} className="text-text-main" />
             </button>
             <button className="p-2 hover:bg-grey transition-colors">
               <Icon name="row" size={16} className="text-text-placeholder" />
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 

@@ -37,7 +37,7 @@ export default function DashboardPage() {
       <DashboardSidebar user={user} />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden bg-white">
         <DashboardTopMenu />
-        <main className="flex flex-col flex-1 overflow-y-auto gap-4 p-4 snap-y snap-mandatory">
+        <main className="flex flex-col flex-1 overflow-y-auto gap-4 p-4 snap-y snap-mandatory mt-4">
           <div className="snap-start shrink-0">
             <DashboardContentHeader
               province={province}

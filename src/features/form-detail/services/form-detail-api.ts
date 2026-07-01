@@ -13,10 +13,14 @@ export function isFullDetail(
 
 export async function fetchFormDetail(
   formId: string,
+  refreshKey?: number,
 ): Promise<FormDetailResponse | FormStatusResponse> {
+  const params = new URLSearchParams({ form_id: formId });
+  if (refreshKey != null) params.set("_t", String(refreshKey));
+
   return apiFetch<FormDetailResponse | FormStatusResponse>(
-    `/api/v1/form/detail?form_id=${encodeURIComponent(formId)}`,
-    { auth: true },
+    `/api/v1/form/detail?${params.toString()}`,
+    { auth: true, cache: refreshKey != null ? "no-store" : undefined },
   );
 }
 

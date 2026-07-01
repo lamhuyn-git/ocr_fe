@@ -3,10 +3,9 @@ import type { NotificationListResponse } from "../types";
 
 export async function fetchNotifications(
   page = 1,
-  pageSize = 20,
 ): Promise<NotificationListResponse> {
   return apiFetch<NotificationListResponse>(
-    `/api/v1/notifications?page=${page}&page_size=${pageSize}`,
+    `/api/v1/notifications?page=${page}`,
     { auth: true },
   );
 }

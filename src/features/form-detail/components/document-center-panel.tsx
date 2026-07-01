@@ -3,14 +3,19 @@ import Icon from "../../../components/icons";
 import DocumentToolbar from "./document-toolbar";
 import type { ExtractionField, FormDetail } from "../types";
 import Status from "../../../components/ui/Status";
+import ReturnConfirmCard, {
+  type ReturnConfirmInfo,
+} from "./return-confirm-card";
 
 // Panel giữa: tiêu đề + meta hồ sơ + toolbar + tờ khai CT01 / hồ sơ đính kèm.
 export default function DocumentCenterPanel({
   detail,
   highlight,
+  returnInfo = null,
 }: {
   detail: FormDetail;
   highlight?: ExtractionField | null; // field đang chọn -> vẽ box vị trí trên ảnh CT01
+  returnInfo?: ReturnConfirmInfo | null;
 }) {
   const [tab, setTab] = useState<"ct01" | "attachments">("ct01");
 
@@ -25,7 +30,7 @@ export default function DocumentCenterPanel({
 
   return (
     <main className="bg-white flex flex-col flex-1 min-w-0 h-full overflow-hidden shadow-[0_0_8px_rgba(182,192,187,0.3)] rounded-[0.5rem]">
-      <div className="flex flex-col px-6 pt-4 pb-3 shrink-0 border-b border-black-light">
+      <div className="flex flex-col px-6 pt-4 shrink-0 border-b border-black-light">
         <h1 className="text-[1.25rem] font-semibold text-text-main">
           CHI TIẾT HỒ SƠ TẠM TRÚ
         </h1>
@@ -66,6 +71,11 @@ export default function DocumentCenterPanel({
             <Status status={detail.statusLabel} />
           </div>
         </div>
+        {returnInfo && (
+          <div className="mb-4">
+            <ReturnConfirmCard info={returnInfo} />
+          </div>
+        )}
       </div>
 
       {/* Toolbar */}

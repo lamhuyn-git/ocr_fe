@@ -6,11 +6,8 @@ import {
   fetchWards,
 } from "../../residence-form/services/form-api";
 
-// Mặc định chọn sẵn tỉnh khi mở dashboard (khớp theo tên không dấu) cho user
-// không bị khoá địa bàn. Officer bị khoá sẽ dùng đúng tỉnh/phường phụ trách.
 const DEFAULT_PROVINCE_MATCH = "ho chi minh";
 
-// Bỏ dấu tiếng Việt + thường hoá để so khớp tên không phụ thuộc dấu/hoa-thường.
 const noAccent = (s: string) =>
   s
     .normalize("NFD")
@@ -24,9 +21,11 @@ type DashboardContentHeaderProps = {
   ward: string;
   onProvinceChange: (value: string) => void;
   onWardChange: (value: string) => void;
-  locationLocked?: boolean; // khoá bộ lọc tỉnh/phường (vd: cán bộ cấp phường)
-  lockedProvinceId?: string | null; // tỉnh phụ trách của officer (khi khoá)
-  lockedWardId?: string | null; // phường phụ trách của officer (khi khoá)
+  locationLocked?: boolean; // khoá bộ lọc tỉnh/phường
+  lockedProvinceId?: string | null; // tỉnh phụ trách của officer khi khoá
+  lockedWardId?: string | null; // phường phụ trách của officer khi khoá
+  title?: string;
+  subtitle?: string;
 };
 
 export default function DashboardContentHeader({
@@ -37,12 +36,13 @@ export default function DashboardContentHeader({
   locationLocked = false,
   lockedProvinceId = null,
   lockedWardId = null,
+  title = "HỆ THỐNG QUẢN LÝ",
+  subtitle = "Hệ thống trích xuất hỗ trợ phân tích, cán bộ kiểm duyệt và quyết định cuối cùng",
 }: DashboardContentHeaderProps) {
   const [provinces, setProvinces] = useState<SelectOption[]>([]);
   const [wards, setWards] = useState<SelectOption[]>([]);
   const [wardsLoading, setWardsLoading] = useState(false);
 
-  // Lưu id tỉnh mặc định đã chọn để chỉ auto-chọn phường mặc định cho tỉnh đó.
   const defaultProvinceId = useRef<string | null>(null);
   const wardDefaultApplied = useRef(false);
 
@@ -50,36 +50,38 @@ export default function DashboardContentHeader({
     fetchProvinces().then(setProvinces);
   }, []);
 
-  // Auto-chọn tỉnh mặc định 1 lần khi danh sách tỉnh đã tải và chưa chọn.
-  // Officer bị khoá → tỉnh phụ trách; còn lại → mặc định HCM.
+  // Auto-chọn set tỉnh mặc định là Hồ Chí Minh
   useEffect(() => {
     if (province || provinces.length === 0 || defaultProvinceId.current) return;
     const targetId =
       locationLocked && lockedProvinceId
         ? lockedProvinceId
-        : provinces.find((p) => noAccent(p.label).includes(DEFAULT_PROVINCE_MATCH))
-            ?.value;
+        : provinces.find((p) =>
+            noAccent(p.label).includes(DEFAULT_PROVINCE_MATCH),
+          )?.value;
     if (targetId) {
       defaultProvinceId.current = targetId;
       onProvinceChange(targetId);
     }
   }, [provinces, province, locationLocked, lockedProvinceId, onProvinceChange]);
 
-  // Officer bị khoá: auto-chọn đúng phường phụ trách 1 lần.
-  // super_admin tự chọn → hiện placeholder "Chọn phường tại đây".
-  // Chờ tỉnh đã khớp tỉnh phụ trách rồi mới chọn phường: auto-chọn tỉnh sẽ
-  // reset ward về "" (handleProvinceChange), nên phải chạy SAU bước đó —
-  // tránh cờ wardDefaultApplied bị "đốt" trước khi tỉnh được thiết lập.
+  // Load tỉnh và phường cho Officer
   useEffect(() => {
     if (!locationLocked || !lockedWardId) return;
     if (wardDefaultApplied.current || ward) return;
     if (province !== lockedProvinceId) return;
     wardDefaultApplied.current = true;
     onWardChange(lockedWardId);
-  }, [locationLocked, lockedWardId, ward, onWardChange, province, lockedProvinceId]);
+  }, [
+    locationLocked,
+    lockedWardId,
+    ward,
+    onWardChange,
+    province,
+    lockedProvinceId,
+  ]);
 
-  // Tải danh sách phường mỗi khi tỉnh đổi. Cờ `stale` huỷ kết quả cũ nếu
-  // người dùng đổi tỉnh nhanh (tránh race: response tỉnh cũ về sau).
+  // Tải danh sách phường mỗi khi tỉnh đổi
   useEffect(() => {
     if (!province) {
       setWards([]);
@@ -102,11 +104,8 @@ export default function DashboardContentHeader({
   return (
     <div className="flex items-center justify-between shrink-0">
       <div className="flex flex-col gap-1">
-        <h2 className="text-h2 font-semibold text-text-main">QUẢN LÝ CƯ TRÚ</h2>
-        <p className="text-para-m-regular text-text-placeholder">
-          Hệ thống trích xuất hỗ trợ phân tích, cán bộ kiểm duyệt và quyết định
-          cuối cùng
-        </p>
+        <h2 className="text-h2 font-semibold text-text-main">{title}</h2>
+        <p className="text-para-m-regular text-text-placeholder">{subtitle}</p>
       </div>
 
       {/* Right: filter dropdowns */}

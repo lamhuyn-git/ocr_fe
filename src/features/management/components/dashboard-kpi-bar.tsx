@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import Icon from "../../../components/icons";
 import type { IconName } from "../../../components/icons";
-import {
-  currentMonthRange,
-  getFormStatusCounts,
-  type KpiCounts,
-} from "../services/form-list-api";
+import { getFormStatusCounts, type KpiCounts } from "../services/form-list-api";
 
 type KpiItem = {
   icon: IconName;
@@ -42,8 +38,7 @@ export default function DashboardKpiBar({
 
   useEffect(() => {
     let stale = false;
-    const { fromDay, toDay } = currentMonthRange();
-    getFormStatusCounts({ organizationId, typeId, fromDay, toDay })
+    getFormStatusCounts({ organizationId, typeId })
       .then((data) => {
         if (!stale) setCounts(data);
       })

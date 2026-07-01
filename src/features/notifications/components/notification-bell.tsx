@@ -66,7 +66,7 @@ export default function NotificationBell({
         </button>
 
         {open && (
-          <div className="absolute right-0 mt-1 w-[28rem] overflow-auto rounded-2xl bg-white shadow-card z-50 p-4">
+          <div className="absolute right-0 mt-1 w-[28rem] h-[90vh] overflow-auto rounded-2xl bg-white shadow-card z-50 p-4">
             <div className="flex items-center justify-between mb-3">
               <span className="text-para-m-semibold uppercase tracking-wide text-text-main">
                 Thông báo

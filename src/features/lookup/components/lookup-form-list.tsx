@@ -63,7 +63,7 @@ export default function LookupFormList({ userId }: { userId: string }) {
   useEffect(() => {
     let stale = false;
     setLoading(true);
-    fetchUserForms(userId, { page, pageSize: PAGE_SIZE, group: tab, q: search })
+    fetchUserForms(userId, { page, group: tab, q: search })
       .then((res) => {
         if (stale) return;
         setItems(res.items);

@@ -45,12 +45,11 @@ function toLookupForm(item: UserFormListItem): LookupForm {
 // Lấy 1 trang hồ sơ của công dân (server-side: phân trang + lọc tab + tìm kiếm).
 export async function fetchUserForms(
   userId: string,
-  { page = 1, pageSize = 10, group = "all", q = "" }: LookupQuery = {},
+  { page = 1, group = "all", q = "" }: LookupQuery = {},
 ): Promise<LookupPage> {
   const params = new URLSearchParams({
     user_id: userId,
     page: String(page),
-    page_size: String(pageSize),
     group,
   });
   if (q.trim()) params.set("q", q.trim());

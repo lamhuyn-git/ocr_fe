@@ -15,7 +15,7 @@ export type UserFormListItem = {
   outcome?: FormOutcome | null;
   form_type_name: string | null;
   location: string | null;
-  created_at: string; // ISO datetime
+  created_at: string;
   completed_at?: string | null;
   reject_reason?: string | null;
   notify_method?: string | null;
@@ -44,7 +44,6 @@ export type LookupPage = {
 
 export type LookupQuery = {
   page?: number;
-  pageSize?: number;
   group?: "all" | "submitted" | "draft";
   q?: string;
 };

@@ -26,6 +26,7 @@ type DashboardContentHeaderProps = {
   lockedWardId?: string | null; // phường phụ trách của officer khi khoá
   title?: string;
   subtitle?: string;
+  showFilters?: boolean;
 };
 
 export default function DashboardContentHeader({
@@ -38,6 +39,7 @@ export default function DashboardContentHeader({
   lockedWardId = null,
   title = "HỆ THỐNG QUẢN LÝ",
   subtitle = "Hệ thống trích xuất hỗ trợ phân tích, cán bộ kiểm duyệt và quyết định cuối cùng",
+  showFilters = true,
 }: DashboardContentHeaderProps) {
   const [provinces, setProvinces] = useState<SelectOption[]>([]);
   const [wards, setWards] = useState<SelectOption[]>([]);
@@ -47,11 +49,13 @@ export default function DashboardContentHeader({
   const wardDefaultApplied = useRef(false);
 
   useEffect(() => {
+    if (!showFilters) return;
     fetchProvinces().then(setProvinces);
-  }, []);
+  }, [showFilters]);
 
   // Auto-chọn set tỉnh mặc định là Hồ Chí Minh
   useEffect(() => {
+    if (!showFilters) return;
     if (province || provinces.length === 0 || defaultProvinceId.current) return;
     const targetId =
       locationLocked && lockedProvinceId
@@ -63,10 +67,18 @@ export default function DashboardContentHeader({
       defaultProvinceId.current = targetId;
       onProvinceChange(targetId);
     }
-  }, [provinces, province, locationLocked, lockedProvinceId, onProvinceChange]);
+  }, [
+    provinces,
+    province,
+    locationLocked,
+    lockedProvinceId,
+    onProvinceChange,
+    showFilters,
+  ]);
 
   // Load tỉnh và phường cho Officer
   useEffect(() => {
+    if (!showFilters) return;
     if (!locationLocked || !lockedWardId) return;
     if (wardDefaultApplied.current || ward) return;
     if (province !== lockedProvinceId) return;
@@ -79,10 +91,12 @@ export default function DashboardContentHeader({
     onWardChange,
     province,
     lockedProvinceId,
+    showFilters,
   ]);
 
   // Tải danh sách phường mỗi khi tỉnh đổi
   useEffect(() => {
+    if (!showFilters) return;
     if (!province) {
       setWards([]);
       return;
@@ -99,7 +113,7 @@ export default function DashboardContentHeader({
     return () => {
       stale = true;
     };
-  }, [province]);
+  }, [province, showFilters]);
 
   return (
     <div className="flex items-center justify-between shrink-0">
@@ -108,41 +122,42 @@ export default function DashboardContentHeader({
         <p className="text-para-m-regular text-text-placeholder">{subtitle}</p>
       </div>
 
-      {/* Right: filter dropdowns */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
-            Tỉnh/Thành phố
-          </span>
-          <div className="w-[11.25rem]">
-            <Select
-              value={province}
-              options={provinces}
-              placeholder="Chọn tỉnh/thành phố"
-              onChange={onProvinceChange}
-              disabled={locationLocked}
-              triggerClassName="!p-2"
-            />
+      {showFilters && (
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
+              Tỉnh/Thành phố
+            </span>
+            <div className="w-[11.25rem]">
+              <Select
+                value={province}
+                options={provinces}
+                placeholder="Chọn tỉnh/thành phố"
+                onChange={onProvinceChange}
+                disabled={locationLocked}
+                triggerClassName="!p-2"
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
-            Phường/Xã
-          </span>
-          <div className="w-[11.25rem]">
-            <Select
-              value={ward}
-              options={wards}
-              placeholder="Chọn phường tại đây"
-              onChange={onWardChange}
-              disabled={locationLocked || !province}
-              loading={wardsLoading}
-              triggerClassName="!p-2"
-            />
+          <div className="flex items-center gap-2">
+            <span className="text-para-m-medium text-text-placeholder whitespace-nowrap">
+              Phường/Xã
+            </span>
+            <div className="w-[11.25rem]">
+              <Select
+                value={ward}
+                options={wards}
+                placeholder="Chọn phường tại đây"
+                onChange={onWardChange}
+                disabled={locationLocked || !province}
+                loading={wardsLoading}
+                triggerClassName="!p-2"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1035,6 +1035,51 @@ export const iconMap = {
       />
     </svg>
   ),
+  delete: () => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1.75 3.5H12.25"
+        stroke="#DC2626"
+        stroke-width="1.16587"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M11.0834 3.5V11.6667C11.0834 12.25 10.5001 12.8333 9.91675 12.8333H4.08341C3.50008 12.8333 2.91675 12.25 2.91675 11.6667V3.5"
+        stroke="#DC2626"
+        stroke-width="1.16587"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M4.66675 3.49935V2.33268C4.66675 1.74935 5.25008 1.16602 5.83341 1.16602H8.16675C8.75008 1.16602 9.33341 1.74935 9.33341 2.33268V3.49935"
+        stroke="#DC2626"
+        stroke-width="1.16587"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M5.83325 6.41602V9.91602"
+        stroke="#DC2626"
+        stroke-width="1.16587"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M8.16675 6.41602V9.91602"
+        stroke="#DC2626"
+        stroke-width="1.16587"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  ),
 };
 
 export type IconName = keyof typeof iconMap;

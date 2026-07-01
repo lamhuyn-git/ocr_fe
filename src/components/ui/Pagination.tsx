@@ -1,14 +1,12 @@
 import Icon from "../icons";
 
 type PaginationProps = {
-  currentPage: number; // trang hiện tại (1-based)
+  currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
   className?: string;
 };
 
-// Tạo danh sách trang hiển thị: luôn có trang đầu/cuối + lân cận trang hiện tại,
-// chèn "..." vào chỗ ngắt quãng. VD current=1,total=10 -> [1,2,"...",9,10].
 function buildPageItems(current: number, total: number): (number | "...")[] {
   const candidates = [
     1,
@@ -53,7 +51,7 @@ export default function Pagination({
         className="flex items-center gap-1 rounded-xl border border-input-border bg-white px-4 py-2.5 text-para-m-semibold text-text-main transition-colors hover:bg-grey disabled:cursor-not-allowed disabled:opacity-40"
       >
         <Icon name="chevron-left" size={16} className="text-text-main" />
-        Previous
+        Trước
       </button>
 
       {items.map((item, i) =>
@@ -87,7 +85,7 @@ export default function Pagination({
         onClick={() => onPageChange(currentPage + 1)}
         className="flex items-center gap-1 rounded-xl border border-input-border bg-white px-4 py-2.5 text-para-m-semibold text-text-main transition-colors hover:bg-grey disabled:cursor-not-allowed disabled:opacity-40"
       >
-        Next
+        Sau
         <Icon name="chevron-right" size={16} className="text-text-main" />
       </button>
     </nav>
